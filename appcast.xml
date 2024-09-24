@@ -8,7 +8,7 @@
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/huggingface/chat-macOS/HuggingChat-Mac.zip" length="7201676" type="application/octet-stream" sparkle:edSignature="KtT6kZ2fdfpGUUMHnKFax7l1Fu7TvFkj9KVAv1mmuvXARSh2JQNyUllX+zj3OLbFMX7cuZKAXfDD/r+5Xzz5DQ=="/>
+            <enclosure url="https://github.com/huggingface/chat-macOS/releases/download/beta/HuggingChat-Mac.zip" length="7201676" type="application/octet-stream" sparkle:edSignature="KtT6kZ2fdfpGUUMHnKFax7l1Fu7TvFkj9KVAv1mmuvXARSh2JQNyUllX+zj3OLbFMX7cuZKAXfDD/r+5Xzz5DQ=="/>
         </item>
     </channel>
 </rss>
