@@ -13,7 +13,7 @@ HuggingChat macOS is a native chat interface designed specifically for macOS use
 3. Unzip the downloaded file.
 4. Drag the `HuggingChat.app` to your Applications folder.
 
-That's it! You can now launch HuggingChat from your Applications folder or using the dedicated keyboard shortcut: `⌘ + Shift + Space`.
+That's it! You can now launch HuggingChat from your Applications folder or using the dedicated keyboard shortcut: `⌘ + Shift + Return`.
 
 ### Feedback
 
