@@ -4,11 +4,11 @@
         <title>HuggingChat-Mac</title>
         <item>
             <title>1.0</title>
-            <pubDate>Mon, 23 Sep 2024 21:00:20 -0700</pubDate>
+            <pubDate>Mon, 23 Sep 2024 22:36:59 -0700</pubDate>
             <sparkle:version>1</sparkle:version>
             <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/huggingface/chat-macOS/releases/download/beta/HuggingChat-Mac.zip" length="7201676" type="application/octet-stream" sparkle:edSignature="KtT6kZ2fdfpGUUMHnKFax7l1Fu7TvFkj9KVAv1mmuvXARSh2JQNyUllX+zj3OLbFMX7cuZKAXfDD/r+5Xzz5DQ=="/>
+            <enclosure url="https://github.com/huggingface/chat-macOS/releases/download/v0.5.0/HuggingChat-Mac.zip" length="7201626" type="application/octet-stream" sparkle:edSignature="/Q2lRjfI1R4ku/K6ZdZ9rPl28GMXaMH5XDdor7pHTVLQ/Exn1cn7cL3f4Y0XxQeGAcrJAUL7J1b6St6aPa7oBA=="/>
         </item>
     </channel>
 </rss>
