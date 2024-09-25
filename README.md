@@ -9,9 +9,9 @@ HuggingChat macOS is a native chat interface designed specifically for macOS use
 ### Installation
 
 1. Go to the [Releases](https://github.com/huggingface/chat-macOS/releases) section of this repository.
-2. Download the latest `HuggingChat-macOS.zip` file.
+2. Download the latest `HuggingChat-Mac.zip` file.
 3. Unzip the downloaded file.
-4. Drag the `HuggingChat.app` to your Applications folder.
+4. Drag the `HuggingChat-Mac.app` to your Applications folder.
 
 That's it! You can now launch HuggingChat from your Applications folder or using the dedicated keyboard shortcut: `⌘ + Shift + Return`.
 
