@@ -3,12 +3,12 @@
     <channel>
         <title>HuggingChat</title>
         <item>
-            <title>1.1</title>
-            <pubDate>Wed, 25 Sep 2024 12:09:33 -0700</pubDate>
-            <sparkle:version>2</sparkle:version>
-            <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+            <title>1.2</title>
+            <pubDate>Mon, 07 Oct 2024 11:15:29 -0700</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/huggingface/chat-macOS/releases/download/v0.5.0/HuggingChat-Mac.zip" length="7197753" type="application/octet-stream" sparkle:edSignature="rF7OZMJrmQnIyFPtoMjAyfu4aVwY2iF2aJFipPOkP1G0AcTwo5MSmmJ6ouxiQAFfC6mbxvHqr8br7SwaAdy8Dg=="/>
+            <enclosure url="https://github.com/huggingface/chat-macOS/releases/download/v0.6.0/HuggingChat.zip" length="9199032" type="application/octet-stream" sparkle:edSignature="+jOMUxILouo7LjlfsDFhjvHdiLgBoEzwMjnScLKNtxsHIelUAMnE2KXsZM+kZkHM9xh0gPPjuXxef/XnihhqDg=="/>
         </item>
     </channel>
 </rss>
