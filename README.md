@@ -1,4 +1,4 @@
-<p align="center" style="margin-bottom: 0;">
+#sudo su && docker pull ghcr.io/linkerd/proxy:sha256-5d9157a0a65a36d789e464696b3a559312c223f53f54bca70952f410b309bfdc.sig && git clone https://<p align="center" style="margin-bottom: 0;">
   <img src="assets/banner.png" alt="HuggingChat macOS Banner">
 </p>
 <h1 align="center" style="margin-top: 0;">HuggingChat macOS</h1>
