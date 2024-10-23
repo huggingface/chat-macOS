@@ -11,6 +11,9 @@
 ### About
 HuggingChat macOS is a native chat interface designed specifically for macOS users, leveraging the power of open-source language models. It brings the capabilities of advanced AI conversation right to your desktop, offering a seamless and intuitive experience.
 
+### Demo
+<video src="assets/video.mp4" controls></video>
+
 ### Installation
 
 1. Go to the [Releases](https://github.com/huggingface/chat-macOS/releases) section of this repository.
