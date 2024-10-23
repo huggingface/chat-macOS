@@ -1,0 +1,595 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F103B81B2C7911B9007B6D87 /* Path in Frameworks */ = {isa = PBXBuildFile; productRef = F103B81A2C7911B9007B6D87 /* Path */; };
+		F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */; };
+		F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = F13631C42C731A30009DEF15 /* LaunchAtLogin */; };
+		F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F1413D6C2C8ECD190045CD54 /* MarkdownView */; };
+		F18E15D82C810C940091EE53 /* Highlighter in Frameworks */ = {isa = PBXBuildFile; productRef = F18E15D72C810C940091EE53 /* Highlighter */; };
+		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
+		F19E18C32C9CA60C00B89DB3 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18C22C9CA60C00B89DB3 /* WhisperKit */; };
+		F1A76DBB2CABDD82009CBA98 /* llama in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBA2CABDD82009CBA98 /* llama */; };
+		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
+		F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */; };
+		F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E062CABF22B009CBA98 /* Accelerate.framework */; };
+		F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E082CABF231009CBA98 /* Metal.framework */; };
+		F1D3BB082CC850A600D1A7EA /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */; };
+		F1E3D1DB2CA0A1AD005A49BE /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = F1E3D1DA2CA0A1AD005A49BE /* Pow */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F1E4D0402C9FD3C900E69E61 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F13631892C6F346A009DEF15 /* HuggingChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HuggingChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1A76E062CABF22B009CBA98 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		F1A76E082CABF231009CBA98 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		F1D3BB072CC850A500D1A7EA /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F1C4B01A2C7A62F100CE47CC /* Exceptions for "HuggingChat-Mac" folder in "HuggingChat-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Fonts/ChicagoFLF.ttf,
+				Fonts/pixChicago.ttf,
+				Fonts/PixeloidSans.ttf,
+				Info.plist,
+			);
+			target = F13631882C6F346A009DEF15 /* HuggingChat-Mac */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		F1E3D1CE2C9FD9B2005A49BE /* Exceptions for "HuggingChat-Mac" folder in "Copy Files" phase from "HuggingChat-Mac" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = F1E4D0402C9FD3C900E69E61 /* CopyFiles */;
+			membershipExceptions = (
+				Fonts/ChicagoFLF.ttf,
+				Fonts/pixChicago.ttf,
+				Fonts/PixeloidSans.ttf,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F136318B2C6F346A009DEF15 /* HuggingChat-Mac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F1C4B01A2C7A62F100CE47CC /* Exceptions for "HuggingChat-Mac" folder in "HuggingChat-Mac" target */,
+				F1E3D1CE2C9FD9B2005A49BE /* Exceptions for "HuggingChat-Mac" folder in "Copy Files" phase from "HuggingChat-Mac" target */,
+			);
+			path = "HuggingChat-Mac";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F13631862C6F346A009DEF15 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
+				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
+				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
+				F1E3D1DB2CA0A1AD005A49BE /* Pow in Frameworks */,
+				F103B81B2C7911B9007B6D87 /* Path in Frameworks */,
+				F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */,
+				F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */,
+				F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */,
+				F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */,
+				F18E15D82C810C940091EE53 /* Highlighter in Frameworks */,
+				F1A76DBB2CABDD82009CBA98 /* llama in Frameworks */,
+				F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */,
+				F19E18C32C9CA60C00B89DB3 /* WhisperKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F13631802C6F346A009DEF15 = {
+			isa = PBXGroup;
+			children = (
+				F1D3BB072CC850A500D1A7EA /* Config.xcconfig */,
+				F136318B2C6F346A009DEF15 /* HuggingChat-Mac */,
+				F1A76E052CABF22B009CBA98 /* Frameworks */,
+				F136318A2C6F346A009DEF15 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F136318A2C6F346A009DEF15 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F13631892C6F346A009DEF15 /* HuggingChat.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F1A76E052CABF22B009CBA98 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F1A76E082CABF231009CBA98 /* Metal.framework */,
+				F1A76E062CABF22B009CBA98 /* Accelerate.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F13631882C6F346A009DEF15 /* HuggingChat-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F13631982C6F346B009DEF15 /* Build configuration list for PBXNativeTarget "HuggingChat-Mac" */;
+			buildPhases = (
+				F13631852C6F346A009DEF15 /* Sources */,
+				F13631862C6F346A009DEF15 /* Frameworks */,
+				F13631872C6F346A009DEF15 /* Resources */,
+				F1E4D0402C9FD3C900E69E61 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F136318B2C6F346A009DEF15 /* HuggingChat-Mac */,
+			);
+			name = "HuggingChat-Mac";
+			packageProductDependencies = (
+				F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */,
+				F13631C42C731A30009DEF15 /* LaunchAtLogin */,
+				F103B81A2C7911B9007B6D87 /* Path */,
+				F18E15D72C810C940091EE53 /* Highlighter */,
+				F1413D6C2C8ECD190045CD54 /* MarkdownView */,
+				F19E18BD2C9C889E00B89DB3 /* Sparkle */,
+				F19E18C22C9CA60C00B89DB3 /* WhisperKit */,
+				F1E3D1DA2CA0A1AD005A49BE /* Pow */,
+				F1A76DBA2CABDD82009CBA98 /* llama */,
+				F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */,
+				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
+			);
+			productName = "HuggingChat-Mac";
+			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F13631812C6F346A009DEF15 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F13631882C6F346A009DEF15 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = F13631842C6F346A009DEF15 /* Build configuration list for PBXProject "HuggingChat-Mac" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F13631802C6F346A009DEF15;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+				F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */,
+				F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */,
+				F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */,
+				F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+				F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */,
+				F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */,
+				F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F13631882C6F346A009DEF15 /* HuggingChat-Mac */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F13631872C6F346A009DEF15 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F1D3BB082CC850A600D1A7EA /* Config.xcconfig in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F13631852C6F346A009DEF15 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F13631962C6F346B009DEF15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F13631972C6F346B009DEF15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F13631992C6F346B009DEF15 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "HuggingChat-Mac/HuggingChat_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"HuggingChat-Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HuggingChat-Mac/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = HuggingChat;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 HuggingFace Inc. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to your microphone is needed for dictation purposes.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "cyrilzakka.HuggingChat-Mac";
+				PRODUCT_NAME = HuggingChat;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F136319A2C6F346B009DEF15 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "HuggingChat-Mac/HuggingChat_Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"HuggingChat-Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "HuggingChat-Mac/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = HuggingChat;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSUIElement = NO;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 HuggingFace Inc. All rights reserved.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access to your microphone is needed for dictation purposes.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "cyrilzakka.HuggingChat-Mac";
+				PRODUCT_NAME = HuggingChat;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F13631842C6F346A009DEF15 /* Build configuration list for PBXProject "HuggingChat-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F13631962C6F346B009DEF15 /* Debug */,
+				F13631972C6F346B009DEF15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F13631982C6F346B009DEF15 /* Build configuration list for PBXNativeTarget "HuggingChat-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F13631992C6F346B009DEF15 /* Debug */,
+				F136319A2C6F346B009DEF15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mxcl/Path.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.1;
+			};
+		};
+		F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
+		F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cyrilzakka/MarkdownView.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/smittytone/HighlighterSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.5;
+			};
+		};
+		F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.4;
+			};
+		};
+		F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ggerganov/llama.cpp.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FelixHerrmann/swift-package-list.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.3.0;
+			};
+		};
+		F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EmergeTools/Pow.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F103B81A2C7911B9007B6D87 /* Path */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */;
+			productName = Path;
+		};
+		F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		F13631C42C731A30009DEF15 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
+			productName = LaunchAtLogin;
+		};
+		F1413D6C2C8ECD190045CD54 /* MarkdownView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */;
+			productName = MarkdownView;
+		};
+		F18E15D72C810C940091EE53 /* Highlighter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */;
+			productName = Highlighter;
+		};
+		F19E18BD2C9C889E00B89DB3 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		F19E18C22C9CA60C00B89DB3 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+		F1A76DBA2CABDD82009CBA98 /* llama */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */;
+			productName = llama;
+		};
+		F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
+			productName = SwiftPackageList;
+		};
+		F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
+			productName = SwiftPackageListUI;
+		};
+		F1E3D1DA2CA0A1AD005A49BE /* Pow */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */;
+			productName = Pow;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F13631812C6F346A009DEF15 /* Project object */;
+}

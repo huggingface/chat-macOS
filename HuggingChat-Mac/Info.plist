@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ATSApplicationFontsPath</key>
+	<string>Fonts</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>cyrilzakka.HuggingChat-Mac</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>huggingchat</string>
+			</array>
+		</dict>
+	</array>
+	<key>SUEnableInstallerLauncherService </key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/huggingface/chat-macOS/blob/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>+24tIJuqGcBmkoIuvGFUd+r0l9/9ZDlYkOF8e4mZbIE=</string>
+</dict>
+</plist>

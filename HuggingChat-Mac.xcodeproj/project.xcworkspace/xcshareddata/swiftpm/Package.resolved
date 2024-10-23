@@ -1,0 +1,150 @@
+{
+  "originHash" : "1878c921a717a2b89849878bfcb1d99168045764ab6745fe833e493a04bfb225",
+  "pins" : [
+    {
+      "identity" : "highlighterswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/smittytone/HighlighterSwift.git",
+      "state" : {
+        "revision" : "7faedca3fe85b807848f8ac9729427a1abcf8a90",
+        "version" : "1.1.6"
+      }
+    },
+    {
+      "identity" : "highlightr",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/raspu/Highlightr.git",
+      "state" : {
+        "revision" : "bcf2d0590f32ac2528feb72d7e34f5b463801a47",
+        "version" : "2.2.1"
+      }
+    },
+    {
+      "identity" : "keyboardshortcuts",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/KeyboardShortcuts",
+      "state" : {
+        "revision" : "9369a045a72a5296150879781321aecd228171db",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "launchatlogin-modern",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/LaunchAtLogin-Modern",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a04ec1c363be3627734f6dad757d82f5d4fa8fcc"
+      }
+    },
+    {
+      "identity" : "llama.cpp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ggerganov/llama.cpp.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "71967c2a6d30da9f61580d3e2d4cb00e0223b6fa"
+      }
+    },
+    {
+      "identity" : "markdownview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cyrilzakka/MarkdownView.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4234a0f287910f403701903e7387bc5e1b9c33f9"
+      }
+    },
+    {
+      "identity" : "mathjaxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/aheze/MathJaxSwift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dad2ff323c1d52ea8747f7ad4f405a9c717a62c1"
+      }
+    },
+    {
+      "identity" : "path.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mxcl/Path.swift.git",
+      "state" : {
+        "revision" : "8e355c28e9393c42e58b18c54cace2c42c98a616",
+        "version" : "1.4.1"
+      }
+    },
+    {
+      "identity" : "pow",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EmergeTools/Pow.git",
+      "state" : {
+        "revision" : "f0d0f3e72d42beaf2b01f1cb798e1b55902814eb",
+        "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "sparkle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparkle-project/Sparkle",
+      "state" : {
+        "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
+        "version" : "2.6.4"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "c8ed701b513cf5177118a175d85fbbbcd707ab41",
+        "version" : "1.3.0"
+      }
+    },
+    {
+      "identity" : "swift-cmark",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-cmark.git",
+      "state" : {
+        "branch" : "gfm",
+        "revision" : "b022b08312decdc46585e0b3440d97f6f22ef703"
+      }
+    },
+    {
+      "identity" : "swift-markdown",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-markdown.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "90a8e2ec3d814093435b76c5e87917bd81785fd4"
+      }
+    },
+    {
+      "identity" : "swift-package-list",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/FelixHerrmann/swift-package-list.git",
+      "state" : {
+        "revision" : "60b77bea44f5b2f7369aecfcd993f7672e09602a",
+        "version" : "4.3.0"
+      }
+    },
+    {
+      "identity" : "swift-transformers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/huggingface/swift-transformers.git",
+      "state" : {
+        "revision" : "74b94211bdc741694ed7e700a1104c72e5ba68fe",
+        "version" : "0.1.7"
+      }
+    },
+    {
+      "identity" : "whisperkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/argmaxinc/WhisperKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c2f1b57266bee2deeeac1d7014e1c05bcd32119a"
+      }
+    }
+  ],
+  "version" : 3
+}
