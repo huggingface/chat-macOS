@@ -69,7 +69,7 @@ struct GeneralSettingsView: View {
                         }
                     }
                     
-                    if !userLoggedIn && HuggingChatSession.shared.currentUser == nil {
+                    if HuggingChatSession.shared.currentUser == nil {
                         // Not logged in
                         VStack(alignment: .leading) {
                             Text("Sign in")
@@ -228,6 +228,7 @@ struct GeneralSettingsView: View {
             HuggingChatSession.shared.refreshLoginState()
             fetchModels()
             modelManager.fetchAllLocalModels()
+            print("HII", HuggingChatSession.shared.currentUser, "HII", userLoggedIn)
         }
         .formStyle(.grouped)
     }

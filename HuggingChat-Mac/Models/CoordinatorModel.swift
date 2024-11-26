@@ -56,7 +56,7 @@ import Combine
                 print("Connected")
 //                self?.showInfo(info: "Connected")
             case .failure(let error):
-                print(error.localizedDescription)
+                print("Could not validate sign in", error.localizedDescription)
 //                self?.showError(error: error)
             }
         } receiveValue: { _ in
