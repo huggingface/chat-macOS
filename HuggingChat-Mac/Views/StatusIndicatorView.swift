@@ -23,6 +23,8 @@ struct StatusIndicatorView: View {
     private var statusColor: Color {
         if let status = status {
             switch status {
+            case .error(_):
+                return .red
             case .idle:
                 return .gray
             case .loaded:
@@ -47,6 +49,8 @@ struct StatusIndicatorView: View {
     private var helpText: String {
         if let status = status {
             switch status {
+            case .error(let error):
+                return "Error: \(error)"
             case .idle:
                 return "No model selected"
             case .loaded(_):

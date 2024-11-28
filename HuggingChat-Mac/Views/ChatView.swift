@@ -80,46 +80,54 @@ struct ChatView: View {
             ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
             
             // ErrorView
-//            if conversationModel.state == .error || modelManager.status == .error {
-//                if cardIndex == 0 && modelManager.status == .error {
-//                    // Local
-////                    if selectedLocalModel != "None" {
-////                        ScrollView {
-////                            Text(modelManager.local_error?.description ?? "")
-////                                .padding(20)
-////                                .onGeometryChange(for: CGRect.self) { proxy in
-////                                    proxy.frame(in: .global)
-////                                } action: { newValue in
-////                                    errorSize.width = newValue.width
-////                                    errorSize.height = min(max(newValue.height, 20), 100)
-////                                }
-////                        }
-////                        .frame(maxWidth: .infinity, alignment: .leading)
-////                        
-////                        .frame(height: errorSize.height)
-////                        .background(.regularMaterial)
-////                        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-////                    }
-//                    
-//                } else if cardIndex == 1 && conversationModel.state == .error {
-//                    // Server
-//                    ScrollView {
-//                        Text(conversationModel.error?.description ?? "")
-//                            .padding(20)
-//                            .onGeometryChange(for: CGRect.self) { proxy in
-//                                proxy.frame(in: .global)
-//                            } action: { newValue in
-//                                errorSize.width = newValue.width
-//                                errorSize.height = min(max(newValue.height, 20), 100)
-//                            }
-//                    }
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    
-//                    .frame(height: errorSize.height)
-//                    .background(.regularMaterial)
-//                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-//                }
-//            }
+            if conversationModel.state == .error || modelManager.loadState.isError {
+                if cardIndex == 0 &&  modelManager.loadState.isError {
+                    // Local
+                    if selectedLocalModel != "None" {
+                        switch modelManager.loadState {
+                        case .error(let error):
+                            ScrollView {
+                                Text(error)
+                                    .padding(20)
+                                    .onGeometryChange(for: CGRect.self) { proxy in
+                                        proxy.frame(in: .global)
+                                    } action: { newValue in
+                                        errorSize.width = newValue.width
+                                        errorSize.height = min(max(newValue.height, 20), 100)
+                                    }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            .frame(height: errorSize.height)
+                            .background(.regularMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                        default:
+                            EmptyView()
+                        }
+
+                    }
+                    
+                }
+                
+                if cardIndex == 1 && conversationModel.state == .error {
+                    // Server
+                    ScrollView {
+                        Text(conversationModel.error?.description ?? "")
+                            .padding(20)
+                            .onGeometryChange(for: CGRect.self) { proxy in
+                                proxy.frame(in: .global)
+                            } action: { newValue in
+                                errorSize.width = newValue.width
+                                errorSize.height = min(max(newValue.height, 20), 100)
+                            }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    .frame(height: errorSize.height)
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                }
+            }
         }
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
         
@@ -138,8 +146,8 @@ struct ChatView: View {
                 }
             }
         }
-//        .onChange(of:  modelManager.loadState) {
-//            if modelManager.status == .error {
+//        .onChange(of:  modelManager.error) {
+//            if modelManager.error != nil {
 //                isResponseVisible = false
 //                prompt = animatablePrompt
 //                isChromeDinoUnlocked = true

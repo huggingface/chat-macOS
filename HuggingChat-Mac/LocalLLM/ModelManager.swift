@@ -18,12 +18,14 @@ import Hub
 enum LoadState {
     case idle
     case loaded(ModelContainer)
-}
-
-enum LocalModelState: Equatable {
-    case generating(Double)
-    case failed(String)
-    case error
+    case error(String)
+    
+    var isError: Bool {
+        if case .error(_) = self {
+            return true
+        }
+        return false
+    }
 }
 
 enum ModelDownloadState: Equatable {
@@ -31,21 +33,6 @@ enum ModelDownloadState: Equatable {
     case downloading(progress: Double)
     case downloaded
     case error(String)
-    
-    static func == (lhs: ModelDownloadState, rhs: ModelDownloadState) -> Bool {
-        switch (lhs, rhs) {
-        case (.notDownloaded, .notDownloaded):
-            return true
-        case (.downloaded, .downloaded):
-            return true
-        case let (.downloading(lhsProgress), .downloading(rhsProgress)):
-            return lhsProgress == rhsProgress
-        case let (.error(lhsError), .error(rhsError)):
-            return lhsError == rhsError
-        default:
-            return false
-        }
-    }
 }
 
 // Local representation of HF models
@@ -117,7 +104,7 @@ enum ModelDownloadState: Equatable {
             globalContainer = try await load(modelConfiguration: globalConfig!)
             loadState = .loaded(globalContainer!)
         } catch {
-            print(error.localizedDescription)
+            self.loadState = .error(error.localizedDescription)
         }
     }
     
@@ -150,7 +137,7 @@ enum ModelDownloadState: Equatable {
             
             return modelContainer
         } catch {
-            print(error.localizedDescription)
+            self.loadState = .error(error.localizedDescription)
             throw error
         }
     }
@@ -239,55 +226,53 @@ enum ModelDownloadState: Equatable {
     
     // MARK: - Generate Text
     func generate(prompt: String) async {
-        guard !running else { return }
-        guard globalContainer != nil else { return }
-        guard globalConfig != nil else { return }
+            guard !running else { return }
+            guard globalContainer != nil else { return }
+            guard globalConfig != nil else { return }
 
-        running = true
-        self.outputText = ""
+            running = true
+            self.outputText = ""
 
-        do {
-            messages.append(["role": "user", "content": prompt])
-            let promptTokens = try await globalContainer!.perform { _, tokenizer in
-                try tokenizer.applyChatTemplate(messages: messages)
-            }
+            do {
+                messages.append(["role": "user", "content": prompt])
+                let promptTokens = try await globalContainer!.perform { _, tokenizer in
+                    try tokenizer.applyChatTemplate(messages: messages)
+                }
 
-            MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+                MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
 
-            let result = await globalContainer!.perform { model, tokenizer in
-                MLXLLM.generate(
-                    promptTokens: promptTokens, parameters: generateParameters, model: model,
-                    tokenizer: tokenizer, extraEOSTokens: globalConfig!.extraEOSTokens
-                ) { tokens in
-                    // update the output -- this will make the view show the text as it generates
-                    if tokens.count % displayEveryNTokens == 0 {
-                        let text = tokenizer.decode(tokens: tokens)
-                        Task { @MainActor in
-                            self.outputText = text
+                let result = await globalContainer!.perform { model, tokenizer in
+                    MLXLLM.generate(
+                        promptTokens: promptTokens, parameters: generateParameters, model: model,
+                        tokenizer: tokenizer, extraEOSTokens: globalConfig!.extraEOSTokens
+                    ) { tokens in
+                        if tokens.count % displayEveryNTokens == 0 {
+                            let text = tokenizer.decode(tokens: tokens)
+                            Task { @MainActor in
+                                self.outputText = text
+                            }
+                        }
+
+                        if tokens.count >= maxTokens {
+                            return .stop
+                        } else {
+                            return .more
                         }
                     }
-
-                    if tokens.count >= maxTokens {
-                        return .stop
-                    } else {
-                        return .more
-                    }
                 }
+
+                if result.output != self.outputText {
+                    self.outputText = result.output
+                    messages.append(["role": "system", "content": result.output])
+                }
+
+            } catch {
+                self.loadState = .error(error.localizedDescription)
+//                outputText = "Failed: \(error.localizedDescription)"
             }
 
-            // update the text if needed, e.g. we haven't displayed because of displayEveryNTokens
-            if result.output != self.outputText {
-                self.outputText = result.output
-                messages.append(["role": "system", "content": result.output])
-            }
-//            self.stat = " Tokens/second: \(String(format: "%.3f", result.tokensPerSecond))"
-
-        } catch {
-            outputText = "Failed: \(error)"
+            running = false
         }
-
-        running = false
-    }
     
     func clearText() {
         messages = []
