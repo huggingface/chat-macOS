@@ -98,7 +98,7 @@ enum ModelDownloadState: Equatable {
     var globalContainer: ModelContainer?
     var globalConfig: ModelConfiguration?
     let generateParameters = GenerateParameters(temperature: 0.6)
-    let maxTokens = 240
+    let maxTokens = 1000
     let displayEveryNTokens = 4
     var loadState = LoadState.idle
     var outputText: String = ""

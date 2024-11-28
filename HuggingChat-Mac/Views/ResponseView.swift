@@ -76,8 +76,9 @@ struct ResponseView: View {
                 }
             }
         } else {
-            if let message = conversationModel.message, !message.content.isEmpty {
-                if isResponseVisible {
+            if let message = conversationModel.message,
+               !message.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+               isResponseVisible {
                     ScrollViewReader { proxy in
                         ScrollView {
                             VStack(alignment: .leading) {
@@ -114,6 +115,7 @@ struct ResponseView: View {
                             }
                         }
                         .onChange(of: conversationModel.message?.content, {
+                            print(conversationModel.message?.content.count)
                             DispatchQueue.main.async {
                                 withAnimation {
                                     proxy.scrollTo(8, anchor: .bottom)
@@ -126,7 +128,7 @@ struct ResponseView: View {
                     .scrollIndicators(.hidden)
                     .background(.regularMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                }
+                
             }
         }
     }
