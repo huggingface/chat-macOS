@@ -8,141 +8,319 @@
 import SwiftUI
 import Path
 import Combine
-import Models
-import Generation
 import UniformTypeIdentifiers
+import MLXLLM
+import MLX
+import MLXRandom
+import Hub
 
 // TODO: Finalize local model loading after getting USER tokens
+enum LoadState {
+    case idle
+    case loaded(ModelContainer)
+}
 
 enum LocalModelState: Equatable {
-    case noModel
-    case loading
-    case ready(Double?)
     case generating(Double)
     case failed(String)
     case error
 }
 
+enum ModelDownloadState: Equatable {
+    case notDownloaded
+    case downloading(progress: Double)
+    case downloaded
+    case error(String)
+    
+    static func == (lhs: ModelDownloadState, rhs: ModelDownloadState) -> Bool {
+        switch (lhs, rhs) {
+        case (.notDownloaded, .notDownloaded):
+            return true
+        case (.downloaded, .downloaded):
+            return true
+        case let (.downloading(lhsProgress), .downloading(rhsProgress)):
+            return lhsProgress == rhsProgress
+        case let (.error(lhsError), .error(rhsError)):
+            return lhsError == rhsError
+        default:
+            return false
+        }
+    }
+}
+
 // Local representation of HF models
-struct LocalModel: Identifiable, Hashable {
+@Observable class LocalModel: Identifiable, Hashable {
     var id : String = UUID().uuidString
-    let name: String
-    var lastUsed: String?
-    var sizeInfo: String?
+    let displayName: String
+    var size: String?
     let hfURL: String?
-    let localURL: URL?
+    var localURL: URL?
     var icon: String = "laptopcomputer"
+    
+    var downloadState: ModelDownloadState = .notDownloaded
+    
+    init(
+        id: String = UUID().uuidString,
+        displayName: String,
+        size: String? = nil,
+        hfURL: String? = nil,
+        localURL: URL? = nil,
+        icon: String = "laptopcomputer",
+        downloadState: ModelDownloadState = .notDownloaded
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.size = size
+        self.hfURL = hfURL
+        self.localURL = localURL
+        self.icon = icon
+        self.downloadState = downloadState
+    }
+    
+    static func == (lhs: LocalModel, rhs: LocalModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }
 
 @Observable class ModelManager {
     
+    var availableModels: [LocalModel] = [
+        LocalModel(id: "Qwen2.5-3B-Instruct-bf16", displayName: "Qwen2.5-3B-Instruct", size: "5.2GB", hfURL: "mlx-community/Qwen2.5-3B-Instruct-bf16", localURL: nil),
+        LocalModel(id: "SmolLM-135M-Instruct-4bit", displayName: "SmolLM-135M-Instruct-4bit", size: "75.8MB", hfURL: "mlx-community/SmolLM-135M-Instruct-4bit")
+    ]
+    private var activeDownloads: [String: Task<Void, Error>] = [:]
     
-    var availableModels: [LocalModel] = []
-    var status: LocalModelState = .noModel
-    var generatedText: String = ""
-    
-    // Llama model properties
-    var swiftLlama: SwiftLlama?
-    var usingStream = true
-    private var cancellable: Set<AnyCancellable> = []
-    
-    // CoreML model properties
-    var coreMLModel: LanguageModel? = nil
-    var config = GenerationConfig(maxNewTokens: 1000) // What's a good default value?
-    var outputText: AttributedString = ""
-    
-    // Errors
-    var local_error: LlamaError?
+    // MLX Params
+    var globalContainer: ModelContainer?
+    var globalConfig: ModelConfiguration?
+    let generateParameters = GenerateParameters(temperature: 0.6)
+    let maxTokens = 240
+    let displayEveryNTokens = 4
+    var loadState = LoadState.idle
+    var outputText: String = ""
+    var running = false
+    var messages : [[String:String]] = []
     
     init() {
         self.fetchAllLocalModels()
     }
     
-    // MARK: - Common Core
-    func localModelDidChange(to model: LocalModel) {
-        if let localURL = model.localURL {
-            if localURL.pathExtension.lowercased() == "gguf" {
-                status = .loading
-                Task {
-                    do {
-                        swiftLlama = try SwiftLlama(modelPath: localURL.path(), modelConfiguration: .init())
-                        status = .ready(nil)
-                    } catch {
-                        local_error = LlamaError.others("Model could not be loaded: \(error.localizedDescription)")
-                        status = .noModel
-                    }
-                }
-            }
+    // MARK: - Model Loading
+    func localModelDidChange(to model: LocalModel) async  {
+        loadState = .idle
+        globalConfig = ModelConfiguration(id: model.hfURL!, defaultPrompt: "")
+        do {
+            globalContainer = try await load(modelConfiguration: globalConfig!)
+            loadState = .loaded(globalContainer!)
+        } catch {
+            print(error.localizedDescription)
         }
-
-        
-        
-//        guard status != .loading else { return }
-//        
-//        status = .loading
-//        Task {
-//            do {
-//                coreMLModel = try await ModelLoader.load(url: model.localURL)
-//                if let config = coreMLModel?.defaultGenerationConfig {
-//                    let maxNewTokens = self.config.maxNewTokens
-//                    self.config = config
-//                    self.config.maxNewTokens = maxNewTokens
-//                }
-//                status = .ready(nil)
-//            } catch {
-//                print("No model could be loaded: \(error)")
-//                status = .noModel
-//            }
-//        }
+    }
+    
+    private func load(modelConfiguration: ModelConfiguration) async throws -> ModelContainer {
+        do {
+            MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
+            
+            let modelContainer = try await MLXLLM.loadModelContainer(
+                configuration: modelConfiguration,
+                progressHandler: { _ in }
+            )
+            
+            return modelContainer
+        } catch {
+            throw error
+        }
+    }
+    
+    private func load(
+        modelConfiguration: ModelConfiguration,
+        progressCallback: @escaping @Sendable (Progress) -> Void
+    ) async throws -> ModelContainer {
+        do {
+            MLX.GPU.set(cacheLimit: 20 * 1024 * 1024)
+            
+            let modelContainer = try await MLXLLM.loadModelContainer(
+                configuration: modelConfiguration,
+                progressHandler: progressCallback
+            )
+            
+            return modelContainer
+        } catch {
+            print(error.localizedDescription)
+            throw error
+        }
     }
     
     func cancelLoading() {
-        status = .noModel
-        generatedText = ""
-        self.swiftLlama = nil
-        self.coreMLModel = nil
-        Task {
-            try await ModelLoader.load(url: nil)
-        }
-        // TODO: proper check for coreML model being released from memory
+        loadState = .idle
+        globalContainer = nil
+        //        generatedText = ""
     }
     
-    func fetchAllLocalModels() {
-        availableModels = []
-        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+    
+    // MARK: - Download model
+    func downloadModel(_ model: LocalModel) {
+        guard let modelIndex = availableModels.firstIndex(where: { $0.id == model.id }) else { return }
+        availableModels[modelIndex].downloadState = .downloading(progress: 0)
+        
+        let downloadTask = Task {
             do {
-                let items = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: [.isDirectoryKey])
-                for item in items {
-                    let fileExtension = item.pathExtension.lowercased()
-                    if fileExtension == "mlpackage" || fileExtension == "mlmodelc" || fileExtension == "gguf" {
-                        // CoreML Stuff
-                        let isDirectory = (try? item.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
-                        if isDirectory {
-                            let creationDate = getFileCreationDate(for: item.standardizedFileURL)
-                            let fileSize = getDirectorySize(url: item.standardizedFileURL)
-                            let downloadedModel = LocalModel(
-                                name: item.deletingPathExtension().lastPathComponent,
-                                lastUsed: creationDate,
-                                sizeInfo: fileSize,
-                                hfURL: nil,
-                                localURL: item
-                            )
-                            availableModels.append(downloadedModel)
-                        } else {
-                            // GGUF stuff
-                            let creationDate = getFileCreationDate(for: item.standardizedFileURL)
-                            let fileSize = getFileSize(url: item.standardizedFileURL)
-                            let downloadedModel = LocalModel(
-                                name: item.deletingPathExtension().lastPathComponent,
-                                lastUsed: creationDate,
-                                sizeInfo: fileSize,
-                                hfURL: nil,
-                                localURL: item
-                            )
-                            availableModels.append(downloadedModel)
+                let modelConfig = ModelConfiguration(id: model.hfURL!, defaultPrompt: "")
+                let hub = HubApi()
+                
+                _ = try await prepareModelDirectory(
+                    hub: hub,
+                    configuration: modelConfig
+                ) { progress in
+                    Task { @MainActor in
+                        if let idx = self.availableModels.firstIndex(where: { $0.id == model.id }) {
+                            self.availableModels[idx].downloadState = .downloading(progress: progress.fractionCompleted)
                         }
                     }
                 }
+                
+                // Update state to downloaded on success
+                await MainActor.run {
+                    if let idx = self.availableModels.firstIndex(where: { $0.id == model.id }) {
+                        self.availableModels[idx].downloadState = .downloaded
+                    }
+                    self.fetchAllLocalModels()
+                }
+                
+            } catch {
+                await MainActor.run {
+                    if let idx = self.availableModels.firstIndex(where: { $0.id == model.id }) {
+                        self.availableModels[idx].downloadState = .error(error.localizedDescription)
+                    }
+                    self.fetchAllLocalModels()
+                }
+                throw error
+            }
+        }
+        
+        activeDownloads[model.id] = downloadTask
+    }
+    
+    private func prepareModelDirectory(
+        hub: HubApi, configuration: ModelConfiguration,
+        progressHandler: @Sendable @escaping (Progress) -> Void
+    ) async throws -> URL {
+        do {
+            switch configuration.id {
+            case .id(let id):
+                // download the model weights
+                let repo = Hub.Repo(id: id)
+                let modelFiles = ["*.safetensors", "config.json"]
+                return try await hub.snapshot(
+                    from: repo, matching: modelFiles, progressHandler: progressHandler)
+                
+            case .directory(let directory):
+                return directory
+            }
+        } catch Hub.HubClientError.authorizationRequired {
+            // an authorizationRequired means (typically) that the named repo doesn't exist on
+            // on the server so retry with local only configuration
+            return configuration.modelDirectory(hub: hub)
+        } catch {
+            let nserror = error as NSError
+            if nserror.domain == NSURLErrorDomain && nserror.code == NSURLErrorNotConnectedToInternet {
+                // Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline."
+                // fall back to the local directory
+                return configuration.modelDirectory(hub: hub)
+            } else {
+                throw error
+            }
+        }
+    }
+    
+    // MARK: - Generate Text
+    func generate(prompt: String) async {
+        guard !running else { return }
+        guard globalContainer != nil else { return }
+        guard globalConfig != nil else { return }
+
+        running = true
+        self.outputText = ""
+
+        do {
+            messages.append(["role": "user", "content": prompt])
+            let promptTokens = try await globalContainer!.perform { _, tokenizer in
+                try tokenizer.applyChatTemplate(messages: messages)
+            }
+
+            MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
+
+            let result = await globalContainer!.perform { model, tokenizer in
+                MLXLLM.generate(
+                    promptTokens: promptTokens, parameters: generateParameters, model: model,
+                    tokenizer: tokenizer, extraEOSTokens: globalConfig!.extraEOSTokens
+                ) { tokens in
+                    // update the output -- this will make the view show the text as it generates
+                    if tokens.count % displayEveryNTokens == 0 {
+                        let text = tokenizer.decode(tokens: tokens)
+                        Task { @MainActor in
+                            self.outputText = text
+                        }
+                    }
+
+                    if tokens.count >= maxTokens {
+                        return .stop
+                    } else {
+                        return .more
+                    }
+                }
+            }
+
+            // update the text if needed, e.g. we haven't displayed because of displayEveryNTokens
+            if result.output != self.outputText {
+                self.outputText = result.output
+                messages.append(["role": "system", "content": result.output])
+            }
+//            self.stat = " Tokens/second: \(String(format: "%.3f", result.tokensPerSecond))"
+
+        } catch {
+            outputText = "Failed: \(error)"
+        }
+
+        running = false
+    }
+    
+    func clearText() {
+        messages = []
+        outputText = ""
+    }
+    
+    // MARK: - Helper functions
+    func fetchAllLocalModels() {
+        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            do {
+                let items = try FileManager.default.contentsOfDirectory(at: documentsPath.appendingPathComponent("huggingface").appendingPathComponent("models").appendingPathComponent("mlx-community"), includingPropertiesForKeys: [.isDirectoryKey])
+                let downloadedModelNames = Set(items.map { $0.lastPathComponent })
+                for (index, model) in availableModels.enumerated() {
+                    if let hfURL = model.hfURL {
+                        let modelName = hfURL.split(separator: "/").last.map(String.init) ?? ""
+                        
+                        if downloadedModelNames.contains(modelName) {
+                            if let modelPath = items.first(where: { $0.lastPathComponent == modelName }) {
+                                let fileSize = getDirectorySize(url: modelPath.standardizedFileURL)
+                                
+                                // Update the model with local info
+                                availableModels[index].downloadState = .downloaded
+                                availableModels[index].localURL = modelPath
+                                availableModels[index].size = fileSize
+                            }
+                        } else {
+                            // Reset properties if model isn't found locally
+                            availableModels[index].downloadState = .notDownloaded
+                            availableModels[index].localURL = nil
+                            
+                        }
+                    }
+                 }
             } catch {
                 print("Error fetching local models: \(error.localizedDescription)")
             }
@@ -156,152 +334,6 @@ struct LocalModel: Identifiable, Hashable {
         } catch {
             print("Error deleting local model: \(error)")
         }
-    }
-    
-    func saveLocalModel(using sourceURL: URL) {
-        //        Task {
-        if let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let destinationURL = documentsPath.appendingPathComponent(sourceURL.lastPathComponent)
-            do {
-                try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
-            } catch {
-                print(error.localizedDescription)
-            }
-            
-            //            }
-        }
-    }
-    
-    // MARK: - Llama CPP
-    func generateCPP(text: String) {
-        status = .generating(0)
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let swiftLlama else {
-            local_error = .others("SwiftLlama is not initialized")
-            status = .error
-            return
-        }
-        
-        // Stop generation if message is sent
-        generatedText = ""
-        swiftLlama.cancelGeneration()
-        
-        Task {
-            do {
-                switch usingStream {
-                case true:
-                    do {
-                        for try await value in await swiftLlama.start(for: text) {
-                            generatedText += value
-                        }
-                    } catch {
-                        throw error
-                    }
-                case false:
-                    await swiftLlama.start(for: text)
-                        .sink { completion in
-                            switch completion {
-                            case .finished:
-                                break
-                            case .failure(let error):
-                                self.local_error = .others(error.localizedDescription)
-                                self.status = .error
-                            }
-                        } receiveValue: { [weak self] value in
-                            self?.generatedText += value
-                        }.store(in: &cancellable)
-                }
-                
-                swiftLlama.logResponse(for: generatedText)
-                DispatchQueue.main.async {
-                    self.status = .ready(0)
-                }
-            } catch {
-                await handleError(error)
-            }
-        }
-    }
-
-    @MainActor
-    private func handleError(_ error: Error) {
-        if let llamaError = error as? LlamaError {
-            self.local_error = llamaError
-            print("LlamaError: \(llamaError.description)")
-        } else {
-            self.local_error = .others(error.localizedDescription)
-            print("Other error: \(error.localizedDescription)")
-        }
-        status = .error
-    }
-    
-    func clearText() {
-        generatedText = ""
-        if let swiftLlama {
-            swiftLlama.clearSession()
-        }
-    }
-    
-    // MARK: - CoreML
-    func predictText(for prompt: String) {
-        guard let coreMLModel = coreMLModel else { return }
-        
-        @Sendable func showOutput(currentGeneration: String, progress: Double, completedTokensPerSecond: Double? = nil) {
-            Task { @MainActor in
-                // Temporary hack to remove start token returned by llama tokenizers
-                var response = currentGeneration.deletingPrefix("<s> ")
-                
-                // Strip prompt
-                guard response.count > prompt.count else { return }
-                response = response[prompt.endIndex...].replacingOccurrences(of: "\\n", with: "\n")
-                
-                // Format prompt + response with different colors
-                var styledPrompt = AttributedString(prompt)
-                styledPrompt.foregroundColor = .black
-                
-                var styledOutput = AttributedString(response)
-                styledOutput.foregroundColor = .accentColor
-                
-                outputText = styledPrompt + styledOutput
-                if let tps = completedTokensPerSecond {
-                    status = .ready(tps)
-                } else {
-                    status = .generating(progress)
-                }
-            }
-        }
-        
-        Task.init {
-            status = .generating(0)
-            var tokensReceived = 0
-            let begin = Date()
-            do {
-                let output = try await coreMLModel.generate(config: config, prompt: prompt) { inProgressGeneration in
-                    tokensReceived += 1
-                    showOutput(currentGeneration: inProgressGeneration, progress: Double(tokensReceived)/Double(self.config.maxNewTokens))
-                }
-                let completionTime = Date().timeIntervalSince(begin)
-                let tokensPerSecond = Double(tokensReceived) / completionTime
-                showOutput(currentGeneration: output, progress: 1, completedTokensPerSecond: tokensPerSecond)
-                print("Took \(completionTime)")
-            } catch {
-                print("Error \(error)")
-                Task { @MainActor in
-                    status = .failed("\(error)")
-                }
-            }
-        }
-    }
-    
-    // MARK: - Helper functions
-    private func getFileCreationDate(for filePath: URL) -> String? {
-        // TODO: Fix so less granular.
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: filePath.path()),
-              let creationDate = attributes[.creationDate] as? Date else {
-            return nil
-        }
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .full
-        return formatter.localizedString(for: creationDate, relativeTo: Date())
     }
     
     func getFileSize(url: URL) -> String {

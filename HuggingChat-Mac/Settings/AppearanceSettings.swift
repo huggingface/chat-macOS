@@ -44,7 +44,6 @@ enum AccentColorOption: String, CaseIterable {
 struct AppearanceSettings: View {
     
     @Environment(ModelManager.self) private var modelManager
-    @Environment(ModelDownloader.self) private var modelDownloader
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("appearance") private var appearance: Appearance = .auto
     @AppStorage("inlineCodeHiglight") private var inlineCodeHiglight: AccentColorOption = .blue
@@ -329,5 +328,4 @@ struct ThemeThumbnailView: View {
     AppearanceSettings()
     //        .frame(width: 500, height: 500)
         .environment(ModelManager())
-        .environment(ModelDownloader())
 }

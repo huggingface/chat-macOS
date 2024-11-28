@@ -13,14 +13,12 @@
 		F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F1413D6C2C8ECD190045CD54 /* MarkdownView */; };
 		F18E15D82C810C940091EE53 /* Highlighter in Frameworks */ = {isa = PBXBuildFile; productRef = F18E15D72C810C940091EE53 /* Highlighter */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
-		F19E18C32C9CA60C00B89DB3 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18C22C9CA60C00B89DB3 /* WhisperKit */; };
-		F1A76DBB2CABDD82009CBA98 /* llama in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBA2CABDD82009CBA98 /* llama */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
 		F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */; };
 		F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E062CABF22B009CBA98 /* Accelerate.framework */; };
 		F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E082CABF231009CBA98 /* Metal.framework */; };
-		F1D3BB082CC850A600D1A7EA /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F1D3BB072CC850A500D1A7EA /* Config.xcconfig */; };
-		F1E3D1DB2CA0A1AD005A49BE /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = F1E3D1DA2CA0A1AD005A49BE /* Pow */; };
+		F1F76BFC2CF6717300E58778 /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76BFB2CF6717300E58778 /* Pow */; };
+		F1F76CD02CF6790A00E58778 /* LLM in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76CCF2CF6790A00E58778 /* LLM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,19 +82,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1F76CD02CF6790A00E58778 /* LLM in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
 				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
-				F1E3D1DB2CA0A1AD005A49BE /* Pow in Frameworks */,
+				F1F76BFC2CF6717300E58778 /* Pow in Frameworks */,
 				F103B81B2C7911B9007B6D87 /* Path in Frameworks */,
 				F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */,
 				F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */,
 				F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */,
 				F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */,
 				F18E15D82C810C940091EE53 /* Highlighter in Frameworks */,
-				F1A76DBB2CABDD82009CBA98 /* llama in Frameworks */,
 				F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */,
-				F19E18C32C9CA60C00B89DB3 /* WhisperKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,11 +154,10 @@
 				F18E15D72C810C940091EE53 /* Highlighter */,
 				F1413D6C2C8ECD190045CD54 /* MarkdownView */,
 				F19E18BD2C9C889E00B89DB3 /* Sparkle */,
-				F19E18C22C9CA60C00B89DB3 /* WhisperKit */,
-				F1E3D1DA2CA0A1AD005A49BE /* Pow */,
-				F1A76DBA2CABDD82009CBA98 /* llama */,
 				F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */,
 				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
+				F1F76BFB2CF6717300E58778 /* Pow */,
+				F1F76CCF2CF6790A00E58778 /* LLM */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -175,7 +171,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					F13631882C6F346A009DEF15 = {
 						CreatedOnToolsVersion = 16.0;
@@ -198,10 +194,10 @@
 				F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */,
 				F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */,
 				F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */,
-				F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */,
-				F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */,
-				F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */,
 				F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */,
+				F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */,
+				F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */,
+				F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -218,7 +214,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1D3BB082CC850A600D1A7EA /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,22 +494,6 @@
 				minimumVersion = 2.6.4;
 			};
 		};
-		F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/argmaxinc/WhisperKit";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ggerganov/llama.cpp.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FelixHerrmann/swift-package-list.git";
@@ -523,12 +502,28 @@
 				minimumVersion = 4.3.0;
 			};
 		};
-		F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */ = {
+		F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/EmergeTools/Pow.git";
+			repositoryURL = "https://github.com/ml-explore/mlx-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
+				minimumVersion = 0.18.1;
+			};
+		};
+		F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EmergeTools/Pow";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.5;
+			};
+		};
+		F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ml-explore/mlx-swift-examples/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.18.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -564,16 +559,6 @@
 			package = F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
 		};
-		F19E18C22C9CA60C00B89DB3 /* WhisperKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F19E18C12C9CA60C00B89DB3 /* XCRemoteSwiftPackageReference "WhisperKit" */;
-			productName = WhisperKit;
-		};
-		F1A76DBA2CABDD82009CBA98 /* llama */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F1A76DB92CABDD82009CBA98 /* XCRemoteSwiftPackageReference "llama.cpp" */;
-			productName = llama;
-		};
 		F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
@@ -584,10 +569,15 @@
 			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
 			productName = SwiftPackageListUI;
 		};
-		F1E3D1DA2CA0A1AD005A49BE /* Pow */ = {
+		F1F76BFB2CF6717300E58778 /* Pow */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F1E3D1D92CA0A1AD005A49BE /* XCRemoteSwiftPackageReference "Pow" */;
+			package = F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */;
 			productName = Pow;
+		};
+		F1F76CCF2CF6790A00E58778 /* LLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */;
+			productName = LLM;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

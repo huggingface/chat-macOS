@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-import WhisperKit
+//import WhisperKit
 
 struct StatusIndicatorView: View {
     
-    var status: LocalModelState?
-    var audioState: ModelState?
+    var status: LoadState?
+//    var audioState: ModelState?
 
     var body: some View {
         Circle()
@@ -23,51 +23,43 @@ struct StatusIndicatorView: View {
     private var statusColor: Color {
         if let status = status {
             switch status {
-            case .noModel:
-                return .gray
-            case .loading:
-                return .yellow
-            case .generating, .ready:
-                return .green
-            case .failed, .error:
-                return .red
-            }
-        } else if let audioState = audioState {
-            switch audioState {
-            case .unloading, .unloaded:
-                return .gray
-            case .loading, .downloading, .prewarmed, .downloaded:
+            case .idle:
                 return .gray
             case .loaded:
                 return .green
-            case .prewarming:
-                return .orange
             }
         }
+//        else if let audioState = audioState {
+//            switch audioState {
+//            case .unloading, .unloaded:
+//                return .gray
+//            case .loading, .downloading, .prewarmed, .downloaded:
+//                return .gray
+//            case .loaded:
+//                return .green
+//            case .prewarming:
+//                return .orange
+//            }
+//        }
         return .gray
     }
     
     private var helpText: String {
         if let status = status {
             switch status {
-            case .noModel:
+            case .idle:
                 return "No model selected"
-            case .loading:
-                return "Model is currently loading. Please wait..."
-            case .ready(_), .generating(_):
+            case .loaded(_):
                 return "Model is ready for use."
-            case .failed(let error):
-                return "Model failed: \(error). Please try again or select a different model."
-            case .error:
-                return "There was an error. Please try again or select a different model."
             }
-        } else if let audioState = audioState {
-            return "Audio model state: \(audioState.description)"
         }
+//        else if let audioState = audioState {
+//            return "Audio model state: \(audioState.description)"
+//        }
         return "Unknown state" // Default text if both status and audioState are nil
     }
 }
 
 #Preview {
-    StatusIndicatorView(status: .noModel)
+//    StatusIndicatorView(status: .noModel)
 }

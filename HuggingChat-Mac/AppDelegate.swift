@@ -7,8 +7,9 @@
 
 import Foundation
 import AppKit
+import MLXLLM
 
-import WhisperKit
+//import WhisperKit
 import KeyboardShortcuts
 import SwiftUI
 
@@ -30,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @Environment(\.openSettings) private var openSettings
     
     @State var modelManager = ModelManager()
-    @State var audioModelManager = AudioModelManager()
+//    @State var audioModelManager = AudioModelManager()
     @State var conversationModel = ConversationViewModel()
     @State var themeEngine = ThemingEngine()
     
@@ -69,8 +70,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Setup local model if needed
         if selectedLocalModel != "None" {
-            if let selectedLocalModel = modelManager.availableModels.first(where: { $0.name == selectedLocalModel }) {
-                modelManager.localModelDidChange(to: selectedLocalModel)
+            if let selectedLocalModel = modelManager.availableModels.first(where: { $0.displayName == selectedLocalModel }) {
+                Task {
+                    await modelManager.localModelDidChange(to: selectedLocalModel)
+                }
             }
         }
         
@@ -101,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = TranscriptionView()
             .environment(modelManager)
             .environment(conversationModel)
-            .environment(audioModelManager)
+//            .environment(audioModelManager)
         
         let screenFrame = NSScreen.main?.visibleFrame ?? NSRect.zero
         let panelWidth: CGFloat = 95
@@ -159,23 +162,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func startRecording() {
-        if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
-            self.transcriptionPanel.orderFront(nil)
-            if self.transcriptionPanel.isVisible {
-                audioModelManager.resetState()
-                audioModelManager.startRecording(true)
-            }
-        }
+//        if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
+//            self.transcriptionPanel.orderFront(nil)
+//            if self.transcriptionPanel.isVisible {
+//                audioModelManager.resetState()
+//                audioModelManager.startRecording(true)
+//            }
+//        }
     }
     
     @objc private func stopRecording() {
-        audioModelManager.stopRecording(true)
-        
-        if !streamTranscript {
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(audioModelManager.getFullTranscript(), forType: .string)
-        }
-        self.transcriptionPanel.orderOut(nil)
+//        audioModelManager.stopRecording(true)
+//        
+//        if !streamTranscript {
+//            NSPasteboard.general.clearContents()
+//            NSPasteboard.general.setString(audioModelManager.getFullTranscript(), forType: .string)
+//        }
+//        self.transcriptionPanel.orderOut(nil)
     }
     
     private func showContextMenu() {

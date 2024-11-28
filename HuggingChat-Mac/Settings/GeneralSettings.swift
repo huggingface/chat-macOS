@@ -127,16 +127,17 @@ struct GeneralSettingsView: View {
 //                    }
 //                })
                 
-                LabeledContent("GGUF Model:", content: {
+                LabeledContent("Local Model:", content: {
                     HStack {
                         Picker("", selection: $selectedLocalModel) {
                             Text("None").tag("None")
-                            ForEach(modelManager.availableModels, id: \.id) { option in
-                                Text(option.name).tag(option.name)
+                            let downloadedModels = modelManager.availableModels.filter { $0.localURL != nil }
+                            ForEach(downloadedModels, id: \.id) { option in
+                                Text(option.displayName).tag(option.displayName)
                             }
                         }
                         // Local model status
-                        StatusIndicatorView(status: modelManager.status)
+                        StatusIndicatorView(status: modelManager.loadState)
                         
                     }
                     .labelsHidden()
@@ -144,8 +145,10 @@ struct GeneralSettingsView: View {
                         if selectedLocalModel == "None" {
                             isLocalGeneration = false
                             modelManager.cancelLoading()
-                        } else if let selectedLocalModel = modelManager.availableModels.first(where: { $0.name == selectedLocalModel }) {
-                            modelManager.localModelDidChange(to: selectedLocalModel)
+                        } else if let selectedLocalModel = modelManager.availableModels.first(where: { $0.displayName == selectedLocalModel }) {
+                            Task {
+                                await modelManager.localModelDidChange(to: selectedLocalModel)
+                            }
                         }
                     }
                 })
@@ -227,8 +230,7 @@ struct GeneralSettingsView: View {
         .onAppear {
             HuggingChatSession.shared.refreshLoginState()
             fetchModels()
-            modelManager.fetchAllLocalModels()
-            print("HII", HuggingChatSession.shared.currentUser, "HII", userLoggedIn)
+//            modelManager.fetchAllLocalModels()
         }
         .formStyle(.grouped)
     }

@@ -33,8 +33,7 @@ struct SettingsListViewIcon: View {
 struct SettingsView: View {
     
     @Environment(ModelManager.self) private var modelManager
-    @Environment(ModelDownloader.self) private var modelDownloader
-    @Environment(AudioModelManager.self) private var audioModelManager
+//    @Environment(AudioModelManager.self) private var audioModelManager
     @Environment(ConversationViewModel.self) private var conversationManager
     
     @AppStorage("hideDock") private var hideDock: Bool = false
@@ -70,7 +69,7 @@ struct SettingsView: View {
                 Tab("Appearance", systemImage: "paintbrush") {
                     AppearanceSettings()
                         .environment(modelManager)
-                        .environment(modelDownloader)
+                        
                 }
                 
 //                Tab("Advanced", systemImage: "wrench.and.screwdriver") {
@@ -80,7 +79,7 @@ struct SettingsView: View {
                 Tab("Components", systemImage: "square.3.layers.3d") {
                     ComponentsSettingsView()
                         .environment(modelManager)
-                        .environment(modelDownloader)
+                        
                 }
             }
             .frame(maxWidth: 500, maxHeight: .infinity)
@@ -109,14 +108,14 @@ struct SettingsView: View {
                 
                 AppearanceSettings()
                     .environment(modelManager)
-                    .environment(modelDownloader)
+                    
                     .tabItem {
                         Label("Appearance", systemImage: "paintbrush")
                     }
                 
                 ComponentsSettingsView()
                     .environment(modelManager)
-                    .environment(modelDownloader)
+                    
                     .tabItem {
                         Label("Components", systemImage: "square.3.layers.3d")
                     }
@@ -130,7 +129,6 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .environment(ModelManager())
-        .environment(ModelDownloader())
-        .environment(AudioModelManager())
+//        .environment(AudioModelManager())
         .environment(ConversationViewModel())
 }

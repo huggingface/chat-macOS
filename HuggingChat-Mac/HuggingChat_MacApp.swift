@@ -15,7 +15,6 @@ struct HuggingChat_MacApp: App {
     
     @State var coordinatorModel = CoordinatorModel()
     @State var hfChatSession = HuggingChatSession()
-    @State var modelDownloader = ModelDownloader()
     
     @Environment(\.openWindow) private var openWindow
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -74,8 +73,7 @@ struct HuggingChat_MacApp: App {
                 .environment(appDelegate.themeEngine)
                 .environment(appDelegate.conversationModel)
                 .environment(appDelegate.modelManager)
-                .environment(modelDownloader)
-                .environment(appDelegate.audioModelManager)
+//                .environment(appDelegate.audioModelManager)
                 .preferredColorScheme(colorScheme(for: appearance))
             
         }

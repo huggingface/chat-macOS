@@ -1,4 +1,4 @@
-import Models
+//import Models
 import UniformTypeIdentifiers
 import MarkdownView
 import SwiftUI
@@ -80,46 +80,46 @@ struct ChatView: View {
             ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
             
             // ErrorView
-            if conversationModel.state == .error || modelManager.status == .error {
-                if cardIndex == 0 && modelManager.status == .error {
-                    // Local
-                    if selectedLocalModel != "None" {
-                        ScrollView {
-                            Text(modelManager.local_error?.description ?? "")
-                                .padding(20)
-                                .onGeometryChange(for: CGRect.self) { proxy in
-                                    proxy.frame(in: .global)
-                                } action: { newValue in
-                                    errorSize.width = newValue.width
-                                    errorSize.height = min(max(newValue.height, 20), 100)
-                                }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        .frame(height: errorSize.height)
-                        .background(.regularMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                    }
-                    
-                } else if cardIndex == 1 && conversationModel.state == .error {
-                    // Server
-                    ScrollView {
-                        Text(conversationModel.error?.description ?? "")
-                            .padding(20)
-                            .onGeometryChange(for: CGRect.self) { proxy in
-                                proxy.frame(in: .global)
-                            } action: { newValue in
-                                errorSize.width = newValue.width
-                                errorSize.height = min(max(newValue.height, 20), 100)
-                            }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    .frame(height: errorSize.height)
-                    .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-                }
-            }
+//            if conversationModel.state == .error || modelManager.status == .error {
+//                if cardIndex == 0 && modelManager.status == .error {
+//                    // Local
+////                    if selectedLocalModel != "None" {
+////                        ScrollView {
+////                            Text(modelManager.local_error?.description ?? "")
+////                                .padding(20)
+////                                .onGeometryChange(for: CGRect.self) { proxy in
+////                                    proxy.frame(in: .global)
+////                                } action: { newValue in
+////                                    errorSize.width = newValue.width
+////                                    errorSize.height = min(max(newValue.height, 20), 100)
+////                                }
+////                        }
+////                        .frame(maxWidth: .infinity, alignment: .leading)
+////                        
+////                        .frame(height: errorSize.height)
+////                        .background(.regularMaterial)
+////                        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+////                    }
+//                    
+//                } else if cardIndex == 1 && conversationModel.state == .error {
+//                    // Server
+//                    ScrollView {
+//                        Text(conversationModel.error?.description ?? "")
+//                            .padding(20)
+//                            .onGeometryChange(for: CGRect.self) { proxy in
+//                                proxy.frame(in: .global)
+//                            } action: { newValue in
+//                                errorSize.width = newValue.width
+//                                errorSize.height = min(max(newValue.height, 20), 100)
+//                            }
+//                    }
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    
+//                    .frame(height: errorSize.height)
+//                    .background(.regularMaterial)
+//                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+//                }
+//            }
         }
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
         
@@ -138,16 +138,16 @@ struct ChatView: View {
                 }
             }
         }
-        .onChange(of:  modelManager.status) {
-            if modelManager.status == .error {
-                isResponseVisible = false
-                prompt = animatablePrompt
-                isChromeDinoUnlocked = true
-                withAnimation(.default) {
-                    self.errorAttempts += 1
-                }
-            }
-        }
+//        .onChange(of:  modelManager.loadState) {
+//            if modelManager.status == .error {
+//                isResponseVisible = false
+//                prompt = animatablePrompt
+//                isChromeDinoUnlocked = true
+//                withAnimation(.default) {
+//                    self.errorAttempts += 1
+//                }
+//            }
+//        }
         
         .preferredColorScheme(colorScheme(for: appearance))
         .onChange(of: cardIndex) {
@@ -241,9 +241,7 @@ struct ChatView: View {
             return nil
         }
     }
-    
-    
-    
+
     private func checkAndClearChat() {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(lastChatTime)

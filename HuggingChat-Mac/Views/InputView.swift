@@ -153,17 +153,17 @@ struct InputView: View {
                     }
                 }
             }
-            .onChange(of: modelManager.status) {
-                if modelManager.status == .generating(0) {
-                    withAnimation(.easeIn) {
-                        startLoadingAnimation = true
-                    }
-                } else {
-                    withAnimation(.easeIn) {
-                        startLoadingAnimation = false
-                    }
-                }
-            }
+//            .onChange(of: modelManager.status) {
+//                if modelManager.status == .generating(0) {
+//                    withAnimation(.easeIn) {
+//                        startLoadingAnimation = true
+//                    }
+//                } else {
+//                    withAnimation(.easeIn) {
+//                        startLoadingAnimation = false
+//                    }
+//                }
+//            }
             
         }
     }
@@ -227,7 +227,7 @@ struct InputView: View {
         if isLocal {
             let localPrompt = prompt
             Task {
-                modelManager.generateCPP(text: localPrompt)
+                await modelManager.generate(prompt: localPrompt)
             }
         } else {
             conversationModel.sendAttributed(text: prompt)

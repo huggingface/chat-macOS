@@ -1,6 +1,15 @@
 {
-  "originHash" : "1878c921a717a2b89849878bfcb1d99168045764ab6745fe833e493a04bfb225",
+  "originHash" : "a7bbc034c15d72d69ecb780c91de55f90c90c481f38275eeb8b5aff0b6a4035a",
   "pins" : [
+    {
+      "identity" : "gzipswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/1024jp/GzipSwift",
+      "state" : {
+        "revision" : "731037f6cc2be2ec01562f6597c1d0aa3fe6fd05",
+        "version" : "6.0.1"
+      }
+    },
     {
       "identity" : "highlighterswift",
       "kind" : "remoteSourceControl",
@@ -17,6 +26,15 @@
       "state" : {
         "revision" : "bcf2d0590f32ac2528feb72d7e34f5b463801a47",
         "version" : "2.2.1"
+      }
+    },
+    {
+      "identity" : "jinja",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/maiqingqiang/Jinja",
+      "state" : {
+        "revision" : "6dbe4c449469fb586d0f7339f900f0dd4d78b167",
+        "version" : "1.0.6"
       }
     },
     {
@@ -38,15 +56,6 @@
       }
     },
     {
-      "identity" : "llama.cpp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ggerganov/llama.cpp.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "71967c2a6d30da9f61580d3e2d4cb00e0223b6fa"
-      }
-    },
-    {
       "identity" : "markdownview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cyrilzakka/MarkdownView.git",
@@ -65,6 +74,24 @@
       }
     },
     {
+      "identity" : "mlx-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ml-explore/mlx-swift",
+      "state" : {
+        "revision" : "d649c62b77c487c25012910b0d02b30283d388ca",
+        "version" : "0.18.1"
+      }
+    },
+    {
+      "identity" : "mlx-swift-examples",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ml-explore/mlx-swift-examples/",
+      "state" : {
+        "revision" : "7baf9bc2d7a2b68b4bfcae308e448ec68b8ef049",
+        "version" : "1.18.1"
+      }
+    },
+    {
       "identity" : "path.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mxcl/Path.swift.git",
@@ -76,10 +103,10 @@
     {
       "identity" : "pow",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/EmergeTools/Pow.git",
+      "location" : "https://github.com/EmergeTools/Pow",
       "state" : {
-        "revision" : "f0d0f3e72d42beaf2b01f1cb798e1b55902814eb",
-        "version" : "1.0.4"
+        "revision" : "a504eb6d144bcf49f4f33029a2795345cb39e6b4",
+        "version" : "1.0.5"
       }
     },
     {
@@ -96,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "c8ed701b513cf5177118a175d85fbbbcd707ab41",
-        "version" : "1.3.0"
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
       }
     },
     {
@@ -119,6 +146,15 @@
       }
     },
     {
+      "identity" : "swift-numerics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-numerics",
+      "state" : {
+        "revision" : "0a5bc04095a675662cf24757cc0640aa2204253b",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "swift-package-list",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/FelixHerrmann/swift-package-list.git",
@@ -132,17 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/huggingface/swift-transformers.git",
       "state" : {
-        "revision" : "74b94211bdc741694ed7e700a1104c72e5ba68fe",
-        "version" : "0.1.7"
-      }
-    },
-    {
-      "identity" : "whisperkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/argmaxinc/WhisperKit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "c2f1b57266bee2deeeac1d7014e1c05bcd32119a"
+        "revision" : "d42fdae473c49ea216671da8caae58e102d28709",
+        "version" : "0.1.14"
       }
     }
   ],

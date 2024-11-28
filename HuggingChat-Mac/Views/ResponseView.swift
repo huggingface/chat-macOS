@@ -23,13 +23,13 @@ struct ResponseView: View {
     
     var body: some View {
         if isLocal {
-            if !modelManager.generatedText.isEmpty {
+            if !modelManager.outputText.isEmpty {
                 if isResponseVisible {
                     ScrollViewReader { proxy in
                         ScrollView {
                             VStack(alignment: .leading) {
                                 if ThemingEngine.shared.currentTheme.markdownFont == nil {
-                                    MarkdownView(text: modelManager.generatedText)
+                                    MarkdownView(text: modelManager.outputText)
                                         .padding()
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .fontGroup(DefaultFontGroup.automatic)
@@ -40,7 +40,7 @@ struct ResponseView: View {
                                         .textSelection(.enabled)
                                         .id(8)
                                 } else {
-                                    MarkdownView(text: modelManager.generatedText)
+                                    MarkdownView(text: modelManager.outputText)
                                         .padding()
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .markdownRenderingThread(.background)
@@ -60,7 +60,7 @@ struct ResponseView: View {
                                 responseSize.height = min(max(newValue.height, 20), 320)
                             }
                         }
-                        .onChange(of: modelManager.generatedText, {
+                        .onChange(of: modelManager.outputText, {
                             DispatchQueue.main.async {
                                 withAnimation {
                                     proxy.scrollTo(8, anchor: .bottom)

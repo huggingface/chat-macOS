@@ -40,6 +40,6 @@ struct AudioMeterIndicator: View {
 
 #Preview {
     TranscriptionView()
-        .environment(AudioModelManager())
+//        .environment(AudioModelManager())
 }
 
