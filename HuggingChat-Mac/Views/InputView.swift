@@ -27,6 +27,8 @@ struct InputView: View {
     @FocusState private var focusedField: ChatView.FocusedField?
     @FocusState private var isMainTextFieldFocused: Bool
     
+    @AppStorage("localModel") private var selectedLocalModel: String = "None"
+    @AppStorage("externalModel") private var selectedExternalModel: String = "meta-llama/Meta-Llama-3.1-70B-Instruct"
     @AppStorage("isAppleClassicUnlocked") private var isAppleClassicUnlocked: Bool = false
     @AppStorage("selectedTheme") private var selectedTheme: String = "Default"
     
@@ -41,79 +43,7 @@ struct InputView: View {
     
     
     var body: some View {
-        HStack(spacing: 5) {
-            Menu {
-                Button {
-                    showFileImporter = true
-                } label: {
-                    Label("Import", systemImage: "doc.circle")
-                }
-                .keyboardShortcut("I", modifiers: [.command])
-                
-                Divider()
-                
-                // Conversations
-                if !isLocal {
-                    Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
-                        Label("Open Conversation", systemImage: "globe")
-                    })
-                    .keyboardShortcut("O")
-                    .disabled(conversationModel.conversation?.id == nil)
-                }
-                
-                Button {
-                    clearChat()
-                } label: {
-                    Label("New Conversation", systemImage: "plus")
-                }
-                .keyboardShortcut("N", modifiers: [.command])
-                
-                Divider()
-                
-                // Settings
-                SettingsLink(label: {
-                    Label("Settings...", systemImage: "gearshape")
-                })
-                .keyboardShortcut(",", modifiers: [.command])
-                
-                Divider()
-                
-                // Quit
-                Button(action: {
-                    NSApplication.shared.terminate(nil)
-                }, label: {
-                    Label("Quit", systemImage: "xmark.circle")
-                })
-                .keyboardShortcut("Q")
-            } label: {
-                Image(ThemingEngine.shared.currentTheme.quickBarIcon)
-                    .resizable()
-                    .foregroundStyle(.primary)
-            }
-            .focusEffectDisabled()
-            
-            .frame(width: 25, height: 25)
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .fileImporter(
-                isPresented: $showFileImporter,
-                allowedContentTypes: [.text, .sourceCode],
-                allowsMultipleSelection: true
-            ) { result in
-                switch result {
-                case .success(let files):
-                    files.forEach { url in
-                        let gotAccess = url.startAccessingSecurityScopedResource()
-                        if !gotAccess { return }
-                        // Handle URL based on type
-                        handleFileImport(url: url)
-                        url.stopAccessingSecurityScopedResource()
-                    }
-                case .failure(let error):
-                    print(error.localizedDescription)
-                }
-            }
-            
+        VStack(alignment: .leading, spacing: 5) {
             ZStack {
                 if isSecondaryTextFieldVisible {
                     TextField("", text: $animatablePrompt)
@@ -125,7 +55,6 @@ struct InputView: View {
                         .transition(.asymmetric(insertion: .identity, removal: .move(edge: .bottom).combined(with: .opacity)))
                 }
                 TextField("Type your message", text: $prompt)
-                    
                     .font(ThemingEngine.shared.currentTheme.quickBarFont)
                     .id("main-\(selectedTheme)")
                     .textFieldStyle(.plain)
@@ -163,6 +92,104 @@ struct InputView: View {
                         startLoadingAnimation = false
                     }
                 }
+            }
+            HStack {
+                Group {
+                Menu {
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        Label("Import", systemImage: "doc.circle")
+                    }
+                    .keyboardShortcut("I", modifiers: [.command])
+                    
+                    Divider()
+                    
+                    // Conversations
+                    if !isLocal {
+                        Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
+                            Label("Open Conversation", systemImage: "globe")
+                        })
+                        .keyboardShortcut("O")
+                        .disabled(conversationModel.conversation?.id == nil)
+                    }
+                    
+                    Button {
+                        clearChat()
+                    } label: {
+                        Label("New Conversation", systemImage: "plus")
+                    }
+                    .keyboardShortcut("N", modifiers: [.command])
+                    
+                    Divider()
+                    
+                    // Settings
+                    SettingsLink(label: {
+                        Label("Settings...", systemImage: "gearshape")
+                    })
+                    .keyboardShortcut(",", modifiers: [.command])
+                    
+                    Divider()
+                    
+                    // Quit
+                    Button(action: {
+                        NSApplication.shared.terminate(nil)
+                    }, label: {
+                        Label("Quit", systemImage: "xmark.circle")
+                    })
+                    .keyboardShortcut("Q")
+                } label: {
+                    Label("", systemImage: "plus")
+                        .fontWeight(.semibold)
+                }
+                .focusEffectDisabled()
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .frame(width: 20, alignment: .leading)
+                .fileImporter(
+                    isPresented: $showFileImporter,
+                    allowedContentTypes: [.text, .sourceCode],
+                    allowsMultipleSelection: true
+                ) { result in
+                    switch result {
+                    case .success(let files):
+                        files.forEach { url in
+                            let gotAccess = url.startAccessingSecurityScopedResource()
+                            if !gotAccess { return }
+                            // Handle URL based on type
+                            handleFileImport(url: url)
+                            url.stopAccessingSecurityScopedResource()
+                        }
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
+                
+                Button(action: {
+                    // TODO: Start dictation
+                }, label: {
+                    Image(systemName: "mic.fill")
+                        .fontWeight(.semibold)
+                })
+                .buttonStyle(.plain)
+                
+                Button(action: {
+                    // TODO: Start dictation
+                }, label: {
+                    Image(systemName: "waveform")
+                        .fontWeight(.semibold)
+                })
+                .buttonStyle(.plain)
+            }
+                
+                
+                Spacer()
+                let externalModelName = selectedExternalModel.split(separator: "/", maxSplits: 1)[1]
+                Label(isLocal ? selectedLocalModel:String(externalModelName), systemImage: isLocal ? "laptopcomputer":"globe")
+                    .foregroundStyle(.tertiary)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+                    .layoutPriority(100)
             }
             
         }
@@ -245,9 +272,18 @@ struct InputView: View {
     }
 }
 
+#Preview("dark") {
+    ChatView()
+        .frame(height: 300)
+        .environment(ModelManager())
+        .environment(ConversationViewModel())
+        .colorScheme(.dark)
+}
+
 #Preview {
     InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false))
         .environment(ModelManager())
         .environment(\.colorScheme, .dark)
         .environment(ConversationViewModel())
 }
+

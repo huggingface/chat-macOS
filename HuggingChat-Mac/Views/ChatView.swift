@@ -198,7 +198,7 @@ struct ChatView: View {
                 ZStack {
                     AnimatedMeshGradient(colors: ThemingEngine.shared.currentTheme.animatedMeshMainColors, speed: $meshSpeed)
                         .mask {
-                            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .stroke(lineWidth: 6.0)
                         }
                 }
@@ -206,7 +206,7 @@ struct ChatView: View {
                 .allowsHitTesting(false)
             }
         })
-        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
     
     @ViewBuilder
@@ -228,7 +228,7 @@ struct ChatView: View {
                 ZStack {
                     AnimatedMeshGradient(colors: ThemingEngine.shared.currentTheme.animatedMeshMainColors, speed: $meshSpeed)
                         .mask {
-                            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
                                 .stroke(lineWidth: 6.0)
                         }
                 }
@@ -236,7 +236,7 @@ struct ChatView: View {
                 .allowsHitTesting(false)
             }
         })
-        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
     
     private func colorScheme(for appearance: Appearance) -> ColorScheme? {
