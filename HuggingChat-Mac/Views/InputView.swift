@@ -153,17 +153,17 @@ struct InputView: View {
                     }
                 }
             }
-//            .onChange(of: modelManager.status) {
-//                if modelManager.status == .generating(0) {
-//                    withAnimation(.easeIn) {
-//                        startLoadingAnimation = true
-//                    }
-//                } else {
-//                    withAnimation(.easeIn) {
-//                        startLoadingAnimation = false
-//                    }
-//                }
-//            }
+            .onChange(of: modelManager.running) {
+                if modelManager.running {
+                    withAnimation(.easeIn) {
+                        startLoadingAnimation = true
+                    }
+                } else {
+                    withAnimation(.easeIn) {
+                        startLoadingAnimation = false
+                    }
+                }
+            }
             
         }
     }

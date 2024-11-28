@@ -115,7 +115,6 @@ struct ResponseView: View {
                             }
                         }
                         .onChange(of: conversationModel.message?.content, {
-                            print(conversationModel.message?.content.count)
                             DispatchQueue.main.async {
                                 withAnimation {
                                     proxy.scrollTo(8, anchor: .bottom)
