@@ -63,7 +63,7 @@ struct ChatView: View {
             
             if selectedLocalModel != "None" {
                 CardStack([
-                    AnyView(localInputView.focused($focusedField, equals: .localInput).environment(\.colorScheme, .dark)), // It physically pains me to do type erasure like this
+                    AnyView(localInputView.focused($focusedField, equals: .localInput)), // It physically pains me to do type erasure like this
                     AnyView(serverInputView.focused($focusedField, equals: .serverInput)),
                 ], selectedIndex: $cardIndex)
             } else {
@@ -146,16 +146,16 @@ struct ChatView: View {
                 }
             }
         }
-//        .onChange(of:  modelManager.error) {
-//            if modelManager.error != nil {
-//                isResponseVisible = false
-//                prompt = animatablePrompt
-//                isChromeDinoUnlocked = true
-//                withAnimation(.default) {
-//                    self.errorAttempts += 1
-//                }
-//            }
-//        }
+        .onChange(of:  modelManager.loadState.isError) {
+            if modelManager.loadState.isError {
+                isResponseVisible = false
+                prompt = animatablePrompt
+                isChromeDinoUnlocked = true
+                withAnimation(.default) {
+                    self.errorAttempts += 1
+                }
+            }
+        }
         
         .preferredColorScheme(colorScheme(for: appearance))
         .onChange(of: cardIndex) {
@@ -192,7 +192,7 @@ struct ChatView: View {
         )
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .background(.bar)
+        .background(.regularMaterial)
         .overlay(content: {
             if startLoadingAnimation {
                 ZStack {
