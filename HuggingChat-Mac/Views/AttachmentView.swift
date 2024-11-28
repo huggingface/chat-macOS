@@ -44,7 +44,6 @@ struct AttachmentView: View {
             }
         }
         .scrollIndicators(.never)
-        .background(.white.opacity(0.01))
     }
 }
 
@@ -55,21 +54,21 @@ struct AttachmentPill: View {
     @State private var showRemoveButton: Bool = false
     
     var body: some View {
-        HStack(alignment: .center, spacing: 5) {
+        HStack(alignment: .top, spacing: 5) {
             if let icon = attachment.fileIcon {
                 Image(nsImage: icon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 15, height: 15)
+                    .frame(width: 30, height: 30)
             } else {
                 Image(nsImage: NSWorkspace.shared.icon(for: attachment.fileType))
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 15, height: 15)
+                    .frame(width: 30, height: 30)
             }
             Text("\(attachment.filename)")
                 .font(ThemingEngine.shared.currentTheme.markdownFont?.footnote ?? .footnote)
-                .lineLimit(1)
+                .lineLimit(2)
             Spacer(minLength: 5)
             
             Button("Remove", systemImage: "xmark.circle.fill", action: {
@@ -83,9 +82,10 @@ struct AttachmentPill: View {
         }
         .padding(.vertical, 5)
         .padding(.leading, 10)
+        .frame(height: 45)
         .frame(maxWidth: 160)
-        .background(.regularMaterial)
-        .clipShape(.capsule)
+        .background(.primary.quinary)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .fixedSize()
         .onHover { state in
             showRemoveButton = state

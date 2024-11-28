@@ -44,6 +44,9 @@ struct InputView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
+            if allAttachments.count > 0 {
+                AttachmentView(allAttachments: $allAttachments)
+            }
             ZStack {
                 if isSecondaryTextFieldVisible {
                     TextField("", text: $animatablePrompt)

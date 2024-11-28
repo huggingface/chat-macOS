@@ -69,12 +69,6 @@ struct ChatView: View {
             } else {
                 serverInputView.focused($focusedField, equals: .serverInput)
             }
-            // Attachment view
-            // No shadow here
-            if allAttachments.count > 0 {
-                AttachmentView(allAttachments: $allAttachments)
-                    .mask(Capsule())
-            }
             
             // Response View
             ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
@@ -180,6 +174,7 @@ struct ChatView: View {
     
     @ViewBuilder
     private var localInputView: some View {
+        
         InputView(
             isLocal: true,
             prompt: $prompt,

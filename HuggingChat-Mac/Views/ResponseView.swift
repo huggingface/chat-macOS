@@ -72,7 +72,7 @@ struct ResponseView: View {
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
                     .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
         } else {
@@ -126,7 +126,7 @@ struct ResponseView: View {
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
                     .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 
             }
         }
