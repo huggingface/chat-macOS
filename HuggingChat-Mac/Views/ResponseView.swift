@@ -30,7 +30,7 @@ struct ResponseView: View {
                             VStack(alignment: .leading) {
                                 if ThemingEngine.shared.currentTheme.markdownFont == nil {
                                     MarkdownView(text: modelManager.outputText)
-                                        .padding()
+                                        .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .fontGroup(DefaultFontGroup.automatic)
                                         .markdownRenderingThread(.background)
@@ -41,7 +41,7 @@ struct ResponseView: View {
                                         .id(8)
                                 } else {
                                     MarkdownView(text: modelManager.outputText)
-                                        .padding()
+                                        .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .markdownRenderingThread(.background)
                                         .fontGroup(ThemingEngine.shared.currentTheme.markdownFont!)
@@ -84,7 +84,7 @@ struct ResponseView: View {
                             VStack(alignment: .leading) {
                                 if ThemingEngine.shared.currentTheme.markdownFont == nil {
                                     MarkdownView(text: message.content)
-                                        .padding()
+                                        .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .fontGroup(DefaultFontGroup.automatic)
                                         .markdownRenderingThread(.background)
@@ -95,7 +95,7 @@ struct ResponseView: View {
                                         .id(8)
                                 } else {
                                     MarkdownView(text: message.content)
-                                        .padding()
+                                        .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .markdownRenderingThread(.background)
                                         .fontGroup(ThemingEngine.shared.currentTheme.markdownFont!)

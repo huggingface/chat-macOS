@@ -139,7 +139,7 @@ struct ThemedFontGroup: MarkdownFontGroup {
             name: .appleClassic,
             previewImage: "huggy.classic",
             quickBarIcon: "plusApple",
-            quickBarFont: Font.custom("pixChicago", size: 17, relativeTo: .largeTitle),
+            quickBarFont: Font.custom("ChicagoFLF", size: 15, relativeTo: .title3),
             markdownFont:  ThemedFontGroup(fontType: .custom("ChicagoFLF"), fontMultiplier: 1),
             animatedMeshMainColors: [.green, .yellow, .orange, .red, .purple, .blue],
             animatedMeshHighlightColors: []
@@ -151,7 +151,7 @@ struct ThemedFontGroup: MarkdownFontGroup {
             name: .chromeDino,
             previewImage: "huggy.404",
             quickBarIcon: "chromeDino",
-            quickBarFont: Font.custom("Silom", size: 25, relativeTo: .largeTitle),
+            quickBarFont: Font.custom("Silom", size: 15, relativeTo: .title3),
             markdownFont:  ThemedFontGroup(fontType: .custom("Silom")),
             animatedMeshMainColors: [.gray, .black, .white],
             animatedMeshHighlightColors: []
@@ -163,7 +163,7 @@ struct ThemedFontGroup: MarkdownFontGroup {
             name: .pixelPals,
             previewImage: "huggy.pals",
             quickBarIcon: "plusPals",
-            quickBarFont: Font.custom("PixeloidSans", size: 25, relativeTo: .largeTitle),
+            quickBarFont: Font.custom("PixeloidSans", size: 15, relativeTo: .title3),
             markdownFont:  ThemedFontGroup(fontType: .custom("PixeloidSans")),
             animatedMeshMainColors: [.green, .yellow, .orange, .red, .purple, .blue],
             animatedMeshHighlightColors: []
