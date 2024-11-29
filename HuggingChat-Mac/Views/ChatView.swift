@@ -200,7 +200,7 @@ struct ChatView: View {
                         }
                 }
                 .transition(.opacity)
-                .allowsHitTesting(false) 
+                .allowsHitTesting(false)
             }
         })
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -236,6 +236,7 @@ struct ChatView: View {
             }
         })
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .fixedSize(horizontal: false, vertical: true)
     }
     
     private func colorScheme(for appearance: Appearance) -> ColorScheme? {
