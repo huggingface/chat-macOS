@@ -127,7 +127,7 @@ struct ThemedFontGroup: MarkdownFontGroup {
             name: .defaultTheme,
             previewImage: "huggy.bp",
             quickBarIcon: "plus",
-            quickBarFont: Font.system(.largeTitle),
+            quickBarFont: Font.system(.title3),
             markdownFont: nil,
             animatedMeshMainColors: [.blue, .purple, .indigo, .pink, .red, .mint, .teal, .cyan],
             animatedMeshHighlightColors: []

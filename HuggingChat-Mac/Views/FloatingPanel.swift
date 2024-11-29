@@ -30,7 +30,7 @@ class FloatingPanel: NSPanel, NSWindowDelegate {
         self.isReleasedWhenClosed = false
         self.backgroundColor = NSColor.clear
         self.isOpaque = false
-        self.hasShadow = false // Attachment shadows not updated when scrolling leading to artifact.
+//        self.hasShadow = false  Attachment shadows not updated when scrolling leading to artifact.
                               // Should invalidate shadow on scroll. Set to false for now.
                               // Shadow is set manually.
         

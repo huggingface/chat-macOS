@@ -66,6 +66,7 @@ struct ChatView: View {
                     AnyView(localInputView.focused($focusedField, equals: .localInput)), // It physically pains me to do type erasure like this
                     AnyView(serverInputView.focused($focusedField, equals: .serverInput)),
                 ], selectedIndex: $cardIndex)
+                
             } else {
                 serverInputView.focused($focusedField, equals: .serverInput)
             }
@@ -124,9 +125,10 @@ struct ChatView: View {
             }
         }
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
+//        .frame(maxHeight: 175)
         
         // Shadow set manually. Check FloatingPanel.swift for explanation.
-        .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.33), radius: 5, x: 0, y: 2)
+//        .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.33), radius: 5, x: 0, y: 2)
         .padding()
         .padding(.horizontal, 10) // Allows for shake animation
         
@@ -198,10 +200,12 @@ struct ChatView: View {
                         }
                 }
                 .transition(.opacity)
-                .allowsHitTesting(false)
+                .allowsHitTesting(false) 
             }
         })
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .fixedSize(horizontal: false, vertical: true)
+       
     }
     
     @ViewBuilder

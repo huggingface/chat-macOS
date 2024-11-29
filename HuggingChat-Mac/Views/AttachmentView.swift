@@ -75,7 +75,8 @@ struct AttachmentPill: View {
                 allAttachments.removeAll { $0.id == attachment.id }
             })
             .labelsHidden()
-            .frame(width: 15, height: 15)
+            .frame(width: 15)
+            .frame(maxHeight: .infinity, alignment: .center)
             .opacity(showRemoveButton ? 1:0)
             .buttonStyle(.borderless)
             .foregroundStyle(.tertiary)

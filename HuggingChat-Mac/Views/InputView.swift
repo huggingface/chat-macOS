@@ -43,26 +43,28 @@ struct InputView: View {
     
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 20) {
             if allAttachments.count > 0 {
                 AttachmentView(allAttachments: $allAttachments)
             }
             ZStack {
                 if isSecondaryTextFieldVisible {
-                    TextField("", text: $animatablePrompt)
+                    TextField("", text: $animatablePrompt, axis: .vertical)
                         .font(ThemingEngine.shared.currentTheme.quickBarFont)
                         .id("hidden-\(selectedTheme)")
                         .textFieldStyle(.plain)
-                        .font(.largeTitle)
+                        .font(.title3)
+                        .lineLimit(4)
                         .allowsHitTesting(false)
                         .transition(.asymmetric(insertion: .identity, removal: .move(edge: .bottom).combined(with: .opacity)))
                 }
-                TextField("Type your message", text: $prompt)
+                TextField("Type your message", text: $prompt, axis: .vertical)
                     .font(ThemingEngine.shared.currentTheme.quickBarFont)
                     .id("main-\(selectedTheme)")
                     .textFieldStyle(.plain)
                     .focused($isMainTextFieldFocused)
-                    .font(.largeTitle)
+                    .font(.title3)
+                    .lineLimit(4)
                     .opacity(isMainTextFieldVisible ? 1:0)
                     .onSubmit {
                         if prompt == "Think different." && isAppleClassicUnlocked == false  {
@@ -194,6 +196,7 @@ struct InputView: View {
                     .fontWeight(.semibold)
                     .layoutPriority(100)
             }
+    
             
         }
     }
