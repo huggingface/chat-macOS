@@ -15,6 +15,7 @@ enum ConversationState: Equatable {
 @Observable final class ConversationViewModel {
     
     var isInteracting = false
+    var isMultimodal: Bool = false
     var model: AnyObject?
     var message: MessageRow? = nil
     var error: HFError?
@@ -136,7 +137,6 @@ enum ConversationState: Equatable {
             }
         } receiveValue: { [weak self] conversation in
             self?.conversation = conversation
-//            self?.updateIDs(conversation: conversation)
         }.store(in: &cancellables)
     }
     
@@ -152,6 +152,8 @@ enum ConversationState: Equatable {
             }
         } receiveValue: { [weak self] model in
             self?.model = model
+            self?.isMultimodal = (model as! LLMModel).multimodal
+            
         }.store(in: &cancellables)
     }
     

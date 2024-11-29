@@ -153,7 +153,7 @@ struct InputView: View {
                 .frame(width: 20, alignment: .leading)
                 .fileImporter(
                     isPresented: $showFileImporter,
-                    allowedContentTypes: [.text, .sourceCode],
+                    allowedContentTypes: (conversationModel.isMultimodal && !isLocal) ? [.text, .sourceCode, .image]:[.text, .sourceCode],
                     allowsMultipleSelection: true
                 ) { result in
                     switch result {

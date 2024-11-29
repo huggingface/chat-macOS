@@ -105,28 +105,6 @@ struct GeneralSettingsView: View {
                 }
             })
             Section(content: {
-//                LabeledContent("CoreML Model:", content: {
-//                    HStack {
-//                        Picker("", selection: $selectedLocalModel) {
-//                            Text("None").tag("None")
-//                            ForEach(modelManager.availableModels, id: \.id) { option in
-//                                Text(option.name).tag(option.name)
-//                            }
-//                        }
-//                        // Local model status
-//                        StatusIndicatorView(status: modelManager.status)
-//                        
-//                    }
-//                    .labelsHidden()
-//                    .onChange(of: selectedLocalModel) {
-//                        if selectedLocalModel == "None" {
-//                            modelManager.cancelLoading()
-//                        } else if let selectedLocalModel = modelManager.availableModels.first(where: { $0.name == selectedLocalModel }) {
-//                            modelManager.localModelDidChange(to: selectedLocalModel)
-//                        }
-//                    }
-//                })
-                
                 LabeledContent("Local Model:", content: {
                     HStack {
                         Picker("", selection: $selectedLocalModel) {
@@ -178,11 +156,11 @@ struct GeneralSettingsView: View {
                     .disabled(HuggingChatSession.shared.currentUser == nil)
                     .onChange(of: selectedExternalModel) {
                         if let activeModel = externalModels.first(where: { $0.id == selectedExternalModel }) {
-                            
                             DataService.shared.setActiveModel(ActiveModel(model: activeModel))
                             
                             // Reset conversation and activate model
                             conversationManager.model = activeModel
+                            conversationManager.isMultimodal = activeModel.multimodal
                             conversationManager.stopGenerating()
                             conversationManager.reset()
                         }

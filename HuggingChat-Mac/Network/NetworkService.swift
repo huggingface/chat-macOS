@@ -173,7 +173,7 @@ final class NetworkService {
     static func sendRequest(_ request: URLRequest) -> AnyPublisher<Data?, HFError> {
         var req = request
         req.setValue(UserAgentBuilder.userAgent, forHTTPHeaderField: "User-Agent")
-        req.setValue("https://huggingface.co", forHTTPHeaderField: "Origin")
+        req.setValue(self.BASE_URL, forHTTPHeaderField: "Origin")
         let publisher = Deferred {
             Future<Data?, HFError> { promise in
                 let task = URLSession.shared.dataTask(with: req) { (data, response, error) in

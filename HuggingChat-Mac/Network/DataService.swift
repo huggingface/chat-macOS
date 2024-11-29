@@ -10,21 +10,9 @@ import Foundation
 
 final class ActiveModel: Codable {
     var id: String
-    var isAssistant: Bool
-    
-    init(id: String, isAssistant: Bool) {
-        self.id = id
-        self.isAssistant = isAssistant
-    }
     
     init(model: LLMModel) {
         self.id = model.id
-        self.isAssistant = false
-    }
-    
-    init(assistant: Assistant) {
-        self.id = assistant.id
-        self.isAssistant = true
     }
 }
 
@@ -93,7 +81,6 @@ final class DataService {
                 guard let model = models.first else {
                     throw HFError.unknown
                 }
-                
                 return model
             }.mapError({ error in
                 if let error = error as? HFError {
@@ -104,9 +91,7 @@ final class DataService {
             }).eraseToAnyPublisher()
         }
         
-        if activeModel.isAssistant {
-            return NetworkService.getAssistant(id: activeModel.id).map { $0 as AnyObject }.eraseToAnyPublisher()
-        } else if let model = DataService.getLocalModels()?.first(where: {$0.id == activeModel.id}) {
+        if let model = DataService.getLocalModels()?.first(where: {$0.id == activeModel.id}) {
             return Just(model).setFailureType(to: HFError.self).eraseToAnyPublisher()
         } else {
             return Fail(outputType: AnyObject.self, failure: HFError.unknown).eraseToAnyPublisher()
