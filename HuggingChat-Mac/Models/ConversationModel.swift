@@ -21,6 +21,9 @@ enum ConversationState: Equatable {
     var message: MessageRow? = nil
     var error: HFError?
     
+    // Tools
+    var imageURL: String?
+    
     // Currently the best way to get @AppStorage value while returning observability
     var useWebService: Bool {
         get {
@@ -131,6 +134,11 @@ enum ConversationState: Equatable {
                     self?.updateConversation(conversationID: conversationID)
                 }
                 self?.message = messageRow
+                if let fileInfo = self?.message?.fileInfo,
+                   fileInfo.mime.hasPrefix("image/"),
+                let conversationID = self?.conversation?.id {
+                    self?.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
+                }
                 
             }.store(in: &cancellables)
 

@@ -60,6 +60,7 @@ final class MessageRow: Identifiable, PromptRequestConvertible {
     }
     
     var webSearch: WebSearch?
+    var fileInfo: FileMessage?
     
     init?(message: Message) {
         self.id = message.id
@@ -74,18 +75,20 @@ final class MessageRow: Identifiable, PromptRequestConvertible {
         self.isInteracting = false
         self.contentType = .rawText(message.content)
         self.responseError = nil
+        self.fileInfo = nil
         
         if let webSearch = message.webSearch {
             self.webSearch = WebSearch(message: "Completed", sources: webSearch.contextSources)
         }
     }
     
-    init(id: String = UUID().uuidString.lowercased(), type: MessageType, isInteracting: Bool, contentType: MessageRowType, responseError: String? = nil) {
+    init(id: String = UUID().uuidString.lowercased(), type: MessageType, isInteracting: Bool, contentType: MessageRowType, responseError: String? = nil, fileInfo: FileMessage? = nil) {
         self.id = id
         self.type = type
         self.isInteracting = isInteracting
         self.contentType = contentType
         self.responseError = responseError
+        self.fileInfo = fileInfo
     }
     
     func updateID(message: Message) {

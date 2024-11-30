@@ -8,6 +8,12 @@
 import SwiftUI
 import MarkdownView
 
+struct CustomImageProvider: ImageDisplayable {
+    func makeImage(url: URL, alt: String?) -> some View {
+        AnimatedImageView(imageURL: url)
+    }
+}
+
 struct ResponseView: View {
     @Environment(ConversationViewModel.self) private var conversationModel
     @Environment(ModelManager.self) private var modelManager
@@ -83,7 +89,8 @@ struct ResponseView: View {
                         ScrollView {
                             VStack(alignment: .leading) {
                                 if ThemingEngine.shared.currentTheme.markdownFont == nil {
-                                    MarkdownView(text: message.content)
+                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n" : "" + message.content))
+                                        .imageProvider(CustomImageProvider(), forURLScheme: "https")
                                         .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .fontGroup(DefaultFontGroup.automatic)
@@ -94,7 +101,8 @@ struct ResponseView: View {
                                         .textSelection(.enabled)
                                         .id(8)
                                 } else {
-                                    MarkdownView(text: message.content)
+                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n" : "" + message.content))
+                                        .imageProvider(CustomImageProvider(), forURLScheme: "https")
                                         .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .markdownRenderingThread(.background)
@@ -111,9 +119,15 @@ struct ResponseView: View {
                                 proxy.frame(in: .global)
                             } action: { newValue in
                                 responseSize.width = newValue.width
-                                responseSize.height = min(max(newValue.height, 20), 320)
+                                responseSize.height = min(max(newValue.height, 175), 320)
                             }
                         }
+//                        .safeAreaInset(edge: .bottom) {
+//                            if let imageURL = conversationModel.imageURL {
+//                                ResponseToolBar(imageURL: imageURL)
+//                            }
+//                        }
+                        
                         .onChange(of: conversationModel.message?.content, {
                             DispatchQueue.main.async {
                                 withAnimation {

@@ -24,12 +24,21 @@ extension NSFont {
     }
 }
 
+struct FileMessage: Decodable {
+    let name: String
+    let sha: String
+    let mime: String
+}
+
 struct StreamMessage: Decodable {
     let type: String
     let token: String?
     let subtype: String?
     let message: String?
     let sources: [WebSearchSource]?
+    let name: String?      // For file messages
+    let sha: String?       // For file messages
+    let mime: String?      // For file messages
     
     enum CodingKeys: CodingKey {
         case type
@@ -37,6 +46,9 @@ struct StreamMessage: Decodable {
         case subtype
         case message
         case sources
+        case name
+        case sha
+        case mime
     }
     
     init(from decoder: Decoder) throws {
@@ -46,6 +58,9 @@ struct StreamMessage: Decodable {
         self.subtype = try container.decodeIfPresent(String.self, forKey: .subtype)
         self.message = try container.decodeIfPresent(String.self, forKey: .message)
         self.sources = try container.decodeIfPresent([WebSearchSource].self, forKey: .sources)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.sha = try container.decodeIfPresent(String.self, forKey: .sha)
+        self.mime = try container.decodeIfPresent(String.self, forKey: .mime)
     }
 }
 
@@ -91,6 +106,7 @@ enum StreamMessageType {
     case started
     case token(String)
     case webSearch(StreamWebSearch)
+    case file(FileMessage)
     case skip
     
     static func messageType(from json: StreamMessage) -> StreamMessageType? {
@@ -99,6 +115,11 @@ enum StreamMessageType {
             return webSearch(from: json)
         case "stream":
             return .token(json.token ?? "")
+        case "file":
+            if let name = json.name, let sha = json.sha, let mime = json.mime {
+                return .file(FileMessage(name: name, sha: sha, mime: mime))
+            }
+            return .skip
         case "title":
             return .skip
         default:
@@ -183,12 +204,23 @@ final class SendPromptHandler {
             guard let self = self, let message = String(data: data, encoding: .utf8) else {
                 return
             }
+            
             let messages = message.split(separator: "\n")
             for m in messages {
                 self.tmpMessage = self.tmpMessage + m
                 guard let sd = self.tmpMessage.data(using: .utf8) else {
                     continue
                 }
+                
+                if let json = try? self.decoder.decode(StreamMessage.self, from: sd),
+                   json.type == "file",
+                   let name = json.name,
+                   let sha = json.sha,
+                   let mime = json.mime {
+                    let fileMessage = FileMessage(name: name, sha: sha, mime: mime)
+                    self.privateUpdate.send(.file(fileMessage))
+                }
+                
                 guard let json = try? self.decoder.decode(StreamMessage.self, from: sd) else {
                     continue
                 }
@@ -221,6 +253,9 @@ final class SendPromptHandler {
             return updateMessage(with: token)
         case .skip:
             return nil
+        case .file(let fileMessage):
+            messageRow.fileInfo = fileMessage
+            return messageRow
         }
     }
     
