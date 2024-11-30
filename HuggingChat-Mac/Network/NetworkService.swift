@@ -236,6 +236,7 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         var data = Data()
         
         // Add the files
+        // TODO: Limit to 10MB per file otherwise error out
         if let filePaths = reqBody.files {
             for (_, filePath) in filePaths.enumerated() {
                 let fileURL = URL(fileURLWithPath: filePath)
@@ -257,7 +258,7 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         
         // Create a cleaned request body without files for JSON
         var cleanedReqBody = reqBody
-        cleanedReqBody.files = nil  // Remove files from JSON portion
+        cleanedReqBody.files = nil
         
         // Add the JSON part
         do {
@@ -280,7 +281,8 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         
         return _update.eraseToAnyPublisher().handleEvents(receiveRequest: { _ in
             task.resume()
-        }).eraseToAnyPublisher()
+        })
+        .eraseToAnyPublisher()
     }
     
     func mimeType(for url: URL) -> String {

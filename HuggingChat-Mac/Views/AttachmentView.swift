@@ -51,46 +51,67 @@ struct AttachmentView: View {
 struct AttachmentPill: View {
     
     @Binding var allAttachments: [LLMAttachment]
-    var attachment: LLMAttachment
+    var attachment: LLMAttachment?
+    
     @State private var showRemoveButton: Bool = false
     
     var body: some View {
-        HStack(alignment: .top, spacing: 5) {
-            if let icon = attachment.fileIcon {
-                Image(nsImage: icon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30, height: 30)
-            } else {
-                Image(nsImage: NSWorkspace.shared.icon(for: attachment.fileType))
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30, height: 30)
+        if let attachment {
+            ZStack {
+                HStack(alignment: .center, spacing: 5) {
+                    if let icon = attachment.fileIcon {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .scaledToFit()
+                            .mask(RoundedRectangle(cornerRadius: 5))
+                            .frame(width: 30, height: 30)
+                    } else {
+                        Image(nsImage: NSWorkspace.shared.icon(for: attachment.fileType))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                    }
+                    Text("\(attachment.filename)")
+                        .font(ThemingEngine.shared.currentTheme.markdownFont?.footnote ?? .footnote)
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    
+                    Button(action: {
+                        allAttachments.removeAll { $0.id == attachment.id }
+                    }, label: {
+                        Label("", systemImage: "xmark.circle.fill")
+                            .labelStyle(.iconOnly)
+                    })
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.tertiary)
+                }
             }
-            Text("\(attachment.filename)")
-                .font(ThemingEngine.shared.currentTheme.markdownFont?.footnote ?? .footnote)
-                .lineLimit(2)
-            Spacer(minLength: 5)
-            
-            Button("Remove", systemImage: "xmark.circle.fill", action: {
-                allAttachments.removeAll { $0.id == attachment.id }
-            })
-            .labelsHidden()
-            .frame(width: 15)
-            .frame(maxHeight: .infinity, alignment: .center)
-            .opacity(showRemoveButton ? 1:0)
-            .buttonStyle(.borderless)
-            .foregroundStyle(.tertiary)
-        }
-        .padding(.vertical, 5)
-        .padding(.leading, 10)
-        .frame(height: 45)
-        .frame(maxWidth: 160)
-        .background(.primary.quinary)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .fixedSize()
-        .onHover { state in
-            showRemoveButton = state
+            .padding(.horizontal, 5)
+            .frame(height: 45)
+            .frame(width: 160)
+            .background(.primary.quinary)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .fixedSize()
+            .onHover { state in
+                showRemoveButton = state
+            }
         }
     }
+}
+
+#Preview {
+    
+    InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([LLMAttachment(
+        filename: "Sample Document.png",
+        fileExtension: "png",
+        url: URL(string: "file:///sample.png"),
+        fileIcon: NSImage(named: "huggy.bp")!,
+        fileType: .image,
+        content: .image(NSImage(named: "huggy.bp")!)
+    )]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false))
+        .environment(ModelManager())
+        .environment(\.colorScheme, .dark)
+        .environment(ConversationViewModel())
+//    AttachmentPill(allAttachments: .constant([]))
 }
