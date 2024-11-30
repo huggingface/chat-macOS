@@ -16,6 +16,7 @@ enum ConversationState: Equatable {
     
     var isInteracting = false
     var isMultimodal: Bool = false
+    var isTools: Bool = false
     var model: AnyObject?
     var message: MessageRow? = nil
     var error: HFError?
@@ -59,13 +60,13 @@ enum ConversationState: Equatable {
     
     var state: ConversationState = .none
     
-    private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil) {
+    private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
         if let model = model as? LLMModel {
-            createConversation(with: model, prompt: prompt, withFiles: withFiles)
+            createConversation(with: model, prompt: prompt, withFiles: withFiles, usingTools: usingTools)
         }
     }
     
-    private func createConversation(with model: LLMModel, prompt: String, withFiles: [String]? = nil) {
+    private func createConversation(with model: LLMModel, prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
         state = .loaded
         NetworkService.createConversation(base: model)
             .receive(on: DispatchQueue.main).sink { completion in
@@ -85,12 +86,11 @@ enum ConversationState: Equatable {
     
     func sendAttributed(text: String, withFiles: [String]? = nil) {
         guard let conversation = conversation, let previousId = conversation.messages.last?.id else {
-            createConversationAndSendPrompt(text, withFiles: withFiles)
+            createConversationAndSendPrompt(text, withFiles: withFiles, usingTools: isTools ? []:nil)
             return
         }
         let trimmedText = text.trimmingCharacters(in: .whitespaces)
-        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles)
-        print(req)
+        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002"] : nil)
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
     
@@ -165,8 +165,9 @@ enum ConversationState: Equatable {
         } receiveValue: { [weak self] model in
             self?.model = model
             self?.externalModel = (model as! LLMModel).name
-            print((model as! LLMModel).name, (model as! LLMModel).multimodal)
+            print((model as! LLMModel).name, (model as! LLMModel).tools)
             self?.isMultimodal = (model as! LLMModel).multimodal
+            self?.isTools = (model as! LLMModel).tools
             
         }.store(in: &cancellables)
     }

@@ -107,7 +107,6 @@ public struct CardStack<Content:View>: View {
         let padding = containerSize.height / 10
         let y = (Double(index) - progressIndex) * padding
         let maxIndex = views.count - 1
-        // position > 0 && position < 0.99 && index < maxIndex
         if index == selectedIndex && progressIndex < Double(maxIndex) && progressIndex > 0 {
             return y * swingOutMultiplier
         }

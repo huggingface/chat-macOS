@@ -252,7 +252,7 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         
         var data = Data()
         
-        // Add the files
+        // Add the files. Add tools Document Parser if supported.
         // TODO: Limit to 10MB per file otherwise error out
         if let filePaths = reqBody.files {
             for (_, filePath) in filePaths.enumerated() {

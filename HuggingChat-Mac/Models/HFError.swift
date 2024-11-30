@@ -9,6 +9,7 @@ import Foundation
 
 enum HFError: Error {
     case unknown
+    case fileLimitExceeded
     case genericError(Error)
     case networkError(Error)
     case httpError(Int, Data?)
@@ -28,6 +29,8 @@ extension HFError: CustomStringConvertible {
         switch self {
         case .unknown:
             return "Unknown"
+        case .fileLimitExceeded:
+            return "File limit exceeded. A file cannot be larger than 10 MB."
         case .genericError(let error):
             return "Generic error \(error.localizedDescription)"
         case .networkError(let error):

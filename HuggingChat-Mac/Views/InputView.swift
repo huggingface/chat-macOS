@@ -103,17 +103,18 @@ struct InputView: View {
             HStack {
                 Group {
                 Menu {
-                    Button {
-                        showFileImporter = true
-                    } label: {
-                        Label("Import", systemImage: "doc.circle")
-                    }
-                    .keyboardShortcut("I", modifiers: [.command])
-                    
-                    Divider()
-                    
-                    // Conversations
+                   // For now disable multimodality for local models
                     if !isLocal {
+                        Button {
+                            showFileImporter = true
+                        } label: {
+                            Label("Import", systemImage: "doc.circle")
+                        }
+                        .keyboardShortcut("I", modifiers: [.command])
+                        
+                        Divider()
+                        
+                        
                         Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
                             Label("Open Conversation", systemImage: "globe")
                         })
@@ -155,7 +156,11 @@ struct InputView: View {
                 .frame(width: 20, alignment: .leading)
                 .fileImporter(
                     isPresented: $showFileImporter,
-                    allowedContentTypes: (conversationModel.isMultimodal && !isLocal) ? [.text, .sourceCode, .image]:[.text, .sourceCode],
+                    allowedContentTypes: getAllowedContentTypes(
+                        isMultimodal: conversationModel.isMultimodal,
+                        isLocal: isLocal,
+                        isTools: conversationModel.isTools
+                    ),
                     allowsMultipleSelection: true
                 ) { result in
                     switch result {
@@ -209,16 +214,28 @@ struct InputView: View {
         let fileExtension = url.pathExtension.lowercased()
         
         do {
+            // Check file size - 10MB = 10 * 1024 * 1024 bytes
+//            let fileSize = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+//            let maxSize = 10 * 1024 * 1024
+//            
+//            guard fileSize <= maxSize else {
+//                throw HFError.fileLimitExceeded
+//            }
+            
             guard let typeID = try url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
                   let utType = UTType(typeID) else { return }
             guard let supertypes = UTType(typeID)?.supertypes else { return }
+            
+            print("TypeID:", typeID)
+            print("UTType:", utType)
+            print("Supertypes:", supertypes)
+            
             if supertypes.contains(.image) {
                 guard let imageData = try? Data(contentsOf: url),
                       let image = NSImage(data: imageData) else {
                     print("Failed to load image data from \(url)")
                     return
                 }
-                // TODO: Complete for image to add to allAttachments
                 let attachment = LLMAttachment(
                     filename: filename,
                     fileExtension: fileExtension,
@@ -232,9 +249,31 @@ struct InputView: View {
             } else if supertypes.contains(.text) {
                 let textContents = try String(contentsOf: url)
                 if !textContents.isEmpty {
-                    let attachment = LLMAttachment(filename: filename, fileExtension: fileExtension, url: url, fileIcon: NSWorkspace.shared.icon(forFile: url.path()), fileType: utType, content: .text(textContents))
+                    let attachment = LLMAttachment(filename: filename,
+                                                 fileExtension: fileExtension,
+                                                 url: url,
+                                                 fileIcon: NSWorkspace.shared.icon(forFile: url.path()),
+                                                 fileType: utType,
+                                                 content: .text(textContents))
                     allAttachments.append(attachment)
                 }
+            } else if utType == .pdf || typeID == "com.adobe.pdf" || fileExtension == "pdf" {
+                // PDF handling code here
+                guard let pdfData = try? Data(contentsOf: url) else {
+                    print("Failed to load PDF data from \(url)")
+                    return
+                }
+                let attachment = LLMAttachment(
+                    filename: filename,
+                    fileExtension: fileExtension,
+                    url: url,
+                    fileIcon: NSWorkspace.shared.icon(forFile: url.path()),
+                    fileType: utType,
+                    content: .pdf(pdfData)
+                )
+                allAttachments.append(attachment)
+            } else {
+                print("Unsupported file type:", supertypes)
             }
         } catch {
             print("\(error.localizedDescription)")
@@ -261,21 +300,24 @@ struct InputView: View {
         isMainTextFieldVisible = false
         isSecondaryTextFieldVisible = true
         
-        if !allAttachments.isEmpty {
-            let filteredContents = allAttachments.filter { attachment in
-                attachment.fileType.conforms(to: .sourceCode) || attachment.fileType.conforms(to: .text)
-            }
-            if !filteredContents.isEmpty {
-                prompt += "\n\n" + filteredContents.compactMap { attachment in
-                    switch attachment.content {
-                    case .text(let content):
-                        return "\(attachment.filename):\n\(content)"
-                    case .image(_):
-                        return prompt
-                    }
-                }.joined(separator: "\n\n")
-            }
-        }
+//        if !allAttachments.isEmpty {
+//            let filteredContents = allAttachments.filter { attachment in
+//                attachment.fileType.conforms(to: .sourceCode) || attachment.fileType.conforms(to: .text)
+//            }
+//            if !filteredContents.isEmpty {
+//                // TODO: Fix this for local when multimodality is added
+//                prompt += "\n\n" + filteredContents.compactMap { attachment in
+//                    switch attachment.content {
+//                    case .text(let content):
+//                        return "\(attachment.filename):\n\(content)"
+//                    case .image(_):
+//                        return prompt
+//                    case .pdf(_):
+//                        return prompt
+//                    }
+//                }.joined(separator: "\n\n")
+//            }
+//        }
         if isLocal {
             let localPrompt = prompt
             Task {
@@ -284,7 +326,6 @@ struct InputView: View {
         } else {
             let attachmentURLs = allAttachments
                 .compactMap { $0.url?.path } // Unwrap optional URLs and convert to String paths
-            print(attachmentURLs)
             conversationModel.sendAttributed(text: prompt, withFiles: attachmentURLs)
         }
         allAttachments = []
@@ -296,6 +337,16 @@ struct InputView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isMainTextFieldFocused = true
+        }
+    }
+    
+    private func getAllowedContentTypes(isMultimodal: Bool, isLocal: Bool, isTools: Bool) -> [UTType] {
+        switch (isLocal, isMultimodal, isTools) {
+        case (true, _, _):         return [.text, .sourceCode]
+        case (_, true, true):      return [.text, .sourceCode, .pdf, .image]
+        case (_, true, false):     return [.image]
+        case (_, false, true):     return [.text, .sourceCode, .pdf]
+        case (_, false, false):    return []
         }
     }
 }

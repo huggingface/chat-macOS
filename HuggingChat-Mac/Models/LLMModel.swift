@@ -14,6 +14,7 @@ final class LLMModel: Codable, Identifiable, BaseConversation {
     let displayName: String
     let websiteUrl: URL
     let modelUrl: URL
+    let tools: Bool
     let promptExamples: [PromptExample]
     let multimodal: Bool
     let unlisted: Bool
@@ -23,7 +24,7 @@ final class LLMModel: Codable, Identifiable, BaseConversation {
     init(
         id: String, name: String, displayName: String, websiteUrl: URL, modelUrl: URL,
         promptExamples: [PromptExample], multimodal: Bool, unlisted: Bool, description: String,
-        isActive: Bool, preprompt: String
+        isActive: Bool, preprompt: String, tools: Bool
     ) {
         self.id = id
         self.name = name
@@ -35,6 +36,7 @@ final class LLMModel: Codable, Identifiable, BaseConversation {
         self.unlisted = unlisted
         self.description = description
         self.preprompt = preprompt
+        self.tools = tools
     }
 
     init(from decoder: Decoder) throws {
@@ -62,6 +64,7 @@ final class LLMModel: Codable, Identifiable, BaseConversation {
         self.description = (try? container.decode(String.self, forKey: .description)) ?? ""
 
         self.preprompt = try container.decode(String.self, forKey: .preprompt)
+        self.tools = try container.decode(Bool.self, forKey: .tools)
     }
 
 }
@@ -81,7 +84,7 @@ extension LLMModel {
             websiteUrl: URL(string: "https://google.fr")!,
             modelUrl: URL(string: "https://google.fr")!, promptExamples: examples,
             multimodal: false,
-            unlisted: false, description: "", isActive: true, preprompt: "")
+            unlisted: false, description: "", isActive: true, preprompt: "", tools: false)
     }
     
     func toNewConversation() -> (AnyObject&Codable) {

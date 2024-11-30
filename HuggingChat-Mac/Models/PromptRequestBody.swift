@@ -14,13 +14,15 @@ struct PromptRequestBody: Encodable {
     let isRetry: Bool?
     let isContinue: Bool?
     let webSearch: Bool?
+    let tools: [String]?
     
-    init(id: String? = nil, inputs: String? = nil, isRetry: Bool = false, isContinue: Bool = false, webSearch: Bool = false, files: [String]? = nil) {
+    init(id: String? = nil, inputs: String? = nil, isRetry: Bool = false, isContinue: Bool = false, webSearch: Bool = false, files: [String]? = nil, tools: [String]? = nil) {
         self.id = id
         self.inputs = inputs
         self.isRetry = isRetry
         self.isContinue = isContinue
         self.webSearch = webSearch
         self.files = files
+        self.tools = tools
     }
 }

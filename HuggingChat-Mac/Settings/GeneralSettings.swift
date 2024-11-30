@@ -162,6 +162,7 @@ struct GeneralSettingsView: View {
                             // Reset conversation and activate model
                             conversationManager.model = activeModel
                             conversationManager.isMultimodal = activeModel.multimodal
+                            conversationManager.isTools = activeModel.tools
                             conversationManager.stopGenerating()
                             conversationManager.reset()
                         }

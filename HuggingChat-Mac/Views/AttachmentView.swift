@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 enum AttachmentContent {
     case text(String)
     case image(NSImage)
+    case pdf(Data)
 }
 
 
