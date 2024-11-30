@@ -225,35 +225,79 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     func postPrompt(reqBody: PromptRequestBody, conversationId: String) -> AnyPublisher<Data, HFError> {
         let endpoint = "\(BASE_URL)/chat/conversation/\(conversationId)"
         
-        let boundary = "------\(UUID().uuidString)"
-        let headers = ["Content-Type": "multipart/form-data; boundary=\(boundary)"]
-        
+        let boundary = UUID().uuidString
         var request = URLRequest(url: URL(string: endpoint)!)
         
         request.httpMethod = "POST"
-        request.allHTTPHeaderFields = headers
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(UserAgentBuilder.userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("https://huggingface.co", forHTTPHeaderField: "Origin")
-
+        
+        var data = Data()
+        
+        // Add the files
+        if let filePaths = reqBody.files {
+            for (_, filePath) in filePaths.enumerated() {
+                let fileURL = URL(fileURLWithPath: filePath)
+                let filename = fileURL.lastPathComponent
+                do {
+                    let fileData = try Data(contentsOf: fileURL)
+                    let base64String = fileData.base64EncodedString()
+                    
+                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+                    data.append("Content-Disposition: form-data; name=\"files\"; filename=\"base64;\(filename)\"\r\n".data(using: .utf8)!)
+                    data.append("Content-Type: \(mimeType(for: fileURL))\r\n\r\n".data(using: .utf8)!)
+                    data.append(base64String.data(using: .utf8)!)
+                    data.append("\r\n".data(using: .utf8)!)
+                } catch {
+                    print("Error reading file: \(error)")
+                }
+            }
+        }
+        
+        // Create a cleaned request body without files for JSON
+        var cleanedReqBody = reqBody
+        cleanedReqBody.files = nil  // Remove files from JSON portion
+        
+        // Add the JSON part
         do {
-            let jsonData = try encoder.encode(reqBody)
-//            let jsonString = String(data: jsonData, encoding: .utf8)
-            var data = Data()
-            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-            data.append("Content-Disposition: form-data; name=\"data\"\r\n\r\n".data(using: .utf8)!)
+            let jsonData = try encoder.encode(cleanedReqBody)
+            data.append("--\(boundary)\r\n".data(using: .utf8)!)
+            data.append("Content-Disposition: form-data; name=\"data\"\r\n".data(using: .utf8)!)
+            data.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
             data.append(jsonData)
-            data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-            request.httpBody = data
+            data.append("\r\n".data(using: .utf8)!)
         } catch {
             return Fail(outputType: Data.self, failure: HFError.encodeError(error)).eraseToAnyPublisher()
         }
+        
+        // Add the final boundary
+        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = data
 
         let task = self.session.dataTask(with: request)
         task.delegate = self
         
-        return _update.eraseToAnyPublisher().handleEvents(receiveRequest:  { _ in
+        return _update.eraseToAnyPublisher().handleEvents(receiveRequest: { _ in
             task.resume()
         }).eraseToAnyPublisher()
+    }
+    
+    func mimeType(for url: URL) -> String {
+        let pathExtension = url.pathExtension
+        
+        switch pathExtension.lowercased() {
+        case "jpg", "jpeg":
+            return "image/jpeg"
+        case "png":
+            return "image/png"
+        case "gif":
+            return "image/gif"
+        case "pdf":
+            return "application/pdf"
+        default:
+            return "application/octet-stream"
+        }
     }
 
 

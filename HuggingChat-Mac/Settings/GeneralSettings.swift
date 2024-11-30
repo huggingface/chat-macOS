@@ -105,7 +105,7 @@ struct GeneralSettingsView: View {
                 }
             })
             Section(content: {
-                LabeledContent("Local Model:", content: {
+                LabeledContent("Model Name:", content: {
                     HStack {
                         Picker("", selection: $selectedLocalModel) {
                             Text("None").tag("None")
@@ -132,7 +132,7 @@ struct GeneralSettingsView: View {
                 })
                 
             }, header: {
-                Text("Local Models")
+                Text("Local Inference")
             }, footer: {
                 Text("Local models will run queries entirely on your local machine.")
                     .font(.footnote)
@@ -143,7 +143,7 @@ struct GeneralSettingsView: View {
             })
             
             Section(content: {
-                LabeledContent("HuggingFace:", content: {
+                LabeledContent("Model Name:", content: {
                     Picker("", selection: $selectedExternalModel) {
                         ForEach(externalModels, id: \.id) { option in
                             let components = option.name.split(separator: "/", maxSplits: 1)
@@ -170,7 +170,7 @@ struct GeneralSettingsView: View {
                 
                 
             }, header: {
-                Text("Server-Side Models")
+                Text("Server-Side Inference")
             }, footer: {
                 Text("Server-side models are more suitable for general usage or complex queries, and will run on an external server. Toggling web search will enable the model to complement its answers with information queried from the web.")
                     .font(.footnote)

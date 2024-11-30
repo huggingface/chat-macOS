@@ -33,6 +33,20 @@ enum ConversationState: Equatable {
         }
     }
     
+    var externalModel: String {
+        get {
+            access(keyPath: \.externalModel)
+            return UserDefaults.standard.string(forKey: "externalModel") ?? "meta-llama/Meta-Llama-3.1-70B-Instruct"
+        }
+        set {
+            withMutation(keyPath: \.externalModel) {
+                UserDefaults.standard.setValue(newValue, forKey: "externalModel")
+            }
+        }
+    }
+    
+    
+    
     private var cancellables = [AnyCancellable]()
     private var sendPromptHandler: SendPromptHandler?
     
@@ -45,13 +59,13 @@ enum ConversationState: Equatable {
     
     var state: ConversationState = .none
     
-    private func createConversationAndSendPrompt(_ prompt: String) {
+    private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil) {
         if let model = model as? LLMModel {
-            createConversation(with: model, prompt: prompt)
+            createConversation(with: model, prompt: prompt, withFiles: withFiles)
         }
     }
     
-    private func createConversation(with model: LLMModel, prompt: String) {
+    private func createConversation(with model: LLMModel, prompt: String, withFiles: [String]? = nil) {
         state = .loaded
         NetworkService.createConversation(base: model)
             .receive(on: DispatchQueue.main).sink { completion in
@@ -65,17 +79,18 @@ enum ConversationState: Equatable {
                 }
             } receiveValue: { [weak self] conversation in
                 self?.conversation = conversation
-                self?.sendAttributed(text: prompt)
+                self?.sendAttributed(text: prompt, withFiles: withFiles)
             }.store(in: &cancellables)
     }
     
-    func sendAttributed(text: String) {
+    func sendAttributed(text: String, withFiles: [String]? = nil) {
         guard let conversation = conversation, let previousId = conversation.messages.last?.id else {
-            createConversationAndSendPrompt(text)
+            createConversationAndSendPrompt(text, withFiles: withFiles)
             return
         }
         let trimmedText = text.trimmingCharacters(in: .whitespaces)
-        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService)
+        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles)
+        print(req)
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
     
@@ -96,7 +111,6 @@ enum ConversationState: Equatable {
                 guard let self else { return }
                 switch completion {
                 case .finished:
-                    print("ConversationViewModel.Message Reception Completed")
                     self.sendPromptHandler = nil
                     isInteracting = false
                     self.sendPromptHandler = nil
@@ -106,11 +120,9 @@ enum ConversationState: Equatable {
                     case .httpTooManyRequest:
                         self.state = .error
                         self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
-                        print("Too Many Requests")
                     default:
                         self.state = .error
                         self.error = error
-                        print(error.localizedDescription)
                     }
                 }
             } receiveValue: { [weak self] obj in
@@ -152,6 +164,8 @@ enum ConversationState: Equatable {
             }
         } receiveValue: { [weak self] model in
             self?.model = model
+            self?.externalModel = (model as! LLMModel).name
+            print((model as! LLMModel).name, (model as! LLMModel).multimodal)
             self?.isMultimodal = (model as! LLMModel).multimodal
             
         }.store(in: &cancellables)

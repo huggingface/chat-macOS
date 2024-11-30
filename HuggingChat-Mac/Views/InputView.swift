@@ -43,7 +43,7 @@ struct InputView: View {
     
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
             if allAttachments.count > 0 {
                 AttachmentView(allAttachments: $allAttachments)
             }
@@ -55,16 +55,18 @@ struct InputView: View {
                         .textFieldStyle(.plain)
                         .font(.title3)
                         .lineLimit(4)
+                        .frame(minHeight: 50, alignment: .top)
                         .allowsHitTesting(false)
                         .transition(.asymmetric(insertion: .identity, removal: .move(edge: .bottom).combined(with: .opacity)))
                 }
-                TextField("Type your message", text: $prompt, axis: .vertical)
+                TextField("Ask anything...", text: $prompt, axis: .vertical)
                     .font(ThemingEngine.shared.currentTheme.quickBarFont)
                     .id("main-\(selectedTheme)")
                     .textFieldStyle(.plain)
                     .focused($isMainTextFieldFocused)
                     .font(.title3)
                     .lineLimit(4)
+                    .frame(minHeight: 50, alignment: .top)
                     .opacity(isMainTextFieldVisible ? 1:0)
                     .onSubmit {
                         if prompt == "Think different." && isAppleClassicUnlocked == false  {
@@ -211,7 +213,22 @@ struct InputView: View {
                   let utType = UTType(typeID) else { return }
             guard let supertypes = UTType(typeID)?.supertypes else { return }
             if supertypes.contains(.image) {
-                print("Image")
+                guard let imageData = try? Data(contentsOf: url),
+                      let image = NSImage(data: imageData) else {
+                    print("Failed to load image data from \(url)")
+                    return
+                }
+                // TODO: Complete for image to add to allAttachments
+                let attachment = LLMAttachment(
+                    filename: filename,
+                    fileExtension: fileExtension,
+                    url: url,
+                    fileIcon: image,
+                    fileType: utType,
+                    content: .image(image)
+                )
+                allAttachments.append(attachment)
+               
             } else if supertypes.contains(.text) {
                 let textContents = try String(contentsOf: url)
                 if !textContents.isEmpty {
@@ -253,6 +270,8 @@ struct InputView: View {
                     switch attachment.content {
                     case .text(let content):
                         return "\(attachment.filename):\n\(content)"
+                    case .image(_):
+                        return prompt
                     }
                 }.joined(separator: "\n\n")
             }
@@ -263,7 +282,10 @@ struct InputView: View {
                 await modelManager.generate(prompt: localPrompt)
             }
         } else {
-            conversationModel.sendAttributed(text: prompt)
+            let attachmentURLs = allAttachments
+                .compactMap { $0.url?.path } // Unwrap optional URLs and convert to String paths
+            print(attachmentURLs)
+            conversationModel.sendAttributed(text: prompt, withFiles: attachmentURLs)
         }
         allAttachments = []
         prompt = ""
