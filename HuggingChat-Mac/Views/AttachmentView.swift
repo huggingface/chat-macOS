@@ -45,6 +45,7 @@ struct AttachmentView: View {
             }
         }
         .scrollIndicators(.never)
+        .scrollClipDisabled()
     }
 }
 
@@ -85,6 +86,7 @@ struct AttachmentPill: View {
                     })
                     .buttonStyle(.plain)
                     .foregroundStyle(.tertiary)
+                    .opacity(showRemoveButton ? 1:0)
                 }
             }
             .padding(.horizontal, 5)

@@ -119,11 +119,11 @@ public struct CardStack<Content:View>: View {
     }
     
     func scale(for index: Int) -> CGFloat {
-        return 1.0 - (0.1 * abs(currentPosition(for: index)))
+        return 1.0 - (0.3 * abs(currentPosition(for: index)))
     }
     
     func opacity(for index: Int) -> CGFloat {
-        return 1.0 - abs(currentPosition(for: index))
+        return 1.0
     }
     
     func rotation(for index: Int) -> Double {

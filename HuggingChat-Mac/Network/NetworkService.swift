@@ -14,7 +14,24 @@ public enum DateDecodingStrategy {
 }
 
 final class NetworkService {
-    fileprivate static let BASE_URL: String = "https://huggingface.co"
+    private static let defaultBaseURL = "https://huggingface.co"
+    fileprivate static var BASE_URL: String {
+        get {
+            UserDefaults.standard.string(forKey: "baseURL") ?? defaultBaseURL
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "baseURL")
+        }
+    }
+    
+    static func resetToDefaultURL() {
+        BASE_URL = defaultBaseURL
+    }
+    
+    // Helper method to update BASE_URL
+    static func updateBaseURL(_ newURL: String) {
+        BASE_URL = newURL
+    }
 //    fileprivate static let BASE_URL: String = "http://192.168.1.111:5173"
 //    fileprivate static let BASE_URL: String = "https://dc7a-83-83-23-99.ngrok-free.app"
 
@@ -26,7 +43,7 @@ final class NetworkService {
         var headers: [String: String] = [:]
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         headers["Accept"] = "*/*"
-        headers["Referer"] = "https://huggingface.co/chat/login"
+        headers["Referer"] = "\(BASE_URL)/chat/login"
 
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
@@ -39,7 +56,7 @@ final class NetworkService {
     static func validateSignIn(code: String, state: String) -> AnyPublisher<Void, HFError> {
         var headers: [String: String] = [:]
         headers["Accept"] = "*/*"
-        headers["Referer"] = "https://huggingface.co/"
+        headers["Referer"] = "\(BASE_URL)/"
 
         var request = URLRequest(url: URL(string: "\(BASE_URL)/chat/login/callback?code=\(code)&state=\(state)")!)
         request.allHTTPHeaderFields = headers
@@ -231,7 +248,7 @@ final class PostStream: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(UserAgentBuilder.userAgent, forHTTPHeaderField: "User-Agent")
-        request.setValue("https://huggingface.co", forHTTPHeaderField: "Origin")
+        request.setValue("\(BASE_URL)", forHTTPHeaderField: "Origin")
         
         var data = Data()
         

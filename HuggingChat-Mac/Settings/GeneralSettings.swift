@@ -19,6 +19,7 @@ struct GeneralSettingsView: View {
     @State var externalModels: [LLMModel] = []
     @State var cancellables = [AnyCancellable]()
     
+    @AppStorage("baseURL") private var baseURL: String = "https://huggingface.co"
     @AppStorage("userLoggedIn") private var userLoggedIn: Bool = false
     @AppStorage("launchAtLogin") private var launchAtLogin = false
     @AppStorage("hideDock") private var hideDock: Bool = false
