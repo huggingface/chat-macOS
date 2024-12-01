@@ -64,7 +64,8 @@ struct StreamMessage: Decodable {
     }
 }
 
-struct WebSearchSource: Decodable {
+struct WebSearchSource: Identifiable, Decodable {
+    var id = UUID()
     let link: URL
     let title: String
     let hostname: String
@@ -85,6 +86,13 @@ struct WebSearchSource: Decodable {
             self.hostname = link.host?.deletingPrefix("www.") ?? link.absoluteString.deletingPrefix("www.")
         }
     }
+    
+    // Convenience Init
+    init(link: URL, title: String, hostname: String) {
+           self.link = link
+           self.title = title
+           self.hostname = hostname
+       }
 }
 
 final class WebSearch {

@@ -151,6 +151,7 @@ struct InputView: View {
                         .fontWeight(.semibold)
                 }
                 .focusEffectDisabled()
+                .help("More")
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .frame(width: 20, alignment: .leading)
@@ -184,6 +185,7 @@ struct InputView: View {
                         .fontWeight(.semibold)
                 })
                 .buttonStyle(.plain)
+                .help("Toggle dictation")
                 
                 Button(action: {
                     // TODO: Start dictation
@@ -192,6 +194,7 @@ struct InputView: View {
                         .fontWeight(.semibold)
                 })
                 .buttonStyle(.plain)
+                .help("Toggle voice mode")
             }
                 
                 

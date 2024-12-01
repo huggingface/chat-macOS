@@ -76,6 +76,19 @@ struct ChatView: View {
                 ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
             }
             
+            
+            // Sources
+            if let webSearch = conversationModel.message?.webSearch, conversationModel.isInteracting == false {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(webSearch.sources) { source in
+                            LinkPreview(link: source)
+                                .frame(maxWidth: 160)
+                        }
+                    }
+                }.scrollIndicators(.hidden)
+            }
+            
             // ErrorView
             if conversationModel.state == .error || modelManager.loadState.isError {
                 if cardIndex == 0 &&  modelManager.loadState.isError {
