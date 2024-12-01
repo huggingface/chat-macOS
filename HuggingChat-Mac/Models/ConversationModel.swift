@@ -24,6 +24,7 @@ enum ConversationState: Equatable {
     // Tools
     var imageURL: String?
     
+    
     // Currently the best way to get @AppStorage value while returning observability
     var useWebService: Bool {
         get {
@@ -93,7 +94,7 @@ enum ConversationState: Equatable {
             return
         }
         let trimmedText = text.trimmingCharacters(in: .whitespaces)
-        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002"] : nil)
+        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002", "00000000000000000000000a"] : nil)
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
     
@@ -173,7 +174,6 @@ enum ConversationState: Equatable {
         } receiveValue: { [weak self] model in
             self?.model = model
             self?.externalModel = (model as! LLMModel).name
-            print((model as! LLMModel).name, (model as! LLMModel).tools)
             self?.isMultimodal = (model as! LLMModel).multimodal
             self?.isTools = (model as! LLMModel).tools
             

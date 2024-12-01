@@ -211,7 +211,6 @@ final class SendPromptHandler {
                 guard let sd = self.tmpMessage.data(using: .utf8) else {
                     continue
                 }
-                
                 if let json = try? self.decoder.decode(StreamMessage.self, from: sd),
                    json.type == "file",
                    let name = json.name,

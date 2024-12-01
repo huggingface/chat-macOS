@@ -54,7 +54,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
         
         KeyboardShortcuts.onKeyUp(for: .toggleLocalGeneration, action: {
-            self.isLocalGeneration.toggle()
+            if self.selectedLocalModel != "None" {
+                self.isLocalGeneration.toggle()
+            }
         })
         
 //        KeyboardShortcuts.onKeyDown(for: .showTranscriptionPanel, action: {

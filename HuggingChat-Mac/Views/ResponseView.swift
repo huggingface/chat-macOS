@@ -89,7 +89,7 @@ struct ResponseView: View {
                         ScrollView {
                             VStack(alignment: .leading) {
                                 if ThemingEngine.shared.currentTheme.markdownFont == nil {
-                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n" : "" + message.content))
+                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n": "") + message.content)
                                         .imageProvider(CustomImageProvider(), forURLScheme: "https")
                                         .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,7 +101,7 @@ struct ResponseView: View {
                                         .textSelection(.enabled)
                                         .id(8)
                                 } else {
-                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n" : "" + message.content))
+                                    MarkdownView(text: (conversationModel.imageURL != nil ? "![Generated Image](\(conversationModel.imageURL!))\n\n\n\n": "") + message.content)
                                         .imageProvider(CustomImageProvider(), forURLScheme: "https")
                                         .padding(.vertical)
                                         .frame(maxWidth: .infinity, alignment: .leading)
