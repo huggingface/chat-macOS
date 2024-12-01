@@ -72,7 +72,9 @@ struct ChatView: View {
             }
             
             // Response View
-            ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
+            if isResponseVisible {
+                ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
+            }
             
             // ErrorView
             if conversationModel.state == .error || modelManager.loadState.isError {
@@ -125,10 +127,6 @@ struct ChatView: View {
             }
         }
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
-//        .frame(maxHeight: 175)
-        
-        // Shadow set manually. Check FloatingPanel.swift for explanation.
-//        .shadow(color: Color(.sRGBLinear, white: 0, opacity: 0.33), radius: 5, x: 0, y: 2)
         .padding()
         .padding(.horizontal, 10) // Allows for shake animation
         

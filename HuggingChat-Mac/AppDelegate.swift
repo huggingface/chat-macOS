@@ -94,11 +94,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .environment(themeEngine)
             .environment(modelManager)
             .environment(conversationModel)
+            .frame(width: 500)
+            .fixedSize(horizontal: true, vertical: false)
         //            .edgesIgnoringSafeArea(.top)
         //            .frame(width: 500) // TODO: Should be relative to screen size
         newEntryPanel = FloatingPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 400), backing: .buffered, defer: false)
         newEntryPanel.contentView = NSHostingView(rootView: contentView)
-        newEntryPanel.contentView?.clipsToBounds = false
+//        newEntryPanel.contentView?.clipsToBounds = false
         
     }
     
