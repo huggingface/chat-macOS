@@ -12,7 +12,7 @@ struct LinkPreview: View {
     var link: WebSearchSource
     @State private var metadata: LPLinkMetadata?
     @State private var isLoading = true
-    @State private var averageColor: Color = .clear
+    @State private var averageColor: Color = .gray.opacity(0.3)
     
     var body: some View {
         HStack(spacing: 7) {
@@ -45,6 +45,7 @@ struct LinkPreview: View {
 //                    .getContrastText(backgroundColor: averageColor)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .lineLimit(1)
                     
             }
             
@@ -53,9 +54,9 @@ struct LinkPreview: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 5)
         .padding(.horizontal, 5)
-//        .background(averageColor)
-        .background(.regularMaterial)
-        .cornerRadius(6)
+        .background(averageColor)
+        .background(.thickMaterial)
+        .cornerRadius(10)
         .onTapGesture {
             NSWorkspace.shared.open(link.link)
         }
@@ -95,7 +96,12 @@ struct IconView: View {
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(6)
             } else {
-                ProgressView()
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.gray.opacity(0.2))
+                    ProgressView()
+                        .controlSize(.small)
+                }
             }
         }
         .onAppear {
@@ -128,20 +134,21 @@ struct IconView: View {
 
 // Preview
 #Preview {
-    VStack(spacing: 16) {
+    VStack() {
         LinkPreview(link: WebSearchSource(
             link: URL(string: "https://www.apple.com")!,
             title: "Apple",
             hostname: "apple.com"
         ))
-        .frame(maxWidth: 160)
+        
         
         LinkPreview(link: WebSearchSource(
-            link: URL(string: "https://www.githusb.com")!,
+            link: URL(string: "https://www.github.com")!,
             title: "GitHub",
             hostname: "github.com"
         ))
-        .frame(maxWidth: 160)
     }
-    .padding()
+    .padding(.horizontal)
+    .frame(maxWidth: 160)
+    
 }

@@ -77,7 +77,7 @@ struct ResponseView: View {
                     .frame(height: responseSize.height)
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
-                    .background(.regularMaterial)
+                    .background(.thickMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
@@ -113,13 +113,28 @@ struct ResponseView: View {
                                         .textSelection(.enabled)
                                         .id(8)
                                 }
+                                
+                                // Sources
+                                if let webSearch = conversationModel.message?.webSearch, conversationModel.isInteracting == false {
+                                    ScrollView(.horizontal) {
+                                        HStack {
+                                            ForEach(webSearch.sources) { source in
+                                                LinkPreview(link: source)
+                                                    .frame(width: 150)
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom)
+                                    .scrollIndicators(.hidden)
+                                    .scrollClipDisabled()
+                                }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .onGeometryChange(for: CGRect.self) { proxy in
                                 proxy.frame(in: .global)
                             } action: { newValue in
                                 responseSize.width = newValue.width
-                                responseSize.height = min(max(newValue.height, 175), 320)
+                                responseSize.height = min(max(newValue.height, 175), 500)
                             }
                         }
 //                        .safeAreaInset(edge: .bottom) {
@@ -139,10 +154,18 @@ struct ResponseView: View {
                     .frame(height: responseSize.height)
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
-                    .background(.regularMaterial)
+                    .background(.thickMaterial)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
+                    }
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 
             }
         }
     }
 }
+
+
+
+

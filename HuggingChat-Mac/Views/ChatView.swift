@@ -76,19 +76,6 @@ struct ChatView: View {
                 ResponseView(isResponseVisible: $isResponseVisible, responseSize: $responseSize, isLocal: isLocalGeneration)
             }
             
-            
-            // Sources
-            if let webSearch = conversationModel.message?.webSearch, conversationModel.isInteracting == false {
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(webSearch.sources) { source in
-                            LinkPreview(link: source)
-                                .frame(maxWidth: 160)
-                        }
-                    }
-                }.scrollIndicators(.hidden)
-            }
-            
             // ErrorView
             if conversationModel.state == .error || modelManager.loadState.isError {
                 if cardIndex == 0 &&  modelManager.loadState.isError {
@@ -109,8 +96,12 @@ struct ChatView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             
                             .frame(height: errorSize.height)
-                            .background(.regularMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                            .background(.thickMaterial)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         default:
                             EmptyView()
                         }
@@ -134,8 +125,12 @@ struct ChatView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
                     .frame(height: errorSize.height)
-                    .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+                    .background(.thickMaterial)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
         }
@@ -200,7 +195,7 @@ struct ChatView: View {
         )
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .background(.regularMaterial)
+        .background(.thickMaterial)
         .overlay(content: {
             if startLoadingAnimation {
                 ZStack {
@@ -232,7 +227,7 @@ struct ChatView: View {
         )
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .background(.regularMaterial)
+        .background(.thickMaterial)
         .overlay(content: {
             if startLoadingAnimation {
                 ZStack {
@@ -244,6 +239,9 @@ struct ChatView: View {
                 }
                 .transition(.opacity)
                 .allowsHitTesting(false)
+            } else {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
             }
         })
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
