@@ -105,6 +105,8 @@ struct AttachmentPill: View {
 
 #Preview {
     
+    @Previewable @State var isTranscribing: Bool = false
+    
     InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([LLMAttachment(
         filename: "Sample Document.png",
         fileExtension: "png",
@@ -112,7 +114,7 @@ struct AttachmentPill: View {
         fileIcon: NSImage(named: "huggy.bp")!,
         fileType: .image,
         content: .image(NSImage(named: "huggy.bp")!)
-    )]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false))
+    )]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: $isTranscribing)
         .environment(ModelManager())
         .environment(\.colorScheme, .dark)
         .environment(ConversationViewModel())

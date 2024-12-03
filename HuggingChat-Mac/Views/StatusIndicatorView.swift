@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-//import WhisperKit
+import WhisperKit
 
 struct StatusIndicatorView: View {
     
     var status: LoadState?
-//    var audioState: ModelState?
+    var audioState: ModelState?
 
     var body: some View {
         Circle()
@@ -31,18 +31,18 @@ struct StatusIndicatorView: View {
                 return .green
             }
         }
-//        else if let audioState = audioState {
-//            switch audioState {
-//            case .unloading, .unloaded:
-//                return .gray
-//            case .loading, .downloading, .prewarmed, .downloaded:
-//                return .gray
-//            case .loaded:
-//                return .green
-//            case .prewarming:
-//                return .orange
-//            }
-//        }
+        else if let audioState = audioState {
+            switch audioState {
+            case .unloading, .unloaded:
+                return .gray
+            case .loading, .downloading, .prewarmed, .downloaded:
+                return .gray
+            case .loaded:
+                return .green
+            case .prewarming:
+                return .orange
+            }
+        }
         return .gray
     }
     
@@ -57,9 +57,9 @@ struct StatusIndicatorView: View {
                 return "Model is ready for use."
             }
         }
-//        else if let audioState = audioState {
-//            return "Audio model state: \(audioState.description)"
-//        }
+        else if let audioState = audioState {
+            return "Audio model state: \(audioState.description)"
+        }
         return "Unknown state" // Default text if both status and audioState are nil
     }
 }

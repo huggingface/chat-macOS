@@ -2,7 +2,7 @@
 import UniformTypeIdentifiers
 import MarkdownView
 import SwiftUI
-import PDFKit
+import WhisperKit
 
 struct ChatView: View {
     
@@ -13,6 +13,7 @@ struct ChatView: View {
     
     @Environment(ModelManager.self) private var modelManager
     @Environment(ConversationViewModel.self) private var conversationModel
+    @Environment(AudioModelManager.self) private var audioModelManager
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("appearance") private var appearance: Appearance = .auto
     @AppStorage("inlineCodeHiglight") private var inlineCodeHiglight: AccentColorOption = .blue
@@ -53,6 +54,9 @@ struct ChatView: View {
     @State private var isResponseVisible: Bool = false
     @State var meshSpeed: CGFloat = 0.4
     @State private var responseSize: CGSize = CGSize(width: 0, height: 320)
+    
+    // STT
+    @State private var isTranscribing: Bool = false
     
     // Ripple animation vars
     //    @State var counter: Int = 0
@@ -191,7 +195,7 @@ struct ChatView: View {
             isMainTextFieldVisible: $isMainTextFieldVisible,
             allAttachments: $allAttachments,
             startLoadingAnimation: $startLoadingAnimation,
-            isResponseVisible: $isResponseVisible
+            isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -223,7 +227,7 @@ struct ChatView: View {
             isMainTextFieldVisible: $isMainTextFieldVisible,
             allAttachments: $allAttachments,
             startLoadingAnimation: $startLoadingAnimation,
-            isResponseVisible: $isResponseVisible
+            isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
         .padding(.horizontal)
         .padding(.vertical, 7)
@@ -303,5 +307,6 @@ struct ChatView: View {
         .frame(height: 300)
         .environment(ModelManager())
         .environment(ConversationViewModel())
+        .environment(AudioModelManager())
         .colorScheme(.dark)
 }

@@ -41,6 +41,9 @@ struct InputView: View {
         }
     }
     
+    // STT
+    @Binding var isTranscribing: Bool
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -179,7 +182,7 @@ struct InputView: View {
                 }
                 
                 Button(action: {
-                    // TODO: Start dictation
+                    isTranscribing = true
                 }, label: {
                     Image(systemName: "mic.fill")
                         .fontWeight(.semibold)
@@ -363,7 +366,7 @@ struct InputView: View {
 }
 
 #Preview {
-    InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false))
+    InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: .constant(false))
         .environment(ModelManager())
         .environment(\.colorScheme, .dark)
         .environment(ConversationViewModel())

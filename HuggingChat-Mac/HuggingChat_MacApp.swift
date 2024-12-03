@@ -73,7 +73,7 @@ struct HuggingChat_MacApp: App {
                 .environment(appDelegate.themeEngine)
                 .environment(appDelegate.conversationModel)
                 .environment(appDelegate.modelManager)
-//                .environment(appDelegate.audioModelManager)
+                .environment(appDelegate.audioModelManager)
                 .preferredColorScheme(colorScheme(for: appearance))
             
         }

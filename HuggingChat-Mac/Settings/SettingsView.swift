@@ -33,7 +33,7 @@ struct SettingsListViewIcon: View {
 struct SettingsView: View {
     
     @Environment(ModelManager.self) private var modelManager
-//    @Environment(AudioModelManager.self) private var audioModelManager
+    @Environment(AudioModelManager.self) private var audioModelManager
     @Environment(ConversationViewModel.self) private var conversationManager
     
     @AppStorage("hideDock") private var hideDock: Bool = false
@@ -61,10 +61,10 @@ struct SettingsView: View {
                         .environment(conversationManager)
                 }
                 
-                //            Tab("Dictation", systemImage: "waveform.badge.mic") {
-                //                DictationSettings()
-                //                    .environment(audioModelManager)
-                //            }
+                Tab("Dictation", systemImage: "waveform.badge.mic") {
+                    DictationSettings()
+                        .environment(audioModelManager)
+                }
                 
                 Tab("Appearance", systemImage: "paintbrush") {
                     AppearanceSettings()
@@ -79,6 +79,7 @@ struct SettingsView: View {
                 Tab("Components", systemImage: "square.3.layers.3d") {
                     ComponentsSettingsView()
                         .environment(modelManager)
+                        .environment(audioModelManager)
                         
                 }
             }

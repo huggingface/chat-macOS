@@ -14,7 +14,6 @@ import MLX
 import MLXRandom
 import Hub
 
-// TODO: Finalize local model loading after getting USER tokens
 enum LoadState {
     case idle
     case loaded(ModelContainer)
@@ -35,6 +34,11 @@ enum ModelDownloadState: Equatable {
     case error(String)
 }
 
+enum ModelType: Equatable {
+    case llm
+    case stt
+}
+
 // Local representation of HF models
 @Observable class LocalModel: Identifiable, Hashable {
     var id : String = UUID().uuidString
@@ -43,6 +47,7 @@ enum ModelDownloadState: Equatable {
     let hfURL: String?
     var localURL: URL?
     var icon: String = "laptopcomputer"
+    var modelType : ModelType = .llm
     
     var downloadState: ModelDownloadState = .notDownloaded
     
@@ -53,6 +58,7 @@ enum ModelDownloadState: Equatable {
         hfURL: String? = nil,
         localURL: URL? = nil,
         icon: String = "laptopcomputer",
+        modelType: ModelType = .llm,
         downloadState: ModelDownloadState = .notDownloaded
     ) {
         self.id = id
@@ -61,6 +67,7 @@ enum ModelDownloadState: Equatable {
         self.hfURL = hfURL
         self.localURL = localURL
         self.icon = icon
+        self.modelType = modelType
         self.downloadState = downloadState
     }
     

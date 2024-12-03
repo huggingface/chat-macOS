@@ -1,5 +1,5 @@
 {
-  "originHash" : "a7bbc034c15d72d69ecb780c91de55f90c90c481f38275eeb8b5aff0b6a4035a",
+  "originHash" : "c938d6018b3ad8b1d0daf8be962862303b9c50e2be47002881c810db4a1ebc4a",
   "pins" : [
     {
       "identity" : "gzipswift",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/KeyboardShortcuts",
       "state" : {
-        "revision" : "9369a045a72a5296150879781321aecd228171db",
-        "version" : "2.1.0"
+        "revision" : "c3c361f409b8dbe1eab186078b41c330a6a82c9a",
+        "version" : "2.2.2"
       }
     },
     {
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
-        "version" : "1.5.0"
+        "revision" : "0fbc8848e389af3bb55c182bc19ca9d5dc2f255b",
+        "version" : "1.4.0"
       }
     },
     {
@@ -142,7 +142,7 @@
       "location" : "https://github.com/swiftlang/swift-markdown.git",
       "state" : {
         "branch" : "main",
-        "revision" : "90a8e2ec3d814093435b76c5e87917bd81785fd4"
+        "revision" : "82f9258ce53b9da7980d1c1aaf80e5bdbbf98c9b"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/FelixHerrmann/swift-package-list.git",
       "state" : {
-        "revision" : "60b77bea44f5b2f7369aecfcd993f7672e09602a",
-        "version" : "4.3.0"
+        "revision" : "5e954ec39ce2374ff28a38224fd4e6bba7c57cdc",
+        "version" : "4.4.2"
       }
     },
     {
@@ -170,6 +170,15 @@
       "state" : {
         "revision" : "d42fdae473c49ea216671da8caae58e102d28709",
         "version" : "0.1.14"
+      }
+    },
+    {
+      "identity" : "whisperkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cyrilzakka/WhisperKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "398868f69568b82531a0a34388877c43f7f726c0"
       }
     }
   ],

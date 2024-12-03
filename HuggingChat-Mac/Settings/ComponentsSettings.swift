@@ -7,10 +7,11 @@
 
 import SwiftUI
 import MLXLLM
-//import WhisperKit
+import WhisperKit
 
 struct ComponentsSettingsView: View {
     
+    @Environment(AudioModelManager.self) private var audioModelManager
     @Environment(ModelManager.self) private var modelManager
     @Environment(\.colorScheme) private var colorScheme
     
@@ -36,8 +37,13 @@ struct ComponentsSettingsView: View {
                                         HStack {
                                             Text(model.size ?? "--")
                                             Button(action: {
-                                                modelManager.downloadModel(model)
                                                 
+                                                switch model.modelType {
+                                                case .llm:
+                                                    modelManager.downloadModel(model)
+                                                case .stt:
+                                                    audioModelManager.downloadModel(model)
+                                                }
                                             }) {
                                                 Text("GET")
                                                     .fontWeight(.medium)
@@ -79,7 +85,12 @@ struct ComponentsSettingsView: View {
                                         }
                                         .help(message)
                                         Button(action: {
-                                            modelManager.downloadModel(model)
+                                            switch model.modelType {
+                                            case .llm:
+                                                modelManager.downloadModel(model)
+                                            case .stt:
+                                                audioModelManager.downloadModel(model)
+                                            }
                                         }) {
                                             Text("GET")
                                                 .fontWeight(.medium)
@@ -100,25 +111,46 @@ struct ComponentsSettingsView: View {
                 }
                 .alignment(.trailing)
             } rows: {
-                Section("Suggested") {
+                Section("Language Models") {
                     ForEach(modelManager.availableModels) { localModel in
                         TableRow(localModel)
+                    }
+                }
+                
+                Section("Audio Models") {
+                    ForEach(audioModelManager.availableLocalModels) { audioModel in
+                        TableRow(audioModel)
                     }
                 }
             }
             .contextMenu(forSelectionType: LocalModel.ID.self) { items in
                 if !items.isEmpty {
-                    let selectedModels = items.compactMap { itemId in
+                    let selectedLLMModels = items.compactMap { itemId in
                         modelManager.availableModels.first(where: { $0.id == itemId })
                     }
                     
+                    let selectedAudioModels = items.compactMap { itemId in
+                        audioModelManager.availableLocalModels.first(where: { $0.id == itemId })
+                    }
+                    
                     // Only show delete if any selected model is downloaded
-                    if selectedModels.contains(where: { $0.downloadState == .downloaded }) {
+                    if selectedLLMModels.contains(where: { $0.downloadState == .downloaded }) {
                         Button(role: .destructive) {
-                            for model in selectedModels where model.downloadState == .downloaded {
+                            for model in selectedLLMModels where model.downloadState == .downloaded {
                                 modelManager.deleteLocalModel(model)
                             }
                             modelManager.fetchAllLocalModels()
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    
+                    if selectedAudioModels.contains(where: { $0.downloadState == .downloaded }) {
+                        Button(role: .destructive) {
+                            for model in selectedAudioModels where model.downloadState == .downloaded {
+                                audioModelManager.deleteModel(selectedModel: model.id)
+                            }
+                            audioModelManager.fetchModels()
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
@@ -133,9 +165,13 @@ struct ComponentsSettingsView: View {
                     for localModelID in selectedModels {
                         if let modelToDelete = modelManager.availableModels.first(where: {$0.id == localModelID}) {
                             modelManager.deleteLocalModel(modelToDelete)
+                            self.modelManager.fetchAllLocalModels()
+                        } else if let modelToDelete = audioModelManager.availableLocalModels.first(where: {$0.id == localModelID}) {
+                            audioModelManager.deleteModel(selectedModel: modelToDelete.id)
+                            self.audioModelManager.fetchModels()
                         }
                     }
-                    self.modelManager.fetchAllLocalModels()
+                   
                 }) {
                     Image(systemName: "minus").imageScale(.medium)
                 }
@@ -148,40 +184,14 @@ struct ComponentsSettingsView: View {
             .frame(height: 20)
             .padding(.horizontal, 10)
         }
-//        .onAppear {
-//            audioModelManager.fetchModels()
-//        }
+        .onAppear {
+            audioModelManager.fetchModels()
+        }
     }
-    
-    
-    // MARK: - Private functions
-    func formatAudioModelName(_ input: String) -> String {
-        let words = input.components(separatedBy: CharacterSet(charactersIn: "-_"))
-        var formatted = words.map { $0.capitalized }.joined(separator: " ")
-        formatted = formatted.replacingOccurrences(of: "openai", with: "OpenAI", options: .caseInsensitive)
-        return formatted
-    }
-    
-//    func fetchModelURL(model: String) -> URL? {
-//        if audioModelManager.localModels.contains(model) {
-//            return URL(fileURLWithPath: model)
-//        } else {
-//            return nil
-//        }
-//    }
-//    
-//    func fetchModelSize(model: String) -> String {
-//        print(audioModelManager.localModels.contains(model))
-//        if audioModelManager.localModels.contains(model) {
-//            return audioModelManager.getDirectorySize(selectedModel: WhisperKit.recommendedModels().default)
-//        } else {
-//            return "--"
-//        }
-//    }
 }
 
 #Preview {
     ComponentsSettingsView()
         .environment(ModelManager())
-//        .environment(AudioModelManager())
+        .environment(AudioModelManager())
 }

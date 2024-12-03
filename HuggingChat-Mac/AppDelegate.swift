@@ -12,6 +12,7 @@ import MLXLLM
 //import WhisperKit
 import KeyboardShortcuts
 import SwiftUI
+import WhisperKit
 
 extension KeyboardShortcuts.Name {
     static let showFloatingPanel = Self("showFloatingPanel", default: .init(.return, modifiers: [.command, .shift]))
@@ -31,7 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @Environment(\.openSettings) private var openSettings
     
     @State var modelManager = ModelManager()
-//    @State var audioModelManager = AudioModelManager()
+    @State var audioModelManager = AudioModelManager()
     @State var conversationModel = ConversationViewModel()
     @State var themeEngine = ThemingEngine()
     
@@ -79,12 +80,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
-//        // Setup transcription model if needed
-//        if selectedAudioModel != "None" {
-//            audioModelManager.loadModel(selectedAudioModel)
-//            audioModelManager.audioDevices = AudioProcessor.getAudioDevices()
-//            audioModelManager.selectedAudioInput = selectedAudioInput
-//        }
+        // Setup transcription model if needed
+        if selectedAudioModel != "None" {
+            audioModelManager.loadModel(selectedAudioModel)
+            audioModelManager.audioDevices = AudioProcessor.getAudioDevices()
+            if selectedAudioInput != "None" {
+                audioModelManager.selectedAudioInput = selectedAudioInput
+            } else {
+                if let defaultAudio = audioModelManager.audioDevices?.first?.name {
+                    selectedAudioInput = defaultAudio
+                    
+                }
+            }
+        }
         
         createMenuBarItem()
     }
@@ -94,6 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .environment(themeEngine)
             .environment(modelManager)
             .environment(conversationModel)
+            .environment(audioModelManager)
             .frame(width: 500)
             .fixedSize(horizontal: true, vertical: false)
         //            .edgesIgnoringSafeArea(.top)

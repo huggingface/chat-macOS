@@ -17,6 +17,7 @@
 		F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */; };
 		F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E062CABF22B009CBA98 /* Accelerate.framework */; };
 		F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E082CABF231009CBA98 /* Metal.framework */; };
+		F1B317F62CFF9C6A00120FAE /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1B317F52CFF9C6A00120FAE /* WhisperKit */; };
 		F1F76BFC2CF6717300E58778 /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76BFB2CF6717300E58778 /* Pow */; };
 		F1F76CD02CF6790A00E58778 /* LLM in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76CCF2CF6790A00E58778 /* LLM */; };
 /* End PBXBuildFile section */
@@ -83,6 +84,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1F76CD02CF6790A00E58778 /* LLM in Frameworks */,
+				F1B317F62CFF9C6A00120FAE /* WhisperKit in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
 				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
@@ -158,6 +160,7 @@
 				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
 				F1F76BFB2CF6717300E58778 /* Pow */,
 				F1F76CCF2CF6790A00E58778 /* LLM */,
+				F1B317F52CFF9C6A00120FAE /* WhisperKit */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -198,6 +201,7 @@
 				F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 				F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */,
 				F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
+				F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -502,6 +506,14 @@
 				minimumVersion = 4.3.0;
 			};
 		};
+		F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cyrilzakka/WhisperKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift";
@@ -568,6 +580,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
 			productName = SwiftPackageListUI;
+		};
+		F1B317F52CFF9C6A00120FAE /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
 		};
 		F1F76BFB2CF6717300E58778 /* Pow */ = {
 			isa = XCSwiftPackageProductDependency;
