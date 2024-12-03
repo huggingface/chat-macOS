@@ -182,7 +182,7 @@ struct InputView: View {
                 }
                 
                 Button(action: {
-                    isTranscribing = true
+                    isTranscribing.toggle()
                 }, label: {
                     Image(systemName: "mic.fill")
                         .fontWeight(.semibold)

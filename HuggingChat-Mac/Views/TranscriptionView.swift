@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TranscriptionView: View {
     
-//    @Environment(AudioModelManager.self) private var audioModelManager
+    @Environment(AudioModelManager.self) private var audioModelManager
     @AppStorage("selectedAudioModel") private var selectedModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
     @AppStorage("streamTranscript") private var streamTranscript: Bool = false
@@ -18,21 +18,21 @@ struct TranscriptionView: View {
     
     var body: some View {
         Color.red
-//        ZStack {
-//            let baseEnergy = audioModelManager.bufferEnergy.last ?? 0
-//            let stridedValues = (0..<barCount).map { _ in
-//                let randomVariation = Float.random(in: -0.2...0.2)
-//                return baseEnergy > Float(audioModelManager.silenceThreshold) ? max(0, min(1, baseEnergy + randomVariation)) : max(0, min(1, baseEnergy))
-//            }
-//            HStack {
-//                AudioMeterIndicator(bufferEnergy: Array(stridedValues), barCount: barCount)
-//                Text(formatTime(audioModelManager.bufferSeconds))
-//                    .font(.caption)
-//                    .foregroundColor(.white)
-//                    .contentTransition(.numericText())
-//                    
-//            }
-//        }
+        ZStack {
+            let baseEnergy = audioModelManager.bufferEnergy.last ?? 0
+            let stridedValues = (0..<barCount).map { _ in
+                let randomVariation = Float.random(in: -0.2...0.2)
+                return baseEnergy > Float(audioModelManager.silenceThreshold) ? max(0, min(1, baseEnergy + randomVariation)) : max(0, min(1, baseEnergy))
+            }
+            HStack {
+                AudioMeterIndicator(bufferEnergy: Array(stridedValues), barCount: barCount)
+                Text(formatTime(audioModelManager.bufferSeconds))
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .contentTransition(.numericText())
+                    
+            }
+        }
         .frame(width: 95, height: 30)
         .background {
             Capsule()
@@ -59,5 +59,5 @@ struct TranscriptionView: View {
 }
 #Preview {
     TranscriptionView()
-//        .environment(AudioModelManager())
+        .environment(AudioModelManager())
 }

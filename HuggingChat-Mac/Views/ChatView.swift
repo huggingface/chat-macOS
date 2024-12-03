@@ -27,6 +27,11 @@ struct ChatView: View {
     @AppStorage("isAppleClassicUnlocked") var isAppleClassicUnlocked: Bool = false
     @AppStorage("isChromeDinoUnlocked") var isChromeDinoUnlocked: Bool = false
     
+    // Audio
+    @AppStorage("selectedAudioModel") private var selectedAudioModel: String = "None"
+    @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
+    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    
     // Animation
     @State var cardIndex: Int = 0
     
@@ -171,6 +176,21 @@ struct ChatView: View {
                 focusedField = .serverInput
             }
         }
+        
+        
+        // MARK: STT
+        .onChange(of: isTranscribing) {
+            if isTranscribing {
+                if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
+                    audioModelManager.resetState()
+                    audioModelManager.startRecording(true)
+                }
+            } else {
+                audioModelManager.stopRecording(true)
+                prompt += audioModelManager.getFullTranscript()
+            }
+        }
+        
         .onAppear {
             if isLocalGeneration {
                 cardIndex = 0
