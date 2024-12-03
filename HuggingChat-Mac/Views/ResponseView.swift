@@ -114,8 +114,17 @@ struct ResponseView: View {
                                         .id(8)
                                 }
                                 
+                                
+                                
                                 // Sources
                                 if let webSearch = conversationModel.message?.webSearch, conversationModel.isInteracting == false {
+                                    Divider()
+                                    Text("Sources")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                        .padding(.vertical, 5)
+                                        
+                                    
                                     ScrollView(.horizontal) {
                                         HStack {
                                             ForEach(webSearch.sources) { source in
