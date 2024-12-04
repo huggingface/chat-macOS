@@ -525,8 +525,6 @@ enum TranscriptionMode {
             finalizeText()
             isTranscriptionComplete = true
         }
-
-        finalizeText()
     }
 
     func finalizeText() {
@@ -936,6 +934,8 @@ enum TranscriptionMode {
     
     // Transcription methods
     public func getFullTranscript() -> String {
+        print("Getting full transcript")
+
         let segments = confirmedSegments + unconfirmedSegments
         let transcript = formatSegments(segments, withTimestamps: false)
         return transcript.joined(separator: "\n")

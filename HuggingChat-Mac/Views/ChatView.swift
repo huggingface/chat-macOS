@@ -190,9 +190,8 @@ struct ChatView: View {
             }
         }
         .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
-            if new == true {  // Only trigger when transcription completes
-                prompt = audioModelManager.getFullTranscript()
-                
+            if audioModelManager.isTranscriptionComplete {
+                prompt += audioModelManager.getFullTranscript()
             }
         }
         

@@ -52,6 +52,12 @@ struct DictationSettings: View {
                                     Text(device.name)
                                         .tag(device.name)
                                 }
+                                .onChange(of: selectedAudioInput) { _, _ in
+                                    if selectedAudioInput != "None" {
+                                        audioModelManager.selectedAudioInput = selectedAudioInput
+                                    }
+                                    
+                                }
                             }
                         }
                     }
