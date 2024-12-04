@@ -498,6 +498,7 @@ enum TranscriptionMode {
 
     func stopRecording(_ loop: Bool) {
         isRecording = false
+        bufferSeconds = 0
         stopRealtimeTranscription()
         isTranscriptionComplete = false
             

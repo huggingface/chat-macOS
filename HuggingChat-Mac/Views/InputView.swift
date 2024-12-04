@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Pow
 
 struct InputView: View {
     
@@ -14,6 +15,7 @@ struct InputView: View {
     
     @Environment(ModelManager.self) private var modelManager
     @Environment(ConversationViewModel.self) private var conversationModel
+    @Environment(AudioModelManager.self) private var audioModelManager
     @Environment(\.colorScheme) private var colorScheme
     
     @Binding var prompt: String
@@ -30,6 +32,7 @@ struct InputView: View {
     @AppStorage("localModel") private var selectedLocalModel: String = "None"
     @AppStorage("externalModel") private var selectedExternalModel: String = "meta-llama/Meta-Llama-3.1-70B-Instruct"
     @AppStorage("isAppleClassicUnlocked") private var isAppleClassicUnlocked: Bool = false
+    @AppStorage("inlineCodeHiglight") private var inlineCodeHiglight: AccentColorOption = .blue
     @AppStorage("selectedTheme") private var selectedTheme: String = "Default"
     
     // File importer
@@ -103,7 +106,7 @@ struct InputView: View {
                     }
                 }
             }
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 Group {
                 Menu {
                    // For now disable multimodality for local models
@@ -182,7 +185,9 @@ struct InputView: View {
                 }
                 
                 Button(action: {
-                    isTranscribing.toggle()
+                    withAnimation(.spring(dampingFraction: 1)) {
+                        isTranscribing.toggle()
+                    }
                 }, label: {
                     Image(systemName: "mic.fill")
                         .fontWeight(.semibold)
@@ -202,14 +207,27 @@ struct InputView: View {
                 
                 
                 Spacer()
-                let externalModelName = selectedExternalModel.split(separator: "/", maxSplits: 1)[1]
-                Label(isLocal ? selectedLocalModel:String(externalModelName), systemImage: isLocal ? "laptopcomputer":"globe")
-                    .foregroundStyle(.tertiary)
-                    .font(.footnote)
-                    .fontWeight(.semibold)
-                    .layoutPriority(100)
+                
+                if isTranscribing {
+                    AudioBarView()
+                        
+                } else {
+                    let externalModelName = selectedExternalModel.split(separator: "/", maxSplits: 1)[1]
+                    Label(isLocal ? selectedLocalModel:String(externalModelName), systemImage: isLocal ? "laptopcomputer":"globe")
+                        .foregroundStyle(.secondary)
+                        .font(.footnote)
+                        .fontWeight(.semibold)
+                        .layoutPriority(100)
+                        .transition(.movingParts.wipe(
+                                    angle: .degrees(180),
+                                    blurRadius: 50
+                                  ))
+                }
+                
+                
+               
             }
-    
+            .frame(height: 30)
             
         }
     }
@@ -357,18 +375,21 @@ struct InputView: View {
     }
 }
 
-#Preview("dark") {
-    ChatView()
-        .frame(height: 300)
-        .environment(ModelManager())
-        .environment(ConversationViewModel())
-        .colorScheme(.dark)
-}
+//#Preview("dark") {
+//    ChatView()
+//        .frame(height: 300)
+//        .environment(ModelManager())
+//        .environment(ConversationViewModel())
+//        .colorScheme(.dark)
+//    .environment(AudioModelManager())
+//}
 
 #Preview {
     InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: .constant(false))
         .environment(ModelManager())
         .environment(\.colorScheme, .dark)
         .environment(ConversationViewModel())
+        .environment(AudioModelManager())
+        .padding()
 }
 

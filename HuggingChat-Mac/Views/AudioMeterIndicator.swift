@@ -27,7 +27,7 @@ struct AudioMeterIndicator: View {
     
     private func bar(energy: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(.green.gradient)
+            .fill(.secondary)
             .frame(width: barWidth, height: (0.1 + energy) * maxHeight, alignment: .center)
             .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0), value: energy)
     }
@@ -39,7 +39,8 @@ struct AudioMeterIndicator: View {
 }
 
 #Preview {
-    TranscriptionView()
-//        .environment(AudioModelManager())
+    AudioBarView()
+        .environment(AudioModelManager())
+        .frame(width: 95, height: 30)
 }
 
