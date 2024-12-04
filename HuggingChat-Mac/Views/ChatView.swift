@@ -186,8 +186,12 @@ struct ChatView: View {
                     audioModelManager.startRecording(true)
                 }
             } else {
-                audioModelManager.stopRecording(true)
-                prompt += audioModelManager.getFullTranscript()
+                audioModelManager.stopRecording(false)
+            }
+        }
+        .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
+            if new == true {  // Only trigger when transcription completes
+                prompt = audioModelManager.getFullTranscript()
             }
         }
         

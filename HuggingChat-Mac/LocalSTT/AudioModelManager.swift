@@ -35,6 +35,7 @@ enum TranscriptionMode {
     var repoName: String = "argmaxinc/whisperkit-coreml"
     var selectedAudioInput: String = "None"
     var silenceThreshold: Double = 0.3
+    var isTranscriptionComplete: Bool = false
     
     private var selectedTask: String = "transcribe"
     private var selectedLanguage: String = "english"
@@ -42,12 +43,12 @@ enum TranscriptionMode {
     private var enablePromptPrefill: Bool = true
     private var enableCachePrefill: Bool = true
     private var enableSpecialCharacters: Bool = false
-    private var enableEagerDecoding: Bool = false
+    private var enableEagerDecoding: Bool = true
     private var temperatureStart: Double = 0
     private var fallbackCount: Double = 5
     private var compressionCheckWindow: Double = 60
     private var sampleLength: Double = 224
-    private var useVAD: Bool = true
+    private var useVAD: Bool = false
     private var tokenConfirmationsNeeded: Double = 2
     private var chunkingStrategy: ChunkingStrategy = .none
     private var encoderComputeUnits: MLComputeUnits = .cpuAndNeuralEngine
@@ -498,11 +499,12 @@ enum TranscriptionMode {
     func stopRecording(_ loop: Bool) {
         isRecording = false
         stopRealtimeTranscription()
+        isTranscriptionComplete = false
+            
         if let audioProcessor = whisperKit?.audioProcessor {
             audioProcessor.stopRecording()
         }
 
-        // If not looping, transcribe the full buffer
         if !loop {
             self.transcribeTask = Task {
                 isTranscribing = true
@@ -513,7 +515,14 @@ enum TranscriptionMode {
                 }
                 finalizeText()
                 isTranscribing = false
+            
+                await MainActor.run {
+                    isTranscriptionComplete = true
+                }
             }
+        } else {
+            finalizeText()
+            isTranscriptionComplete = true
         }
 
         finalizeText()
@@ -686,7 +695,7 @@ enum TranscriptionMode {
         let nextBufferSeconds = Float(nextBufferSize) / Float(WhisperKit.sampleRate)
 
         // Only run the transcribe if the next buffer has at least 1 second of audio
-        guard nextBufferSeconds > 1 else {
+        guard nextBufferSeconds > 0.1 else {
             await MainActor.run {
                 if currentText == "" {
                     currentText = "Waiting for speech..."
