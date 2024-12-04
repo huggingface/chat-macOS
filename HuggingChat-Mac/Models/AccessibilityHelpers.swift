@@ -8,186 +8,177 @@
 import Cocoa
 import ApplicationServices
 
+import Cocoa
+import ApplicationServices
+
 class AccessibilityTextPaster {
+    /// Singleton instance for shared access
+    static let shared = AccessibilityTextPaster()
     
-    private static var lastPastedLength: Int = 0
+    private init() {
+        // Check for accessibility permissions
+        checkAccessibilityPermissions()
+    }
     
-    private init() {}
+    // MARK: - Public Interface
     
-    static func pasteTextToFocusedElement(_ text: String) {
-        // Get the focused text field
-        guard let focusedTextField = getFocusedTextField() else {
-            print("No focused text field found")
-            return
+    /// Paste text to the currently focused text field
+    /// - Parameter text: The text to paste
+    /// - Returns: Bool indicating success
+    @discardableResult
+    func pasteText(_ text: String) -> Bool {
+        // First try using the pasteboard - this is the most reliable method
+        if pasteThroughPasteboard(text) {
+            return true
         }
-
-        // Delete previous content
-        deletePreviousContent(from: focusedTextField)
-
-        // Copy the new text to pasteboard
+        
+        // Fall back to accessibility API if pasteboard method fails
+        return pasteThroughAccessibility(text)
+    }
+    
+    // MARK: - Private Methods
+    
+    private func checkAccessibilityPermissions() {
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+        let trusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
+        
+        if !trusted {
+            NSLog("⚠️ Accessibility permissions not granted. Some features may not work.")
+        }
+    }
+    
+    private func pasteThroughPasteboard(_ text: String) -> Bool {
+        // Store current pasteboard contents
         let pasteboard = NSPasteboard.general
+        let oldContents = pasteboard.string(forType: .string)
+        
+        // Set new content
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
-
-        // Perform paste action
-        performPasteAction(for: focusedTextField)
-
-        // Update the last pasted length
-        lastPastedLength = text.count
-    }
-
-    // MARK: - Focused element
-    private static func getFocusedTextField() -> AXUIElement? {
-        let systemWideElement = AXUIElementCreateSystemWide()
-        var focusedElement: AnyObject?
-        let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
-
-        guard result == .success else {
-            print("Failed to get focused element")
-            return nil
-        }
-
-        // Check if the focused element is a text field
-        if isTextField(focusedElement as! AXUIElement) {
-            return (focusedElement as! AXUIElement)
-        }
-
-        // If not, search for a text field within the focused element
-        return findTextFieldWithin(focusedElement as! AXUIElement)
-    }
-
-    private static func isTextField(_ element: AXUIElement) -> Bool {
-        var role: CFTypeRef?
-        let result = AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
         
-        guard result == .success,
-              let roleString = role as? String
-        else {
+        // Simulate Cmd+V
+        if simulateCommandV() {
+            // Wait a brief moment to ensure paste completes
+            Thread.sleep(forTimeInterval: 0.1)
+            
+            // Restore old contents if needed
+            if let oldContents = oldContents {
+                pasteboard.clearContents()
+                pasteboard.setString(oldContents, forType: .string)
+            }
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    private func pasteThroughAccessibility(_ text: String) -> Bool {
+        guard let focusedElement = getFocusedTextElement() else {
             return false
         }
         
-        return roleString == "AXTextField" || roleString == "AXTextArea"
-    }
-
-    private static func findTextFieldWithin(_ element: AXUIElement) -> AXUIElement? {
-        var children: CFTypeRef?
-        let result = AXUIElementCopyAttributeValue(element, kAXChildrenAttribute as CFString, &children)
+        // Try setting value directly first
+        if setValueDirectly(text, for: focusedElement) {
+            return true
+        }
         
-        guard result == .success,
-              let childrenArray = children as? [AXUIElement]
-        else {
+        // Fall back to simulating insertion
+        return insertTextThroughAccessibility(text, in: focusedElement)
+    }
+    
+    private func getFocusedTextElement() -> AXUIElement? {
+        let systemWide = AXUIElementCreateSystemWide()
+        var focusedElement: AnyObject?
+        
+        guard AXUIElementCopyAttributeValue(systemWide,
+                                          kAXFocusedUIElementAttribute as CFString,
+                                          &focusedElement) == .success else {
+            return nil
+        }
+        
+        let element = focusedElement as! AXUIElement
+        
+        // Check if element is directly a text element
+        if isTextElement(element) {
+            return element
+        }
+        
+        // Search children for text element
+        return findTextElement(in: element)
+    }
+    
+    private func isTextElement(_ element: AXUIElement) -> Bool {
+        var role: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXRoleAttribute as CFString,
+                                          &role) == .success,
+              let roleString = role as? String else {
+            return false
+        }
+        
+        return ["AXTextField", "AXTextArea", "AXComboBox"].contains(roleString)
+    }
+    
+    private func findTextElement(in element: AXUIElement) -> AXUIElement? {
+        var children: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXChildrenAttribute as CFString,
+                                          &children) == .success,
+              let childrenArray = children as? [AXUIElement] else {
             return nil
         }
         
         for child in childrenArray {
-            if isTextField(child) {
+            if isTextElement(child) {
                 return child
             }
-            if let textField = findTextFieldWithin(child) {
-                return textField
+            if let found = findTextElement(in: child) {
+                return found
             }
         }
         
         return nil
     }
     
-    // MARK: - Text selection
-    // TODO: Use AXTextMarkerForIndex instead?
-    func getTextMarker(forIndex index: CFIndex) throws -> AXTextMarker? {
-            var textMarker: AnyObject?
-        guard AXUIElementCopyParameterizedAttributeValue(self as! AXUIElement,"AXTextMarkerForIndex" as CFString, index as AnyObject, &textMarker) == .success else { return nil }
-        return (textMarker as! AXTextMarker)
-    }
-
-    func selectStaticText(withRange range: CFRange) throws {
-            guard let textMarkerStart = try? getTextMarker(forIndex: range.location) else { return }
-            guard let textMarkerEnd = try? getTextMarker(forIndex: range.location + range.length) else { return }
-            let textMarkerRange = AXTextMarkerRangeCreate(kCFAllocatorDefault, textMarkerStart, textMarkerEnd)
-
-        AXUIElementSetAttributeValue(self as! AXUIElement, "AXSelectedTextMarkerRange" as CFString, textMarkerRange)
+    private func setValueDirectly(_ text: String, for element: AXUIElement) -> Bool {
+        let result = AXUIElementSetAttributeValue(element,
+                                                kAXValueAttribute as CFString,
+                                                text as CFTypeRef)
+        return result == .success
     }
     
-    private static func selectPreviousContent(in element: AXUIElement) {
-        var value: AnyObject?
-        let result = AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value)
-        
-        guard result == .success, let stringValue = value as? String else {
-            print("Failed to get text value")
-            return
+    private func insertTextThroughAccessibility(_ text: String, in element: AXUIElement) -> Bool {
+        // First try to use AXInsertText if available
+        var actions: CFArray?
+        guard AXUIElementCopyActionNames(element, &actions) == .success,
+              let actionNames = actions as? [String] else {
+            return false
         }
         
-        let endLocation = stringValue.count
-        let startLocation = max(0, endLocation - lastPastedLength)
-        var range = CFRangeMake(startLocation, lastPastedLength)
-        
-        let rangeValue = AXValueCreate(.cfRange, &range)
-        if let rangeValue = rangeValue {
-            AXUIElementSetAttributeValue(element, kAXSelectedTextRangeAttribute as CFString, rangeValue)
-        } else {
-            print("Failed to create AXValue for range")
+        if actionNames.contains("AXInsertText") {
+            return AXUIElementPerformAction(element, "AXInsertText" as CFString) == .success
         }
+        
+        return false
     }
     
-    // MARK: - Text Deletion
-    private static func deletePreviousContent(from element: AXUIElement) {
-        if lastPastedLength > 0 {
-            // Select the previous content
-            selectPreviousContent(in: element)
-            
-            // Delete the selected content
-            deleteSelectedContent(in: element)
+    private func simulateCommandV() -> Bool {
+        guard let source = CGEventSource(stateID: .hidSystemState) else {
+            return false
         }
-    }
-    
-    private static func deleteSelectedContent(in element: AXUIElement) {
-        var actionNames: CFArray?
-        AXUIElementCopyActionNames(element, &actionNames)
         
-        if let actions = actionNames as? [String],
-           actions.contains("AXDelete") {
-            AXUIElementPerformAction(element, "AXDelete" as CFString)
-        } else {
-            print("Delete action not available for this element")
-            simulateDeleteKey()
+        guard let vDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true),
+              let vUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false) else {
+            return false
         }
-    }
-    
-    // MARK: - Text Insertion
-    private static func performPasteAction(for element: AXUIElement) {
-        var actionNames: CFArray?
-        AXUIElementCopyActionNames(element, &actionNames)
         
-        if let actions = actionNames as? [String],
-           actions.contains("AXPaste") {
-            AXUIElementPerformAction(element, "AXPaste" as CFString)
-        } else {
-            print("Paste action not available for this element")
-            simulateCommandV()
-        }
-    }
-    
-    
-    // MARK: - Helper functions
-    private static func simulateDeleteKey() {
-        let source = CGEventSource(stateID: .hidSystemState)
+        vDown.flags = .maskCommand
+        vUp.flags = .maskCommand
         
-        let deleteKeyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x33, keyDown: true)
-        let deleteKeyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x33, keyDown: false)
+        vDown.post(tap: .cghidEventTap)
+        vUp.post(tap: .cghidEventTap)
         
-        deleteKeyDown?.post(tap: .cghidEventTap)
-        deleteKeyUp?.post(tap: .cghidEventTap)
-    }
-    
-    private static func simulateCommandV() {
-        let source = CGEventSource(stateID: .hidSystemState)
-        
-        let vKeyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true)
-        let vKeyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false)
-        
-        vKeyDown?.flags = .maskCommand
-        vKeyUp?.flags = .maskCommand
-        
-        vKeyDown?.post(tap: .cghidEventTap)
-        vKeyUp?.post(tap: .cghidEventTap)
+        return true
     }
 }

@@ -17,7 +17,6 @@ struct TranscriptionView: View {
     var barCount: Int = 6
     
     var body: some View {
-        Color.red
         ZStack {
             let baseEnergy = audioModelManager.bufferEnergy.last ?? 0
             let stridedValues = (0..<barCount).map { _ in
@@ -28,7 +27,7 @@ struct TranscriptionView: View {
                 AudioMeterIndicator(bufferEnergy: Array(stridedValues), barCount: barCount)
                 Text(formatTime(audioModelManager.bufferSeconds))
                     .font(.caption)
-                    .foregroundColor(.white)
+                    .foregroundColor(.secondary)
                     .contentTransition(.numericText())
                     
             }
@@ -36,7 +35,16 @@ struct TranscriptionView: View {
         .frame(width: 95, height: 30)
         .background {
             Capsule()
-                .fill(.black)
+                .fill(.thickMaterial)
+        }
+        .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
+            if audioModelManager.isTranscriptionComplete {
+                if AccessibilityTextPaster.shared.pasteText(audioModelManager.getFullTranscript()) {
+                    print("Text pasted successfully")
+                } else {
+                    print("Failed to paste text")
+                }
+            }
         }
         
 //        .onChange(of: audioModelManager.getFullTranscript()) {

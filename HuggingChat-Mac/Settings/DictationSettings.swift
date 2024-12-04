@@ -75,24 +75,24 @@ struct DictationSettings: View {
                     .foregroundColor(.secondary)
             })
             
-//            Section(content: {
-//                KeyboardShortcuts.Recorder("Keyboard Shortcut:", name: .showTranscriptionPanel)
+            Section(content: {
+                KeyboardShortcuts.Recorder("Global Transcription Shortcut:", name: .showTranscriptionPanel)
 //                Toggle("Stream Transcription (Beta):", isOn: $streamTranscript)
-//            }, header: {
-//                Text("Miscellaneous")
-//            }, footer: {
-//                Text(streamTranscript ? "Transcribed text will appear in the focused text field as you speak. Limited compatibility with non-native or web-based applications.":"Transcribed text will be copied to the your clipboard at the end of your recording.")
-//                    .font(.footnote)
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .multilineTextAlignment(.leading)
-//                    .lineLimit(nil)
-//                    .foregroundColor(.secondary)
-//            })
+            }, header: {
+                Text("Miscellaneous")
+            }, footer: {
+                Text(streamTranscript ? "Transcribed text will appear in the focused text field as you speak. Limited compatibility with non-native or web-based applications.":"Transcribed text will be copied to the your clipboard at the end of your recording.")
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+                    .foregroundColor(.secondary)
+            })
         }
         .formStyle(.grouped)
         .onAppear {
             audioModelManager.fetchModels()
-            audioModelManager.audioDevices = AudioProcessor.getAudioDevices()
+            audioModelManager.setupMicrophone()
          }
     }
     

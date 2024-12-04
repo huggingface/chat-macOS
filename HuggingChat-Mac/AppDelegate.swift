@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 import MLXLLM
 
-//import WhisperKit
+import Combine
 import KeyboardShortcuts
 import SwiftUI
 import WhisperKit
@@ -41,14 +41,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var transcriptionPanel: ToastPanel!
     var statusBar: NSStatusBar!
     var statusBarItem: NSStatusItem!
+    
     private var recordingTimer: Timer?
     private var isKeyDown = false
+    private var cancellable: AnyCancellable?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         createFloatingPanel()
         newEntryPanel.center()
         
-//        createTranscriptionPanel()
+        createTranscriptionPanel()
         
         // Set keyboard shortcut
         KeyboardShortcuts.onKeyUp(for: .showFloatingPanel, action: {
@@ -61,13 +63,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         })
         
-//        KeyboardShortcuts.onKeyDown(for: .showTranscriptionPanel, action: {
-//            self.handleKeyDown()
-//        })
+        KeyboardShortcuts.onKeyDown(for: .showTranscriptionPanel, action: {
+            self.handleKeyDown()
+        })
         
-//        KeyboardShortcuts.onKeyUp(for: .showTranscriptionPanel, action: {
-//            self.handleKeyUp()
-//        })
+        KeyboardShortcuts.onKeyUp(for: .showTranscriptionPanel, action: {
+            self.handleKeyUp()
+        })
         
         // Check hide dock status
         NSApp.setActivationPolicy(hideDock ? .accessory : .regular)
@@ -110,11 +112,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = TranscriptionView()
             .environment(modelManager)
             .environment(conversationModel)
-//            .environment(audioModelManager)
+            .environment(audioModelManager)
         
         let screenFrame = NSScreen.main?.visibleFrame ?? NSRect.zero
         let panelWidth: CGFloat = 95
-        let panelHeight: CGFloat = 30
+        let panelHeight: CGFloat = 130
         let topPadding: CGFloat = 10
         
         let xPosition = (screenFrame.width - panelWidth) / 2 + screenFrame.minX
@@ -168,23 +170,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func startRecording() {
-//        if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
-//            self.transcriptionPanel.orderFront(nil)
-//            if self.transcriptionPanel.isVisible {
-//                audioModelManager.resetState()
-//                audioModelManager.startRecording(true)
-//            }
-//        }
+        if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
+            self.transcriptionPanel.orderFront(nil)
+            if self.transcriptionPanel.isVisible {
+                audioModelManager.resetState()
+                audioModelManager.startRecording(true)
+            }
+        }
     }
     
     @objc private func stopRecording() {
-//        audioModelManager.stopRecording(true)
-//        
-//        if !streamTranscript {
-//            NSPasteboard.general.clearContents()
-//            NSPasteboard.general.setString(audioModelManager.getFullTranscript(), forType: .string)
-//        }
-//        self.transcriptionPanel.orderOut(nil)
+        audioModelManager.stopRecording(false)
+        self.transcriptionPanel.orderOut(nil)
     }
     
     private func showContextMenu() {

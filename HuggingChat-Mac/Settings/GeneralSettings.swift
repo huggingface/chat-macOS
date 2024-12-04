@@ -184,8 +184,8 @@ struct GeneralSettingsView: View {
             .disabled(HuggingChatSession.shared.currentUser == nil)
             
             Section(content: {
-                KeyboardShortcuts.Recorder("HFChat Keyboard Shortcut:", name: .showFloatingPanel)
-                KeyboardShortcuts.Recorder("Generation Mode Shortcut:", name: .toggleLocalGeneration)
+                KeyboardShortcuts.Recorder("Global Keyboard Shortcut:", name: .showFloatingPanel)
+                KeyboardShortcuts.Recorder("Toggle between local and server generation:", name: .toggleLocalGeneration)
                 Toggle(isOn: $hideDock) {
                     Text("Hide dock icon")
                 }
