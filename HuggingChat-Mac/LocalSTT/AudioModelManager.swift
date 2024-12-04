@@ -33,9 +33,20 @@ enum TranscriptionMode {
     var availableLanguages: [String] = []
     var disabledModels: [String] = WhisperKit.recommendedModels().disabled
     var repoName: String = "argmaxinc/whisperkit-coreml"
-    var selectedAudioInput: String = "None"
     var silenceThreshold: Double = 0.3
     var isTranscriptionComplete: Bool = false
+    
+    var selectedAudioInput: String {
+        get {
+            access(keyPath: \.selectedAudioInput)
+            return UserDefaults.standard.string(forKey: "selectedAudioInput") ?? "None"
+        }
+        set {
+            withMutation(keyPath: \.selectedAudioInput) {
+                UserDefaults.standard.setValue(newValue, forKey: "selectedAudioInput")
+            }
+        }
+    }
     
     private var selectedTask: String = "transcribe"
     private var selectedLanguage: String = "english"
@@ -466,11 +477,12 @@ enum TranscriptionMode {
                     return
                 }
                 
+                setupMicrophone()
+                
                 var deviceId: DeviceID?
                 if self.selectedAudioInput != "None",
                    let devices = self.audioDevices,
-                   let device = devices.first(where: { $0.name == selectedAudioInput })
-                {
+                   let device = devices.first(where: { $0.name == selectedAudioInput }) {
                     deviceId = device.id
                 }
 
@@ -543,9 +555,30 @@ enum TranscriptionMode {
             }
         }
     }
+    
+    func setupMicrophone() {
+        audioDevices = AudioProcessor.getAudioDevices()
+        if let audioDevices {
+            if audioDevices.isEmpty {
+//                throw WhisperError.microphoneUnavailable()
+                return
+            } else {
+                let device = audioDevices.first(where: { $0.name == selectedAudioInput })
+                if selectedAudioInput == "None" ||  device == nil {
+                    if let defaultDevice = AVCaptureDevice.default(for: .audio) {
+                        selectedAudioInput = defaultDevice.localizedName
+                    } else {
+                        selectedAudioInput = "None"
+                    }
+                } else {
+                    selectedAudioInput = device!.name
+                }
+            }
+            
+        }
+    }
 
     // MARK: - Transcribe Logic
-
     func transcribeCurrentFile(path: String) async throws {
         // Load and convert buffer in a limited scope
         let audioFileSamples = try await Task {
@@ -934,7 +967,6 @@ enum TranscriptionMode {
     
     // Transcription methods
     public func getFullTranscript() -> String {
-        print("Getting full transcript")
         finalizeText()
 
         let segments = confirmedSegments + unconfirmedSegments

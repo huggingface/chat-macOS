@@ -13,6 +13,7 @@ import MLXLLM
 import KeyboardShortcuts
 import SwiftUI
 import WhisperKit
+import AVFoundation
 
 extension KeyboardShortcuts.Name {
     static let showFloatingPanel = Self("showFloatingPanel", default: .init(.return, modifiers: [.command, .shift]))
@@ -81,17 +82,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         // Setup transcription model if needed
+        audioModelManager.setupMicrophone()
         if selectedAudioModel != "None" {
             audioModelManager.loadModel(selectedAudioModel)
-            audioModelManager.audioDevices = AudioProcessor.getAudioDevices()
-            if selectedAudioInput != "None" {
-                audioModelManager.selectedAudioInput = selectedAudioInput
-            } else {
-                if let defaultAudio = audioModelManager.audioDevices?.first?.name {
-                    selectedAudioInput = defaultAudio
-                    
-                }
-            }
         }
         
         createMenuBarItem()

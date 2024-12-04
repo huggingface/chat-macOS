@@ -101,6 +101,7 @@ enum ConversationState: Equatable {
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
         state = .generating
         isInteracting = true
+        imageURL = nil
         let sendPromptHandler = SendPromptHandler(conversationId: conversationID)
         self.sendPromptHandler = sendPromptHandler
 //        let messageRow = sendPromptHandler.messageRow

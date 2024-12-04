@@ -117,7 +117,7 @@ struct ResponseView: View {
                                 
                                 
                                 // Sources
-                                if let webSearch = conversationModel.message?.webSearch, conversationModel.isInteracting == false {
+                                if let webSearch = conversationModel.message?.webSearch, webSearch.sources.count > 0 && conversationModel.isInteracting == false {
                                     Divider()
                                     Text("Sources")
                                         .font(.subheadline)
