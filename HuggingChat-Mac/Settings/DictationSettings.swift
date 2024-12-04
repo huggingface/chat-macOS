@@ -24,7 +24,7 @@ struct DictationSettings: View {
                         Picker("", selection: $selectedModel) {
                             Text("None")
                                 .tag("None")
-                            ForEach(audioModelManager.availableLocalModels) { model in
+                            ForEach(audioModelManager.availableLocalModels.filter { $0.downloadState == .downloaded }) { model in
                                 Text(model.id).tag(model.id)
                             }
                             .onChange(of: selectedModel, initial: false) { _, _ in

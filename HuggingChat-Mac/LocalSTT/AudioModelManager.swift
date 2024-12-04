@@ -935,6 +935,7 @@ enum TranscriptionMode {
     // Transcription methods
     public func getFullTranscript() -> String {
         print("Getting full transcript")
+        finalizeText()
 
         let segments = confirmedSegments + unconfirmedSegments
         let transcript = formatSegments(segments, withTimestamps: false)
