@@ -15,6 +15,9 @@ struct ComponentsSettingsView: View {
     @Environment(ModelManager.self) private var modelManager
     @Environment(\.colorScheme) private var colorScheme
     
+    @AppStorage("localModel") private var selectedLocalModel: String = "None"
+    @AppStorage("selectedAudioModel") private var selectedAudioModel: String = "None"
+    
     @State private var selectedModels = Set<LocalModel.ID>()
     @State private var showFilePicker = false
     
@@ -138,7 +141,12 @@ struct ComponentsSettingsView: View {
                         Button(role: .destructive) {
                             for model in selectedLLMModels where model.downloadState == .downloaded {
                                 modelManager.deleteLocalModel(model)
+                                if selectedLocalModel == model.id {
+                                    selectedLocalModel = "None"
+                                    modelManager.loadState = .idle
+                                }
                             }
+                            
                             modelManager.fetchAllLocalModels()
                         } label: {
                             Label("Delete", systemImage: "trash")
@@ -149,7 +157,13 @@ struct ComponentsSettingsView: View {
                         Button(role: .destructive) {
                             for model in selectedAudioModels where model.downloadState == .downloaded {
                                 audioModelManager.deleteModel(selectedModel: model.id)
+                                if selectedAudioModel == model.id {
+                                    selectedAudioModel = "None"
+                                    audioModelManager.modelState = .unloaded
+                                    
+                                }
                             }
+                            
                             audioModelManager.fetchModels()
                         } label: {
                             Label("Delete", systemImage: "trash")
@@ -160,29 +174,29 @@ struct ComponentsSettingsView: View {
             .tableStyle(.automatic)
             .alternatingRowBackgrounds(.disabled)
         
-            HStack(alignment: .center) {
-                Button(action: {
-                    for localModelID in selectedModels {
-                        if let modelToDelete = modelManager.availableModels.first(where: {$0.id == localModelID}) {
-                            modelManager.deleteLocalModel(modelToDelete)
-                            self.modelManager.fetchAllLocalModels()
-                        } else if let modelToDelete = audioModelManager.availableLocalModels.first(where: {$0.id == localModelID}) {
-                            audioModelManager.deleteModel(selectedModel: modelToDelete.id)
-                            self.audioModelManager.fetchModels()
-                        }
-                    }
-                   
-                }) {
-                    Image(systemName: "minus").imageScale(.medium)
-                }
-                .disabled(selectedModels.isEmpty)
-                
-                Spacer()
-            }
-            
-            .buttonStyle(.borderless)
-            .frame(height: 20)
-            .padding(.horizontal, 10)
+//            HStack(alignment: .center) {
+//                Button(action: {
+//                    for localModelID in selectedModels {
+//                        if let modelToDelete = modelManager.availableModels.first(where: {$0.id == localModelID}) {
+//                            modelManager.deleteLocalModel(modelToDelete)
+//                            self.modelManager.fetchAllLocalModels()
+//                        } else if let modelToDelete = audioModelManager.availableLocalModels.first(where: {$0.id == localModelID}) {
+//                            audioModelManager.deleteModel(selectedModel: modelToDelete.id)
+//                            self.audioModelManager.fetchModels()
+//                        }
+//                    }
+//                   
+//                }) {
+//                    Image(systemName: "minus").imageScale(.medium)
+//                }
+//                .disabled(selectedModels.isEmpty)
+//                
+//                Spacer()
+//            }
+//            
+//            .buttonStyle(.borderless)
+//            .frame(height: 20)
+//            .padding(.horizontal, 10)
         }
         .onAppear {
             audioModelManager.fetchModels()

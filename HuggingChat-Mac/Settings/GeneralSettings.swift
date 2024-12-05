@@ -123,6 +123,7 @@ struct GeneralSettingsView: View {
                     .labelsHidden()
                     .onChange(of: selectedLocalModel) {
                         if selectedLocalModel == "None" {
+                            modelManager.loadState = .idle
                             isLocalGeneration = false
                             modelManager.cancelLoading()
                         } else if let selectedLocalModel = modelManager.availableModels.first(where: { $0.displayName == selectedLocalModel }) {
