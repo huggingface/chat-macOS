@@ -20,7 +20,7 @@ struct DictationSettings: View {
     var body: some View {
         Form {
             Section(content: {
-                LabeledContent("CoreML Model:", content: {
+                LabeledContent("Model Name:", content: {
                     HStack {
                         Picker("", selection: $selectedModel) {
                             Text("None")

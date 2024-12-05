@@ -31,6 +31,7 @@ struct ChatView: View {
     @AppStorage("selectedAudioModel") private var selectedAudioModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
     @AppStorage("smartDictation") private var smartDictation: Bool = false
+    @AppStorage("useContext") private var useContext: Bool = false
     
     // Animation
     @State var cardIndex: Int = 0
@@ -146,6 +147,8 @@ struct ChatView: View {
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
         .padding()
         .padding(.horizontal, 10) // Allows for shake animation
+        .animation(.bouncy, value: allAttachments.count)
+        .animation(.bouncy, value: useContext)
         
         .onChange(of: conversationModel.state) {
             if conversationModel.state == .error {

@@ -211,6 +211,9 @@ struct InputView: View {
                 })
                 .buttonStyle(.plain)
                 .help("Toggle context")
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
             }
                 
                 
