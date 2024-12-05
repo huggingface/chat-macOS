@@ -21,8 +21,13 @@ struct ContextView: View {
             .aspectRatio(1, contentMode: .fit)
             .frame(width: 16)
             VStack {
-                Text("Working with \(conversationModel.contextAppName ?? "")")
-                    .fontWeight(.semibold)
+                if conversationModel.contextIsSupported {
+                    Text("Working with \(conversationModel.contextAppName ?? "")")
+                        .fontWeight(.semibold)
+                } else {
+                    Text("\(conversationModel.contextAppName ?? "") is not currently supported.")
+                        .fontWeight(.semibold)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Button(action: {

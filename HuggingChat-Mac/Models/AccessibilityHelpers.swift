@@ -12,6 +12,13 @@ import UniformTypeIdentifiers
 class AccessibilityContentReader {
     static let shared = AccessibilityContentReader()
     
+    private let supportedApps = [
+        "com.apple.dt.Xcode",          // Xcode
+        "com.googlecode.iterm2",       // iTerm2
+        "com.apple.Terminal",          // Terminal
+        "com.microsoft.VSCode"         // Visual Studio Code
+    ]
+    
     private init() {
         checkAccessibilityPermissions()
     }
@@ -22,6 +29,11 @@ class AccessibilityContentReader {
         let applicationName: String?
         let bundleIdentifier: String?
         let applicationIcon: NSImage?
+        
+        var isSupported: Bool {
+            guard let bundleId = bundleIdentifier else { return false }
+            return AccessibilityContentReader.shared.supportedApps.contains(bundleId)
+        }
     }
     
     private func checkAccessibilityPermissions() {
@@ -40,25 +52,37 @@ class AccessibilityContentReader {
                   let windowElement = self.getFocusedWindow(for: app) else {
                 return nil
             }
-            
-            async let fullText = self.getFullText(from: windowElement)
-            async let selectedText = self.getSelectedText(from: windowElement)
             async let icon = self.getApplicationIcon(for: app)
             
-            let content = await EditorContent(
-                fullText: fullText ?? "",
-                selectedText: selectedText,
-                applicationName: app.localizedName,
-                bundleIdentifier: app.bundleIdentifier,
-                applicationIcon: icon
-            )
-            
-            return content
+            if let bundleId = app.bundleIdentifier,
+               supportedApps.contains(bundleId) {
+                let content = await EditorContent(
+                    fullText: "",
+                    selectedText: nil,
+                    applicationName: app.localizedName,
+                    bundleIdentifier: app.bundleIdentifier,
+                    applicationIcon: icon
+                )
+                return content
+            } else {
+                
+                async let fullText = self.getFullText(from: windowElement)
+                async let selectedText = self.getSelectedText(from: windowElement)
+                
+                let content = await EditorContent(
+                    fullText: fullText ?? "",
+                    selectedText: selectedText,
+                    applicationName: app.localizedName,
+                    bundleIdentifier: app.bundleIdentifier,
+                    applicationIcon: icon
+                )
+                
+                return content
+            }
         }.value
     }
     
     private func getApplicationIcon(for app: NSRunningApplication) -> NSImage? {
-        // Try to get the icon directly from the running application
         if let icon = app.icon {
             return icon
         }

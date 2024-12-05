@@ -29,6 +29,7 @@ enum ConversationState: Equatable {
     var contextAppSelectedText: String?
     var contextAppFullText: String?
     var contextAppIcon: NSImage?
+    var contextIsSupported: Bool = false
     
     // Currently the best way to get @AppStorage value while returning observability
     var useWebService: Bool {
@@ -243,15 +244,27 @@ enum ConversationState: Equatable {
     
     // MARK: Context Functions
     func fetchContext() {
+        self.contextAppName = nil
+        self.contextAppSelectedText = nil
+        self.contextAppFullText = nil
+        self.contextAppIcon = nil
+        self.contextIsSupported = false
         Task {
             if let content = await AccessibilityContentReader.shared.getActiveEditorContent() {
                 await MainActor.run {
-                    print("SELECTED TEXT", content.selectedText)
-                    print("FULL TEXT", content.fullText)
+                    self.contextIsSupported = content.isSupported
                     self.contextAppName = content.applicationName
-                    self.contextAppSelectedText = content.selectedText
-                    self.contextAppFullText = content.fullText
                     self.contextAppIcon = content.applicationIcon
+                    if self.contextIsSupported {
+                        
+                        //                        print("SELECTED TEXT", content.selectedText)
+                        //                        print("FULL TEXT", content.fullText)
+                        
+                        self.contextAppSelectedText = content.selectedText
+                        self.contextAppFullText = content.fullText
+                        
+                        
+                    }
                 }
             }
         }

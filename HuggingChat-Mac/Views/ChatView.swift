@@ -147,8 +147,8 @@ struct ChatView: View {
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
         .padding()
         .padding(.horizontal, 10) // Allows for shake animation
-        .animation(.bouncy, value: allAttachments.count)
-        .animation(.bouncy, value: useContext)
+        .animation(.smooth, value: allAttachments.count)
+        .animation(.smooth, value: useContext)
         
         .onChange(of: conversationModel.state) {
             if conversationModel.state == .error {
