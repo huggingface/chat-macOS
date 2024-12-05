@@ -14,7 +14,8 @@ struct DictationSettings: View {
     @Environment(AudioModelManager.self) private var audioModelManager
     @AppStorage("selectedAudioModel") private var selectedModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
-    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    @AppStorage("smartDictation") private var smartDictation: Bool = false
+    @AppStorage("useLocalCleanup") private var useLocalCleanup: Bool = false
     
     var body: some View {
         Form {
@@ -77,16 +78,21 @@ struct DictationSettings: View {
             
             Section(content: {
                 KeyboardShortcuts.Recorder("Global Transcription Shortcut:", name: .showTranscriptionPanel)
-//                Toggle("Stream Transcription (Beta):", isOn: $streamTranscript)
+//                Toggle("Smart Dictation", isOn: $smartDictation)
+//                if smartDictation {
+//                       Toggle("Local Model Only", isOn: $useLocalCleanup)
+//                   }
             }, header: {
                 Text("Miscellaneous")
             }, footer: {
-                Text(streamTranscript ? "Transcribed text will appear in the focused text field as you speak. Limited compatibility with non-native or web-based applications.":"Transcribed text will be copied to the your clipboard at the end of your recording.")
-                    .font(.footnote)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(nil)
-                    .foregroundColor(.secondary)
+//                Text(smartDictation ?
+//                    useLocalCleanup ? "Uses a local AI model to clean and format transcripts using contextual information, for maximum privacy at the cost of accuracy and speed." : "Uses a server-based AI model along with contextual information to clean and format transcripts. Your data is never used for training."
+//                    : "Raw transcripts are inserted directly without formatting.")
+//                    .font(.footnote)
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                    .multilineTextAlignment(.leading)
+//                    .lineLimit(nil)
+//                    .foregroundColor(.secondary)
             })
         }
         .formStyle(.grouped)
@@ -95,8 +101,6 @@ struct DictationSettings: View {
             audioModelManager.setupMicrophone()
          }
     }
-    
-    
 }
 
 #Preview {

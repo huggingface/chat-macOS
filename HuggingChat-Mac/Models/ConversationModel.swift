@@ -98,6 +98,16 @@ enum ConversationState: Equatable {
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
     
+    func sendTranscript(text: String) {
+        guard let conversation = conversation, let previousId = conversation.messages.last?.id else {
+            createConversationAndSendPrompt(text, withFiles: nil, usingTools: nil)
+            return
+        }
+        let trimmedText = text.trimmingCharacters(in: .whitespaces)
+        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: nil, tools: nil)
+        sendPromptRequest(req: req, conversationID: conversation.id)
+    }
+    
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
         state = .generating
         isInteracting = true

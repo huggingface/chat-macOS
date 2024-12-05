@@ -27,7 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @AppStorage("localModel") private var selectedLocalModel: String = "None"
     @AppStorage("selectedAudioModel") private var selectedAudioModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
-    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    @AppStorage("smartDictation") private var smartDictation: Bool = false
     @AppStorage("isLocalGeneration") private var isLocalGeneration: Bool = false
     
     @Environment(\.openSettings) private var openSettings
@@ -116,7 +116,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let screenFrame = NSScreen.main?.visibleFrame ?? NSRect.zero
         let panelWidth: CGFloat = 95
-        let panelHeight: CGFloat = 130
+        let panelHeight: CGFloat = 75
         let topPadding: CGFloat = 10
         
         let xPosition = (screenFrame.width - panelWidth) / 2 + screenFrame.minX
@@ -174,7 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.transcriptionPanel.orderFront(nil)
             if self.transcriptionPanel.isVisible {
                 audioModelManager.resetState()
-                audioModelManager.startRecording(true)
+                audioModelManager.startRecording(true, source: .transcriptionView)
             }
         }
     }

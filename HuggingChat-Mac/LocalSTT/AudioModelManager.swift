@@ -16,6 +16,12 @@ enum TranscriptionMode {
     case recording
 }
 
+enum TranscriptionSource {
+    case chat
+    case transcriptionView
+    case none
+}
+
 @Observable class AudioModelManager {
     
     var whisperKit: WhisperKit? = nil
@@ -35,6 +41,7 @@ enum TranscriptionMode {
     var repoName: String = "argmaxinc/whisperkit-coreml"
     var silenceThreshold: Double = 0.3
     var isTranscriptionComplete: Bool = false
+    var transcriptionSource: TranscriptionSource = .none
     
     var selectedAudioInput: String {
         get {
@@ -182,14 +189,14 @@ enum TranscriptionMode {
     
     func downloadModel(_ model: LocalModel, redownload: Bool = false) {
         guard let modelIndex = availableLocalModels.firstIndex(where: { $0.id == model.id }) else { return }
-        print("Selected Model: \(UserDefaults.standard.string(forKey: "selectedModel") ?? "nil")")
-        print("""
-            Computing Options:
-            - Mel Spectrogram:  \(getComputeOptions().melCompute.description)
-            - Audio Encoder:    \(getComputeOptions().audioEncoderCompute.description)
-            - Text Decoder:     \(getComputeOptions().textDecoderCompute.description)
-            - Prefill Data:     \(getComputeOptions().prefillCompute.description)
-        """)
+//        print("Selected Model: \(UserDefaults.standard.string(forKey: "selectedModel") ?? "nil")")
+//        print("""
+//            Computing Options:
+//            - Mel Spectrogram:  \(getComputeOptions().melCompute.description)
+//            - Audio Encoder:    \(getComputeOptions().audioEncoderCompute.description)
+//            - Text Decoder:     \(getComputeOptions().textDecoderCompute.description)
+//            - Prefill Data:     \(getComputeOptions().prefillCompute.description)
+//        """)
 
         whisperKit = nil
         
@@ -234,14 +241,14 @@ enum TranscriptionMode {
     }
     
     func loadModel(_ model: String, redownload: Bool = false) {
-        print("Selected Model: \(UserDefaults.standard.string(forKey: "selectedModel") ?? "nil")")
-        print("""
-            Computing Options:
-            - Mel Spectrogram:  \(getComputeOptions().melCompute.description)
-            - Audio Encoder:    \(getComputeOptions().audioEncoderCompute.description)
-            - Text Decoder:     \(getComputeOptions().textDecoderCompute.description)
-            - Prefill Data:     \(getComputeOptions().prefillCompute.description)
-        """)
+//        print("Selected Model: \(UserDefaults.standard.string(forKey: "selectedModel") ?? "nil")")
+//        print("""
+//            Computing Options:
+//            - Mel Spectrogram:  \(getComputeOptions().melCompute.description)
+//            - Audio Encoder:    \(getComputeOptions().audioEncoderCompute.description)
+//            - Text Decoder:     \(getComputeOptions().textDecoderCompute.description)
+//            - Prefill Data:     \(getComputeOptions().prefillCompute.description)
+//        """)
 
         whisperKit = nil
         Task {
@@ -469,7 +476,8 @@ enum TranscriptionMode {
         }
     }
 
-    func startRecording(_ loop: Bool) {
+    func startRecording(_ loop: Bool, source: TranscriptionSource = .none) {
+        transcriptionSource = source
         if let audioProcessor = whisperKit?.audioProcessor {
             Task(priority: .userInitiated) {
                 guard await AudioProcessor.requestRecordPermission() else {
@@ -821,7 +829,7 @@ enum TranscriptionMode {
                     // Update lastConfirmedSegmentEnd based on the last confirmed segment
                     if let lastConfirmedSegment = confirmedSegmentsArray.last, lastConfirmedSegment.end > lastConfirmedSegmentEndSeconds {
                         lastConfirmedSegmentEndSeconds = lastConfirmedSegment.end
-                        print("Last confirmed segment end: \(lastConfirmedSegmentEndSeconds)")
+//                        print("Last confirmed segment end: \(lastConfirmedSegmentEndSeconds)")
 
                         // Add confirmed segments to the confirmedSegments array
                         for segment in confirmedSegmentsArray {
@@ -971,6 +979,8 @@ enum TranscriptionMode {
 
         let segments = confirmedSegments + unconfirmedSegments
         let transcript = formatSegments(segments, withTimestamps: false)
+        transcriptionSource = .none
         return transcript.joined(separator: "\n")
     }
 }
+

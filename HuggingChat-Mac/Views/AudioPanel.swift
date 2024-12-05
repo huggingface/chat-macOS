@@ -11,7 +11,7 @@ import AppKit
 class ToastPanel: FloatingPanel {
     override init(contentRect: NSRect, backing: NSWindow.BackingStoreType, defer flag: Bool) {
         super.init(contentRect: contentRect, backing: backing, defer: flag)
-        self.setFrameAutosaveName("hfToastPanel")
+//        self.setFrameAutosaveName("hfToastPanel")
     }
     
     override func resignMain() {}

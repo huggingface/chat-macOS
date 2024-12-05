@@ -9,10 +9,14 @@ import SwiftUI
 
 struct TranscriptionView: View {
     
+    @Environment(ModelManager.self) private var modelManager
+    @Environment(ConversationViewModel.self) private var conversationModel
     @Environment(AudioModelManager.self) private var audioModelManager
+    
     @AppStorage("selectedAudioModel") private var selectedModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
-    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    @AppStorage("smartDictation") private var smartDictation: Bool = false
+    @AppStorage("useLocalCleanup") private var useLocalCleanup: Bool = false
     
     var barCount: Int = 6
     
@@ -38,18 +42,29 @@ struct TranscriptionView: View {
                 .fill(.thickMaterial)
         }
         .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
-            if audioModelManager.isTranscriptionComplete {
-                if AccessibilityTextPaster.shared.pasteText(audioModelManager.getFullTranscript()) {
-                    print("Text pasted successfully")
-                } else {
-                    print("Failed to paste text")
-                }
+            if audioModelManager.isTranscriptionComplete && audioModelManager.transcriptionSource == .transcriptionView {
+                let fullTranscript = audioModelManager.getFullTranscript()
+//                if smartDictation {
+//                    let currentAppName = AccessibilityTextPaster.shared.getCurrentApplicationName() ?? ""
+//                    print(currentAppName)
+//                    let directive = "Clean up and reformat the transcript to fit the context of the app \(currentAppName). Then paste the following text into the app:\(fullTranscript). Return only the new text. Nothing else."
+//                    if useLocalCleanup {
+//                        Task {
+//                            await modelManager.generate(prompt: directive)
+//                        }
+//                    } else {
+//                        conversationModel.sendAttributed(text: directive, withFiles: nil)
+//                    }
+//
+//                } else {
+                    if AccessibilityTextPaster.shared.pasteText(fullTranscript) {
+                        print("Text pasted successfully")
+                    } else {
+                        print("Failed to paste text")
+                    }
+//                }
             }
         }
-        
-//        .onChange(of: audioModelManager.getFullTranscript()) {
-//            AccessibilityTextPaster.pasteTextToFocusedElement(audioModelManager.getFullTranscript())
-//        }
         
     }
     
@@ -65,6 +80,7 @@ struct TranscriptionView: View {
             }
         }
 }
+
 #Preview {
     TranscriptionView()
         .environment(AudioModelManager())

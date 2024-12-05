@@ -30,7 +30,7 @@ struct ChatView: View {
     // Audio
     @AppStorage("selectedAudioModel") private var selectedAudioModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
-    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    @AppStorage("smartDictation") private var smartDictation: Bool = false
     
     // Animation
     @State var cardIndex: Int = 0
@@ -183,14 +183,14 @@ struct ChatView: View {
             if isTranscribing {
                 if selectedAudioModel != "None" && selectedAudioInput != "None" && audioModelManager.modelState == .loaded  {
                     audioModelManager.resetState()
-                    audioModelManager.startRecording(true)
+                    audioModelManager.startRecording(true, source: .chat)
                 }
             } else {
                 audioModelManager.stopRecording(false)
             }
         }
         .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
-            if audioModelManager.isTranscriptionComplete {
+            if audioModelManager.isTranscriptionComplete && audioModelManager.transcriptionSource == .chat {
                 prompt += audioModelManager.getFullTranscript()
             }
         }

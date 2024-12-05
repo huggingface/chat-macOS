@@ -12,7 +12,7 @@ struct AudioBarView: View {
     @Environment(AudioModelManager.self) private var audioModelManager
     @AppStorage("selectedAudioModel") private var selectedModel: String = "None"
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
-    @AppStorage("streamTranscript") private var streamTranscript: Bool = false
+    @AppStorage("smartDictation") private var smartDictation: Bool = false
     
     var barCount: Int = 6
     

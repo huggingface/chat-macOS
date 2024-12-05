@@ -46,6 +46,23 @@ class AccessibilityTextPaster {
             NSLog("⚠️ Accessibility permissions not granted. Some features may not work.")
         }
     }
+    /// Get the currently active application
+    /// - Returns: NSRunningApplication? of the active app
+    func getCurrentApplication() -> NSRunningApplication? {
+        return NSWorkspace.shared.frontmostApplication
+    }
+    
+    /// Get the bundle identifier of the currently active application
+    /// - Returns: String? containing the bundle identifier
+    func getCurrentApplicationBundleIdentifier() -> String? {
+        return getCurrentApplication()?.bundleIdentifier
+    }
+    
+    /// Get the localized name of the currently active application
+    /// - Returns: String? containing the application name
+    func getCurrentApplicationName() -> String? {
+        return getCurrentApplication()?.localizedName
+    }
     
     private func pasteThroughPasteboard(_ text: String) -> Bool {
         // Store current pasteboard contents
@@ -92,8 +109,8 @@ class AccessibilityTextPaster {
         var focusedElement: AnyObject?
         
         guard AXUIElementCopyAttributeValue(systemWide,
-                                          kAXFocusedUIElementAttribute as CFString,
-                                          &focusedElement) == .success else {
+                                            kAXFocusedUIElementAttribute as CFString,
+                                            &focusedElement) == .success else {
             return nil
         }
         
@@ -111,8 +128,8 @@ class AccessibilityTextPaster {
     private func isTextElement(_ element: AXUIElement) -> Bool {
         var role: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element,
-                                          kAXRoleAttribute as CFString,
-                                          &role) == .success,
+                                            kAXRoleAttribute as CFString,
+                                            &role) == .success,
               let roleString = role as? String else {
             return false
         }
@@ -123,8 +140,8 @@ class AccessibilityTextPaster {
     private func findTextElement(in element: AXUIElement) -> AXUIElement? {
         var children: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element,
-                                          kAXChildrenAttribute as CFString,
-                                          &children) == .success,
+                                            kAXChildrenAttribute as CFString,
+                                            &children) == .success,
               let childrenArray = children as? [AXUIElement] else {
             return nil
         }
@@ -143,8 +160,8 @@ class AccessibilityTextPaster {
     
     private func setValueDirectly(_ text: String, for element: AXUIElement) -> Bool {
         let result = AXUIElementSetAttributeValue(element,
-                                                kAXValueAttribute as CFString,
-                                                text as CFTypeRef)
+                                                  kAXValueAttribute as CFString,
+                                                  text as CFTypeRef)
         return result == .success
     }
     
