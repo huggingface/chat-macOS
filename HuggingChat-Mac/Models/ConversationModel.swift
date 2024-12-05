@@ -24,6 +24,11 @@ enum ConversationState: Equatable {
     // Tools
     var imageURL: String?
     
+    // Context
+    var contextAppName: String?
+    var contextAppSelectedText: String?
+    var contextAppFullText: String?
+    var contextAppIcon: NSImage?
     
     // Currently the best way to get @AppStorage value while returning observability
     var useWebService: Bool {
@@ -34,6 +39,18 @@ enum ConversationState: Equatable {
         set {
             withMutation(keyPath: \.useWebService) {
                 UserDefaults.standard.setValue(newValue, forKey: "useWebSearch")
+            }
+        }
+    }
+    
+    var useContext: Bool {
+        get {
+            access(keyPath: \.useContext)
+            return UserDefaults.standard.bool(forKey: "useContext")
+        }
+        set {
+            withMutation(keyPath: \.useContext) {
+                UserDefaults.standard.setValue(newValue, forKey: "useContext")
             }
         }
     }
@@ -49,9 +66,7 @@ enum ConversationState: Equatable {
             }
         }
     }
-    
-    
-    
+
     private var cancellables = [AnyCancellable]()
     private var sendPromptHandler: SendPromptHandler?
     
@@ -93,7 +108,18 @@ enum ConversationState: Equatable {
             createConversationAndSendPrompt(text, withFiles: withFiles, usingTools: isTools ? []:nil)
             return
         }
-        let trimmedText = text.trimmingCharacters(in: .whitespaces)
+        var trimmedText = ""
+        if useContext {
+            if let contextAppSelectedText = contextAppSelectedText {
+                trimmedText += "Lines of Interest: ```\(contextAppSelectedText)```"
+            }
+            if let contextAppFullText = contextAppFullText {
+                trimmedText += "\n\nFull context:```\(contextAppFullText)```"
+            }
+        }
+        
+        trimmedText += text.trimmingCharacters(in: .whitespaces)
+        
         let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002", "00000000000000000000000a"] : nil)
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
@@ -199,6 +225,7 @@ enum ConversationState: Equatable {
         error = nil
         isInteracting = false
         HuggingChatSession.shared.currentConversation = ""
+        clearContext()
     }
     
     func stopGenerating() {
@@ -212,6 +239,33 @@ enum ConversationState: Equatable {
         sendPromptHandler = nil
         state = .loaded
         error = nil
+    }
+    
+    // MARK: Context Functions
+    func fetchContext() {
+        Task {
+            if let content = await AccessibilityContentReader.shared.getActiveEditorContent() {
+                await MainActor.run {
+                    print("SELECTED TEXT", content.selectedText)
+                    print("FULL TEXT", content.fullText)
+                    self.contextAppName = content.applicationName
+                    self.contextAppSelectedText = content.selectedText
+                    self.contextAppFullText = content.fullText
+                    self.contextAppIcon = content.applicationIcon
+                }
+            }
+        }
+    }
+    
+    func formatContext() {
+        // TODO: Truncate contextAppFullText from start to 3000 characters.
+        
+    }
+    
+    func clearContext() {
+        contextAppName = nil
+        contextAppSelectedText = nil
+        contextAppFullText = nil
     }
     
 }

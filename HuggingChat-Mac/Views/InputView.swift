@@ -34,6 +34,7 @@ struct InputView: View {
     @AppStorage("isAppleClassicUnlocked") private var isAppleClassicUnlocked: Bool = false
     @AppStorage("inlineCodeHiglight") private var inlineCodeHiglight: AccentColorOption = .blue
     @AppStorage("selectedTheme") private var selectedTheme: String = "Default"
+    @AppStorage("useContext") private var useContext: Bool = false
     
     // File importer
     @State private var showFileImporter = false {
@@ -47,11 +48,15 @@ struct InputView: View {
     // STT
     @Binding var isTranscribing: Bool
     
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if allAttachments.count > 0 {
-                AttachmentView(allAttachments: $allAttachments)
+            if useContext {
+                ContextView()
+                    .padding(.horizontal, -9)
+            } else {
+                if allAttachments.count > 0 {
+                    AttachmentView(allAttachments: $allAttachments)
+                }
             }
             ZStack {
                 if isSecondaryTextFieldVisible {
@@ -189,20 +194,23 @@ struct InputView: View {
                         isTranscribing.toggle()
                     }
                 }, label: {
-                    Image(systemName: "mic.fill")
+                    Image(systemName: isTranscribing ? "mic.fill":"mic")
                         .fontWeight(.semibold)
                 })
                 .buttonStyle(.plain)
                 .help("Toggle dictation")
                 
                 Button(action: {
-                    // TODO: Start dictation
+                    useContext.toggle()
+                    if useContext {
+                        conversationModel.fetchContext()
+                    }
                 }, label: {
-                    Image(systemName: "waveform")
+                    Image(systemName: useContext ? "doc.viewfinder.fill":"doc.viewfinder")
                         .fontWeight(.semibold)
                 })
                 .buttonStyle(.plain)
-                .help("Toggle voice mode")
+                .help("Toggle context")
             }
                 
                 
@@ -230,6 +238,7 @@ struct InputView: View {
             .frame(height: 30)
             
         }
+        .padding(.horizontal)
     }
     
     // Private methods
@@ -375,21 +384,21 @@ struct InputView: View {
     }
 }
 
-//#Preview("dark") {
-//    ChatView()
-//        .frame(height: 300)
-//        .environment(ModelManager())
-//        .environment(ConversationViewModel())
-//        .colorScheme(.dark)
-//    .environment(AudioModelManager())
-//}
-
-#Preview {
-    InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: .constant(false))
+#Preview("dark") {
+    ChatView()
+        .frame(height: 300)
         .environment(ModelManager())
-        .environment(\.colorScheme, .dark)
         .environment(ConversationViewModel())
         .environment(AudioModelManager())
-        .padding()
+        .colorScheme(.dark)
 }
+
+//#Preview {
+//    InputView(isLocal: true, prompt: .constant(""), isSecondaryTextFieldVisible: .constant(false), animatablePrompt: .constant(""), isMainTextFieldVisible: .constant(true), allAttachments: .constant([]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: .constant(false))
+//        .environment(ModelManager())
+//        .environment(\.colorScheme, .dark)
+//        .environment(ConversationViewModel())
+//        .environment(AudioModelManager())
+//        .padding()
+//}
 

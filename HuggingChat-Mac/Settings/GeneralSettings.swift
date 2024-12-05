@@ -28,6 +28,7 @@ struct GeneralSettingsView: View {
     @AppStorage("useWebSearch") private var useWebSearch = false
     @AppStorage("chatClearInterval") private var chatClearInterval: String = "never"
     @AppStorage("isLocalGeneration") private var isLocalGeneration: Bool = false
+    @AppStorage("useContext") private var useContext: Bool = false
     
     var body: some View {
         Form {
@@ -182,6 +183,20 @@ struct GeneralSettingsView: View {
                     .foregroundColor(.secondary)
             })
             .disabled(HuggingChatSession.shared.currentUser == nil)
+            
+            
+            Section(content: {
+                Toggle("Use Working Context", isOn: $useContext)
+            }, header: {
+                Text("Experimental")
+            }, footer: {
+                Text("When enabled, the model will automatically use the working context of the foremost window (e.g. text editor, selected text, terminal history) and append it to your query. Your data is never used for training.")
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+                    .foregroundColor(.secondary)
+            })
             
             Section(content: {
                 KeyboardShortcuts.Recorder("Global Keyboard Shortcut:", name: .showFloatingPanel)

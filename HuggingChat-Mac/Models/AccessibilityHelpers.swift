@@ -7,9 +7,169 @@
 
 import Cocoa
 import ApplicationServices
+import UniformTypeIdentifiers
 
-import Cocoa
-import ApplicationServices
+class AccessibilityContentReader {
+    static let shared = AccessibilityContentReader()
+    
+    private init() {
+        checkAccessibilityPermissions()
+    }
+    
+    struct EditorContent {
+        let fullText: String
+        let selectedText: String?
+        let applicationName: String?
+        let bundleIdentifier: String?
+        let applicationIcon: NSImage?
+    }
+    
+    private func checkAccessibilityPermissions() {
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+        let trusted = AXIsProcessTrustedWithOptions(options as CFDictionary)
+        
+        if !trusted {
+            NSLog("⚠️ Accessibility permissions not granted. Content reading features will not work.")
+        }
+    }
+    
+    func getActiveEditorContent() async -> EditorContent? {
+        await Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self = self,
+                  let app = NSWorkspace.shared.frontmostApplication,
+                  let windowElement = self.getFocusedWindow(for: app) else {
+                return nil
+            }
+            
+            async let fullText = self.getFullText(from: windowElement)
+            async let selectedText = self.getSelectedText(from: windowElement)
+            async let icon = self.getApplicationIcon(for: app)
+            
+            let content = await EditorContent(
+                fullText: fullText ?? "",
+                selectedText: selectedText,
+                applicationName: app.localizedName,
+                bundleIdentifier: app.bundleIdentifier,
+                applicationIcon: icon
+            )
+            
+            return content
+        }.value
+    }
+    
+    private func getApplicationIcon(for app: NSRunningApplication) -> NSImage? {
+        // Try to get the icon directly from the running application
+        if let icon = app.icon {
+            return icon
+        }
+        
+        // Fallback: Try to get the icon from the bundle
+        if let bundleIdentifier = app.bundleIdentifier,
+           let bundle = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+           let icon = NSWorkspace.shared.icon(forFile: bundle.path)
+            return icon
+        }
+        return NSWorkspace.shared.icon(for: UTType.application)
+    }
+    
+    private func getFocusedWindow(for app: NSRunningApplication) -> AXUIElement? {
+        let appRef = AXUIElementCreateApplication(app.processIdentifier)
+        var focusedWindow: CFTypeRef?
+        
+        guard AXUIElementCopyAttributeValue(appRef,
+                                          kAXFocusedWindowAttribute as CFString,
+                                          &focusedWindow) == .success else {
+            return nil
+        }
+        
+        return (focusedWindow as! AXUIElement)
+    }
+    
+    private func getSelectedText(from element: AXUIElement) -> String? {
+        // First check if this element has selected text
+        if isTextInputElement(element) {
+            var selectedText: CFTypeRef?
+            if AXUIElementCopyAttributeValue(element,
+                                           kAXSelectedTextAttribute as CFString,
+                                           &selectedText) == .success,
+               let text = selectedText as? String,
+               !text.isEmpty {
+                return text
+            }
+        }
+        
+        // If not, search children
+        var children: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXChildrenAttribute as CFString,
+                                          &children) == .success,
+              let childrenArray = children as? [AXUIElement] else {
+            return nil
+        }
+        
+        // Search all children recursively
+        for child in childrenArray {
+            if let selected = getSelectedText(from: child) {
+                return selected
+            }
+        }
+        
+        return nil
+    }
+
+    private func isTextInputElement(_ element: AXUIElement) -> Bool {
+        var role: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXRoleAttribute as CFString,
+                                          &role) == .success,
+              let roleString = role as? String else {
+            return false
+        }
+        
+        return ["AXTextArea", "AXTextField", "AXTextInput", "AXComboBox"].contains(roleString)
+    }
+    
+    private func getFullText(from element: AXUIElement) -> String? {
+//        // First check if this element has text value
+//        if isTextInputElement(element) {
+//            var value: CFTypeRef?
+//            if AXUIElementCopyAttributeValue(element,
+//                                           kAXValueAttribute as CFString,
+//                                           &value) == .success,
+//               let text = value as? String {
+//                return text
+//            }
+//        }
+//        
+//        // If not, search children
+//        var children: CFTypeRef?
+//        guard AXUIElementCopyAttributeValue(element,
+//                                          kAXChildrenAttribute as CFString,
+//                                          &children) == .success,
+//              let childrenArray = children as? [AXUIElement] else {
+//            return nil
+//        }
+//        
+//        // Search all children recursively
+//        for child in childrenArray {
+//            if let text = getFullText(from: child) {
+//                return text
+//            }
+//        }
+//        
+        return nil
+    }
+    
+    private func getValue(from element: AXUIElement) -> String? {
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                            kAXValueAttribute as CFString,
+                                            &value) == .success else {
+            return nil
+        }
+        return value as? String
+    }
+}
 
 class AccessibilityTextPaster {
     /// Singleton instance for shared access

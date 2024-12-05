@@ -205,6 +205,7 @@ struct ChatView: View {
             }
             conversationModel.getActiveModel()
             checkAndClearChat()
+         
         }
     }
     
@@ -221,7 +222,6 @@ struct ChatView: View {
             startLoadingAnimation: $startLoadingAnimation,
             isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
-        .padding(.horizontal)
         .padding(.vertical, 7)
         .background(.thickMaterial)
         .overlay(content: {
@@ -253,7 +253,6 @@ struct ChatView: View {
             startLoadingAnimation: $startLoadingAnimation,
             isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
-        .padding(.horizontal)
         .padding(.vertical, 7)
         .background(.thickMaterial)
         .overlay(content: {

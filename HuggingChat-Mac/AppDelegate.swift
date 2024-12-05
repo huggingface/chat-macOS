@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @AppStorage("selectedAudioInput") private var selectedAudioInput: String = "None"
     @AppStorage("smartDictation") private var smartDictation: Bool = false
     @AppStorage("isLocalGeneration") private var isLocalGeneration: Bool = false
+    @AppStorage("useContext") private var useContext: Bool = false
     
     @Environment(\.openSettings) private var openSettings
     
@@ -145,6 +146,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.newEntryPanel.orderOut(nil)
         } else {
             self.newEntryPanel.makeKeyAndOrderFront(nil)
+            
+            if useContext {
+                conversationModel.fetchContext()
+            }
             NSApp.activate(ignoringOtherApps: true)
         }
     }
