@@ -112,10 +112,11 @@ enum ConversationState: Equatable {
         var trimmedText = ""
         if useContext {
             if let contextAppSelectedText = contextAppSelectedText {
-                trimmedText += "Lines of Interest: ```\(contextAppSelectedText)```"
+                trimmedText += "Selected Text: ```\(contextAppSelectedText)```"
             }
             if let contextAppFullText = contextAppFullText {
-                trimmedText += "\n\nFull context:```\(contextAppFullText)```"
+                // TODO: Truncate full context if needed
+                trimmedText += "\n\nFull Text:```\(contextAppFullText)```"
             }
         }
         
@@ -256,14 +257,8 @@ enum ConversationState: Equatable {
                     self.contextAppName = content.applicationName
                     self.contextAppIcon = content.applicationIcon
                     if self.contextIsSupported {
-                        
-                        print("SELECTED TEXT", content.selectedText)
-                        // print("FULL TEXT", content.fullText)
-                        
                         self.contextAppSelectedText = content.selectedText
                         self.contextAppFullText = content.fullText
-                        
-                        
                     }
                 }
             }

@@ -150,16 +150,28 @@ class AccessibilityContentReader {
         if let bundleId = app.bundleIdentifier,
            supportedApps.contains(bundleId) {
             do {
-                async let fullText = getFullText(from: windowElement)
-                async let selectedText = getSelectedText(from: windowElement)
-                
-                return EditorContent(
-                    fullText: (try await fullText) ?? "",
-                    selectedText: await selectedText,
-                    applicationName: app.localizedName,
-                    bundleIdentifier: app.bundleIdentifier,
-                    applicationIcon: await icon
-                )
+                // For VSCode, use the VSCodeReader
+                if bundleId == "com.microsoft.VSCode" {
+                    let vsContent = try await VSCodeReader.shared.getActiveEditorContent()
+                    return EditorContent(
+                        fullText: vsContent.content,
+                        selectedText: vsContent.selectedText,
+                        applicationName: app.localizedName,
+                        bundleIdentifier: bundleId,
+                        applicationIcon: await icon
+                    )
+                } else {
+                    async let fullText = getFullText(from: windowElement)
+                    async let selectedText = getSelectedText(from: windowElement)
+                    
+                    return EditorContent(
+                        fullText: (try await fullText) ?? "",
+                        selectedText: await selectedText,
+                        applicationName: app.localizedName,
+                        bundleIdentifier: app.bundleIdentifier,
+                        applicationIcon: await icon
+                    )
+                }
             } catch {
                 print("Error getting editor content: \(error)")
                 return nil
@@ -254,15 +266,6 @@ class AccessibilityContentReader {
         switch bundleId {
         case "com.apple.dt.Xcode":
             return try extractTextFromXcode(element)
-        
-        case "com.microsoft.VSCode":
-            do {
-                let content = try await VSCodeReader.shared.getActiveEditorContent()
-                return content.content
-            } catch {
-                return try extractTextGeneric(element)
-            }
-            
         default:
             return try extractTextGeneric(element)
         }
