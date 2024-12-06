@@ -9,7 +9,97 @@ import Cocoa
 import ApplicationServices
 import UniformTypeIdentifiers
 
+// MARK: VSCode Reader
+struct VSCodeWindow: Decodable {
+    let windowId: String
+    let lastFocusTime: TimeInterval
+    let content: String
+    let language: String?
+    let fileName: String?
+    let timestamp: String
+    let isFocused: Bool
+}
+
+class VSCodeReader {
+    static let shared = VSCodeReader()
+    private let portRange = 54321...54330
+    
+    private init() {}
+    
+    struct VSCodeContent {
+        let content: String
+        let language: String?
+        let fileName: String?
+    }
+    
+    func getActiveEditorContent() async throws -> VSCodeContent {
+        // Try each port until we find an active window
+        for port in portRange {
+            do {
+                let window = try await getWindowContent(port: port)
+                if window.isFocused {
+                    return VSCodeContent(
+                        content: window.content,
+                        language: window.language,
+                        fileName: window.fileName
+                    )
+                }
+            } catch {
+                continue
+            }
+        }
+        
+        // If no focused window found, get the most recently focused one
+        let windows = try await getAllWindows()
+        guard let mostRecent = windows.max(by: { $0.lastFocusTime < $1.lastFocusTime }) else {
+            throw AccessibilityError.noActiveWindow
+        }
+        
+        return VSCodeContent(
+            content: mostRecent.content,
+            language: mostRecent.language,
+            fileName: mostRecent.fileName
+        )
+    }
+    
+    private func getAllWindows() async throws -> [VSCodeWindow] {
+        var windows: [VSCodeWindow] = []
+        
+        for port in portRange {
+            do {
+                let window = try await getWindowContent(port: port)
+                windows.append(window)
+            } catch {
+                continue
+            }
+        }
+        
+        guard !windows.isEmpty else {
+            throw AccessibilityError.noActiveWindow
+        }
+        
+        return windows
+    }
+    
+    private func getWindowContent(port: Int) async throws -> VSCodeWindow {
+        let url = URL(string: "http://127.0.0.1:\(port)")!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        return try decoder.decode(VSCodeWindow.self, from: data)
+    }
+}
+
+enum AccessibilityError: Error {
+    case noActiveWindow
+    case extractionFailed
+}
+
 class AccessibilityContentReader {
+    private enum TextExtractionError: Error {
+        case noTextFound
+        case invalidHierarchy
+    }
+    
     static let shared = AccessibilityContentReader()
     
     private let supportedApps = [
@@ -46,40 +136,39 @@ class AccessibilityContentReader {
     }
     
     func getActiveEditorContent() async -> EditorContent? {
-        await Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self = self,
-                  let app = NSWorkspace.shared.frontmostApplication,
-                  let windowElement = self.getFocusedWindow(for: app) else {
+        guard let app = NSWorkspace.shared.frontmostApplication,
+              let windowElement = getFocusedWindow(for: app) else {
+            return nil
+        }
+        
+        async let icon = getApplicationIcon(for: app)
+        
+        if let bundleId = app.bundleIdentifier,
+           supportedApps.contains(bundleId) {
+            do {
+                async let fullText = getFullText(from: windowElement)
+                async let selectedText = getSelectedText(from: windowElement)
+                
+                return EditorContent(
+                    fullText: (try await fullText) ?? "",
+                    selectedText: await selectedText,
+                    applicationName: app.localizedName,
+                    bundleIdentifier: app.bundleIdentifier,
+                    applicationIcon: await icon
+                )
+            } catch {
+                print("Error getting editor content: \(error)")
                 return nil
             }
-            async let icon = self.getApplicationIcon(for: app)
-            
-            if let bundleId = app.bundleIdentifier,
-               supportedApps.contains(bundleId) {
-                let content = await EditorContent(
-                    fullText: "",
-                    selectedText: nil,
-                    applicationName: app.localizedName,
-                    bundleIdentifier: app.bundleIdentifier,
-                    applicationIcon: icon
-                )
-                return content
-            } else {
-                
-                async let fullText = self.getFullText(from: windowElement)
-                async let selectedText = self.getSelectedText(from: windowElement)
-                
-                let content = await EditorContent(
-                    fullText: fullText ?? "",
-                    selectedText: selectedText,
-                    applicationName: app.localizedName,
-                    bundleIdentifier: app.bundleIdentifier,
-                    applicationIcon: icon
-                )
-                
-                return content
-            }
-        }.value
+        } else {
+            return await EditorContent(
+                fullText: "",
+                selectedText: nil,
+                applicationName: app.localizedName,
+                bundleIdentifier: app.bundleIdentifier,
+                applicationIcon: icon
+            )
+        }
     }
     
     private func getApplicationIcon(for app: NSRunningApplication) -> NSImage? {
@@ -87,10 +176,9 @@ class AccessibilityContentReader {
             return icon
         }
         
-        // Fallback: Try to get the icon from the bundle
         if let bundleIdentifier = app.bundleIdentifier,
            let bundle = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
-           let icon = NSWorkspace.shared.icon(forFile: bundle.path)
+            let icon = NSWorkspace.shared.icon(forFile: bundle.path)
             return icon
         }
         return NSWorkspace.shared.icon(for: UTType.application)
@@ -110,7 +198,6 @@ class AccessibilityContentReader {
     }
     
     private func getSelectedText(from element: AXUIElement) -> String? {
-        // First check if this element has selected text
         if isTextInputElement(element) {
             var selectedText: CFTypeRef?
             if AXUIElementCopyAttributeValue(element,
@@ -122,7 +209,6 @@ class AccessibilityContentReader {
             }
         }
         
-        // If not, search children
         var children: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element,
                                           kAXChildrenAttribute as CFString,
@@ -131,7 +217,6 @@ class AccessibilityContentReader {
             return nil
         }
         
-        // Search all children recursively
         for child in childrenArray {
             if let selected = getSelectedText(from: child) {
                 return selected
@@ -140,7 +225,7 @@ class AccessibilityContentReader {
         
         return nil
     }
-
+    
     private func isTextInputElement(_ element: AXUIElement) -> Bool {
         var role: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element,
@@ -153,45 +238,133 @@ class AccessibilityContentReader {
         return ["AXTextArea", "AXTextField", "AXTextInput", "AXComboBox"].contains(roleString)
     }
     
-    private func getFullText(from element: AXUIElement) -> String? {
-//        // First check if this element has text value
-//        if isTextInputElement(element) {
-//            var value: CFTypeRef?
-//            if AXUIElementCopyAttributeValue(element,
-//                                           kAXValueAttribute as CFString,
-//                                           &value) == .success,
-//               let text = value as? String {
-//                return text
-//            }
-//        }
-//        
-//        // If not, search children
-//        var children: CFTypeRef?
-//        guard AXUIElementCopyAttributeValue(element,
-//                                          kAXChildrenAttribute as CFString,
-//                                          &children) == .success,
-//              let childrenArray = children as? [AXUIElement] else {
-//            return nil
-//        }
-//        
-//        // Search all children recursively
-//        for child in childrenArray {
-//            if let text = getFullText(from: child) {
-//                return text
-//            }
-//        }
-//        
-        return nil
+    private func getFullText(from element: AXUIElement) async throws -> String? {
+        guard let bundleId = NSWorkspace.shared.frontmostApplication?.bundleIdentifier else {
+            return nil
+        }
+        
+        return try await extractTextForApp(bundleId: bundleId, from: element)
+    }
+    
+    private func extractTextForApp(bundleId: String, from element: AXUIElement) async throws -> String {
+        switch bundleId {
+        case "com.apple.dt.Xcode":
+            return try extractTextFromXcode(element)
+        
+        case "com.microsoft.VSCode":
+            do {
+                let content = try await VSCodeReader.shared.getActiveEditorContent()
+                return content.content
+            } catch {
+                return try extractTextGeneric(element)
+            }
+            
+        default:
+            return try extractTextGeneric(element)
+        }
+    }
+    
+    private func extractTextFromXcode(_ element: AXUIElement) throws -> String {
+        var role: CFTypeRef?
+        var subrole: CFTypeRef?
+        AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
+        AXUIElementCopyAttributeValue(element, kAXSubroleAttribute as CFString, &subrole)
+        let roleString = role as? String ?? "unknown"
+        
+        if roleString == "AXTextArea",
+           let parent = getParentElement(of: element),
+           let parentRole = getRole(of: parent),
+           parentRole == "AXScrollArea" {
+            
+            if let value = getValue(from: element), !value.isEmpty {
+                return value
+            }
+            
+            var textValue: CFTypeRef?
+            if AXUIElementCopyAttributeValue(element, "AXValue" as CFString, &textValue) == .success,
+               let text = textValue as? String,
+               !text.isEmpty {
+                return text
+            }
+        }
+        
+        var children: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXChildrenAttribute as CFString,
+                                          &children) == .success,
+              let childrenArray = children as? [AXUIElement] else {
+            return ""
+        }
+        
+        for child in childrenArray {
+            if let result = try? extractTextFromXcode(child), !result.isEmpty {
+                return result
+            }
+        }
+        
+        return ""
+    }
+    
+    private func extractTextGeneric(_ element: AXUIElement) throws -> String {
+        if isTextInputElement(element) {
+            if let text = getValue(from: element), !text.isEmpty {
+                return text
+            }
+        }
+        return try searchChildrenForText(element)
+    }
+    
+    private func searchChildrenForText(_ element: AXUIElement) throws -> String {
+        var children: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXChildrenAttribute as CFString,
+                                          &children) == .success,
+              let childrenArray = children as? [AXUIElement] else {
+            throw TextExtractionError.invalidHierarchy
+        }
+        
+        var combinedText = ""
+        for child in childrenArray {
+            if let childText = try? extractTextGeneric(child) {
+                combinedText += childText + " "
+            }
+        }
+        
+        if combinedText.isEmpty {
+            throw TextExtractionError.noTextFound
+        }
+        
+        return combinedText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     private func getValue(from element: AXUIElement) -> String? {
         var value: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element,
-                                            kAXValueAttribute as CFString,
-                                            &value) == .success else {
+                                          kAXValueAttribute as CFString,
+                                          &value) == .success else {
             return nil
         }
         return value as? String
+    }
+    
+    private func getParentElement(of element: AXUIElement) -> AXUIElement? {
+        var parent: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXParentAttribute as CFString,
+                                          &parent) == .success else {
+            return nil
+        }
+        return (parent as! AXUIElement)
+    }
+    
+    private func getRole(of element: AXUIElement) -> String? {
+        var role: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element,
+                                          kAXRoleAttribute as CFString,
+                                          &role) == .success else {
+            return nil
+        }
+        return role as? String
     }
 }
 

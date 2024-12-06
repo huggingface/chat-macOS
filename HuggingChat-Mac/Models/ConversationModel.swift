@@ -258,7 +258,7 @@ enum ConversationState: Equatable {
                     if self.contextIsSupported {
                         
                         //                        print("SELECTED TEXT", content.selectedText)
-                        //                        print("FULL TEXT", content.fullText)
+                        print("FULL TEXT", content.fullText)
                         
                         self.contextAppSelectedText = content.selectedText
                         self.contextAppFullText = content.fullText

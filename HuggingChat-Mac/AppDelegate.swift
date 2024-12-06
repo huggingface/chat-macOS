@@ -150,7 +150,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if useContext {
                 conversationModel.fetchContext()
             }
-            NSApp.activate(ignoringOtherApps: true)
+//            NSApp.activate(ignoringOtherApps: true)
         }
     }
     
