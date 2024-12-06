@@ -14,6 +14,7 @@ struct VSCodeWindow: Decodable {
     let windowId: String
     let lastFocusTime: TimeInterval
     let content: String
+    let selectedText: String
     let language: String?
     let fileName: String?
     let timestamp: String
@@ -28,6 +29,7 @@ class VSCodeReader {
     
     struct VSCodeContent {
         let content: String
+        let selectedText: String
         let language: String?
         let fileName: String?
     }
@@ -40,6 +42,7 @@ class VSCodeReader {
                 if window.isFocused {
                     return VSCodeContent(
                         content: window.content,
+                        selectedText: window.selectedText,
                         language: window.language,
                         fileName: window.fileName
                     )
@@ -57,6 +60,7 @@ class VSCodeReader {
         
         return VSCodeContent(
             content: mostRecent.content,
+            selectedText: mostRecent.selectedText,
             language: mostRecent.language,
             fileName: mostRecent.fileName
         )

@@ -257,8 +257,8 @@ enum ConversationState: Equatable {
                     self.contextAppIcon = content.applicationIcon
                     if self.contextIsSupported {
                         
-                        //                        print("SELECTED TEXT", content.selectedText)
-                        print("FULL TEXT", content.fullText)
+                        print("SELECTED TEXT", content.selectedText)
+                        // print("FULL TEXT", content.fullText)
                         
                         self.contextAppSelectedText = content.selectedText
                         self.contextAppFullText = content.fullText
