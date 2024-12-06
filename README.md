@@ -15,7 +15,6 @@ HuggingChat macOS is a native chat interface designed specifically for macOS use
 https://github.com/user-attachments/assets/dacc87b2-2242-4ef5-84d5-9f9aae50c453
 
 
-
 ### Installation
 
 1. Go to the [Releases](https://github.com/huggingface/chat-macOS/releases) section of this repository.
@@ -24,7 +23,6 @@ https://github.com/user-attachments/assets/dacc87b2-2242-4ef5-84d5-9f9aae50c453
 4. Drag the `HuggingChat.app` to your Applications folder.
 
 #### Homebrew
-
 HuggingChat is also available via Homebrew. Simply run:
 
 ```bash
@@ -32,6 +30,9 @@ brew install --cask huggingchat
 ```
 
 That's it! You can now launch HuggingChat from your Applications folder or using the dedicated keyboard shortcut: `⌘ + Shift + Return`.
+
+#### VSCode Integration
+In order to use HuggingChat in VSCode, you'll need to install the [HuggingChat Extension](https://github.com/cyrilzakka/huggingchat-helper). After downloading it, add it to VSCode by navigating to the Extensions tab and selecting "Install from VSIX". Choose the downloaded file and restart VSCode. HuggingChat can now use context from your code editor to provide more accurate responses.
 
 ### Development Setup
 #### Prerequisites
