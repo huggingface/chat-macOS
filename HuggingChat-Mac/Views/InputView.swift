@@ -45,6 +45,15 @@ struct InputView: View {
         }
     }
     
+    // Focus Mode
+    @State private var shouldFocus = false {
+        didSet {
+            if let floatingPanel = NSApp.windows.first(where: { $0 is FloatingPanel }) as? FloatingPanel {
+                floatingPanel.updateFocusMode(shouldFocus)
+            }
+        }
+    }
+    
     // STT
     @Binding var isTranscribing: Bool
     
@@ -111,7 +120,7 @@ struct InputView: View {
                     }
                 }
             }
-            HStack(alignment: .firstTextBaseline) {
+            HStack(alignment: .center, spacing: 2) {
                 Group {
                 Menu {
                    // For now disable multimodality for local models
@@ -125,13 +134,23 @@ struct InputView: View {
                         
                         Divider()
                         
+                        Button {
+                            shouldFocus.toggle()
+                        } label: {
+                            Label(shouldFocus ? "Disable Focus Mode":"Enable Focus Mode", systemImage: "viewfinder.circle")
+                        }
+                        .keyboardShortcut("F", modifiers: [.command])
                         
+                        Divider()
+
                         Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
                             Label("Open Conversation", systemImage: "globe")
                         })
                         .keyboardShortcut("O")
                         .disabled(conversationModel.conversation?.id == nil)
                     }
+                    
+                    
                     
                     Button {
                         clearChat()
@@ -158,14 +177,16 @@ struct InputView: View {
                     })
                     .keyboardShortcut("Q")
                 } label: {
-                    Label("", systemImage: "plus")
+                    Label("", systemImage: "slider.horizontal.3")
+                        .labelStyle(.iconOnly)
                         .fontWeight(.semibold)
+                        .imageScale(.medium)
+                        
                 }
                 .focusEffectDisabled()
                 .help("More")
-                .menuStyle(.borderlessButton)
+                .menuStyle(MenuButtonStyle())
                 .menuIndicator(.hidden)
-                .frame(width: 20, alignment: .leading)
                 .fileImporter(
                     isPresented: $showFileImporter,
                     allowedContentTypes: getAllowedContentTypes(
@@ -197,7 +218,7 @@ struct InputView: View {
                     Image(systemName: isTranscribing ? "mic.fill":"mic")
                         .fontWeight(.semibold)
                 })
-                .buttonStyle(.plain)
+                .buttonStyle(HighlightButtonStyle())
                 .help("Toggle dictation")
                 
                 Button(action: {
@@ -206,10 +227,11 @@ struct InputView: View {
                         conversationModel.fetchContext()
                     }
                 }, label: {
-                    Image(systemName: useContext ? "doc.viewfinder.fill":"doc.viewfinder")
+                    Image(systemName: useContext ? "text.viewfinder.fill":"text.viewfinder")
                         .fontWeight(.semibold)
+                        .imageScale(.medium)
                 })
-                .buttonStyle(.plain)
+                .buttonStyle(HighlightButtonStyle())
                 .help("Toggle context")
                 .transaction { transaction in
                     transaction.animation = nil
@@ -228,6 +250,7 @@ struct InputView: View {
                         .foregroundStyle(.secondary)
                         .font(.footnote)
                         .fontWeight(.semibold)
+                        .labelStyle(SpacedLabelStyle(spacing: 5))
                         .layoutPriority(100)
                         .transition(.movingParts.wipe(
                                     angle: .degrees(180),
