@@ -100,7 +100,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .environment(conversationModel)
             .environment(audioModelManager)
             .frame(width: 500)
-            .fixedSize(horizontal: true, vertical: false)
+//            .fixedSize(horizontal: true, vertical: false)
         //            .edgesIgnoringSafeArea(.top)
         //            .frame(width: 500) // TODO: Should be relative to screen size
         newEntryPanel = FloatingPanel(contentRect: NSRect(x: 0, y: 0, width: 500, height: 400), backing: .buffered, defer: false)

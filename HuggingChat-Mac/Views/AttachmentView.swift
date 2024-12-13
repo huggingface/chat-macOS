@@ -9,6 +9,7 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+
 enum AttachmentContent {
     case text(String)
     case image(NSImage)
@@ -34,13 +35,12 @@ struct LLMAttachment: Identifiable, Equatable {
 }
 
 struct AttachmentView: View {
-    
     @Binding var allAttachments: [LLMAttachment]
     
     var body: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 5) {
-                ForEach(Array(allAttachments.enumerated()), id: \.element.id) { index, attachment in
+                ForEach(allAttachments, id: \.id) { attachment in
                     AttachmentPill(allAttachments: $allAttachments, attachment: attachment)
                 }
             }
@@ -80,7 +80,9 @@ struct AttachmentPill: View {
                     
                     
                     Button(action: {
-                        allAttachments.removeAll { $0.id == attachment.id }
+                        DispatchQueue.main.async {
+                                allAttachments.removeAll { $0.id == attachment.id }
+                        }
                     }, label: {
                         Label("", systemImage: "xmark.circle.fill")
                             .labelStyle(.iconOnly)
@@ -93,7 +95,7 @@ struct AttachmentPill: View {
             .padding(.horizontal, 5)
             .frame(height: 45)
             .frame(width: 160)
-            .background(.primary.quinary)
+            .background(.gray.opacity(0.3))
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .fixedSize()
             .onHover { state in
@@ -115,8 +117,9 @@ struct AttachmentPill: View {
         fileType: .image,
         content: .image(NSImage(named: "huggy.bp")!)
     )]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: $isTranscribing)
-        .environment(ModelManager())
-        .environment(\.colorScheme, .dark)
-        .environment(ConversationViewModel())
+            .environment(ModelManager())
+            .environment(\.colorScheme, .dark)
+            .environment(ConversationViewModel())
+            .environment(AudioModelManager())
 //    AttachmentPill(allAttachments: .constant([]))
 }

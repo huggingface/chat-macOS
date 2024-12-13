@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 struct ContextView: View {
     
     @Environment(ConversationViewModel.self) private var conversationModel
-    @AppStorage("useContext") private var useContext: Bool = false
+    @Binding var showingContext: Bool
     
     var body: some View {
         HStack(alignment: .center) {
@@ -32,7 +32,10 @@ struct ContextView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             Button(action: {
                 conversationModel.clearContext()
-                                useContext = false
+                withAnimation(.smooth(duration: 0.3)) {
+                    showingContext = false
+                }
+                
             }, label: {
                 Label("", systemImage: "xmark.circle.fill")
                     .labelStyle(.iconOnly)
@@ -49,7 +52,7 @@ struct ContextView: View {
                 bottomTrailing: 0,
                 topTrailing: 9),
                 style: .continuous)
-                .fill(.quaternary)
+                .fill(.gray.opacity(0.3))
             )
     }
 }

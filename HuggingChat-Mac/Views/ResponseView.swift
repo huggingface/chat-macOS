@@ -77,7 +77,7 @@ struct ResponseView: View {
                     .frame(height: responseSize.height)
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
-                    .background(.thickMaterial)
+                    .background(.ultraThickMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
@@ -163,7 +163,7 @@ struct ResponseView: View {
                     .frame(height: responseSize.height)
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollIndicators(.hidden)
-                    .background(.thickMaterial)
+                    .background(.ultraThickMaterial)
                     .overlay {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .stroke(.secondary.opacity(0.5), lineWidth: 1.0)

@@ -39,7 +39,7 @@ struct TranscriptionView: View {
         .frame(width: 95, height: 30)
         .background {
             Capsule()
-                .fill(.thickMaterial)
+                .fill(.ultraThickMaterial)
         }
         .onChange(of: audioModelManager.isTranscriptionComplete) { old, new in
             if audioModelManager.isTranscriptionComplete && audioModelManager.transcriptionSource == .transcriptionView {

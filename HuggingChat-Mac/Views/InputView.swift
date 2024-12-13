@@ -36,6 +36,8 @@ struct InputView: View {
     @AppStorage("selectedTheme") private var selectedTheme: String = "Default"
     @AppStorage("useContext") private var useContext: Bool = false
     
+    @State private var showingContext: Bool = false
+    
     // File importer
     @State private var showFileImporter = false {
         didSet {
@@ -57,16 +59,46 @@ struct InputView: View {
     // STT
     @Binding var isTranscribing: Bool
     
+    init(isLocal: Bool = false,
+         prompt: Binding<String>,
+         isSecondaryTextFieldVisible: Binding<Bool>,
+         animatablePrompt: Binding<String>,
+         isMainTextFieldVisible: Binding<Bool>,
+         allAttachments: Binding<[LLMAttachment]>,
+         startLoadingAnimation: Binding<Bool>,
+         isResponseVisible: Binding<Bool>,
+         isTranscribing: Binding<Bool>) {
+        
+        self.isLocal = isLocal
+        _prompt = prompt
+        _isSecondaryTextFieldVisible = isSecondaryTextFieldVisible
+        _animatablePrompt = animatablePrompt
+        _isMainTextFieldVisible = isMainTextFieldVisible
+        _allAttachments = allAttachments
+        _startLoadingAnimation = startLoadingAnimation
+        _isResponseVisible = isResponseVisible
+        _isTranscribing = isTranscribing
+        
+        // Initialize showingContext with the AppStorage value
+        _showingContext = State(initialValue: UserDefaults.standard.bool(forKey: "useContext"))
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if useContext {
-                ContextView()
+            if showingContext {
+                ContextView(showingContext: $showingContext)
                     .padding(.horizontal, -9)
-            } else {
-                if allAttachments.count > 0 {
+                    .transition(.move(edge: .top).combined(with: .blurReplace).combined(with: .opacity))
+            }
+            
+            Group {
+                if !allAttachments.isEmpty {
                     AttachmentView(allAttachments: $allAttachments)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
+            .animation(.smooth(duration: 0.3), value: allAttachments.isEmpty)
+            
             ZStack {
                 if isSecondaryTextFieldVisible {
                     TextField("", text: $animatablePrompt, axis: .vertical)
@@ -122,147 +154,149 @@ struct InputView: View {
             }
             HStack(alignment: .center, spacing: 2) {
                 Group {
-                Menu {
-                   // For now disable multimodality for local models
-                    if !isLocal {
-                        Button {
-                            showFileImporter = true
-                        } label: {
-                            Label("Import", systemImage: "doc.circle")
+                    Menu {
+                        // For now disable multimodality for local models
+                        if !isLocal {
+                            Button {
+                                showFileImporter = true
+                            } label: {
+                                Label("Import", systemImage: "doc.circle")
+                            }
+                            .keyboardShortcut("I", modifiers: [.command])
+                            
+                            Divider()
+                            
+                            Button {
+                                shouldFocus.toggle()
+                            } label: {
+                                Label(shouldFocus ? "Exit Focus Mode":"Enter Focus Mode", systemImage: "viewfinder.circle")
+                            }
+                            .keyboardShortcut("F", modifiers: [.command])
+                            
+                            Divider()
+                            
+                            Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
+                                Label("Open Conversation", systemImage: "globe")
+                            })
+                            .keyboardShortcut("O")
+                            .disabled(conversationModel.conversation?.id == nil)
                         }
-                        .keyboardShortcut("I", modifiers: [.command])
+                        
+                        
+                        
+                        Button {
+                            clearChat()
+                        } label: {
+                            Label("New Conversation", systemImage: "plus")
+                        }
+                        .keyboardShortcut("N", modifiers: [.command])
                         
                         Divider()
                         
-                        Button {
-                            shouldFocus.toggle()
-                        } label: {
-                            Label(shouldFocus ? "Disable Focus Mode":"Enable Focus Mode", systemImage: "viewfinder.circle")
-                        }
-                        .keyboardShortcut("F", modifiers: [.command])
-                        
-                        Divider()
-
-                        Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
-                            Label("Open Conversation", systemImage: "globe")
+                        // Settings
+                        SettingsLink(label: {
+                            Label("Settings...", systemImage: "gearshape")
                         })
-                        .keyboardShortcut("O")
-                        .disabled(conversationModel.conversation?.id == nil)
-                    }
-                    
-                    
-                    
-                    Button {
-                        clearChat()
-                    } label: {
-                        Label("New Conversation", systemImage: "plus")
-                    }
-                    .keyboardShortcut("N", modifiers: [.command])
-                    
-                    Divider()
-                    
-                    // Settings
-                    SettingsLink(label: {
-                        Label("Settings...", systemImage: "gearshape")
-                    })
-                    .keyboardShortcut(",", modifiers: [.command])
-                    
-                    Divider()
-                    
-                    // Quit
-                    Button(action: {
-                        NSApplication.shared.terminate(nil)
-                    }, label: {
-                        Label("Quit", systemImage: "xmark.circle")
-                    })
-                    .keyboardShortcut("Q")
-                } label: {
-                    Label("", systemImage: "slider.horizontal.3")
-                        .labelStyle(.iconOnly)
-                        .fontWeight(.semibold)
-                        .imageScale(.medium)
+                        .keyboardShortcut(",", modifiers: [.command])
                         
-                }
-                .focusEffectDisabled()
-                .help("More")
-                .menuStyle(MenuButtonStyle())
-                .menuIndicator(.hidden)
-                .fileImporter(
-                    isPresented: $showFileImporter,
-                    allowedContentTypes: getAllowedContentTypes(
-                        isMultimodal: conversationModel.isMultimodal,
-                        isLocal: isLocal,
-                        isTools: conversationModel.isTools
-                    ),
-                    allowsMultipleSelection: true
-                ) { result in
-                    switch result {
-                    case .success(let files):
-                        files.forEach { url in
-                            let gotAccess = url.startAccessingSecurityScopedResource()
-                            if !gotAccess { return }
-                            // Handle URL based on type
-                            handleFileImport(url: url)
-                            url.stopAccessingSecurityScopedResource()
+                        Divider()
+                        
+                        // Quit
+                        Button(action: {
+                            NSApplication.shared.terminate(nil)
+                        }, label: {
+                            Label("Quit", systemImage: "xmark.circle")
+                        })
+                        .keyboardShortcut("Q")
+                    } label: {
+                        Label("", systemImage: "slider.horizontal.3")
+                            .labelStyle(.iconOnly)
+                            .fontWeight(.semibold)
+                            .imageScale(.medium)
+                        
+                    }
+                    .focusEffectDisabled()
+                    .help("More")
+                    .menuStyle(MenuButtonStyle())
+                    .menuIndicator(.hidden)
+                    .fileImporter(
+                        isPresented: $showFileImporter,
+                        allowedContentTypes: getAllowedContentTypes(
+                            isMultimodal: conversationModel.isMultimodal,
+                            isLocal: isLocal,
+                            isTools: conversationModel.isTools
+                        ),
+                        allowsMultipleSelection: true
+                    ) { result in
+                        switch result {
+                        case .success(let files):
+                            files.forEach { url in
+                                let gotAccess = url.startAccessingSecurityScopedResource()
+                                if !gotAccess { return }
+                                // Handle URL based on type
+                                handleFileImport(url: url)
+                                url.stopAccessingSecurityScopedResource()
+                            }
+                        case .failure(let error):
+                            print(error.localizedDescription)
                         }
-                    case .failure(let error):
-                        print(error.localizedDescription)
                     }
+                    
+                    Button(action: {
+                        withAnimation(.spring(dampingFraction: 1)) {
+                            isTranscribing.toggle()
+                        }
+                    }, label: {
+                        Image(systemName: isTranscribing ? "mic.fill":"mic")
+                            .fontWeight(.semibold)
+                    })
+                    .buttonStyle(HighlightButtonStyle())
+                    .help("Toggle dictation")
+                    
+                    Button(action: {
+                        withAnimation(.smooth(duration: 0.3)) {
+                            showingContext.toggle()
+                        }
+                    }, label: {
+                        Image(systemName: showingContext ? "doc.viewfinder.fill":"doc.viewfinder")
+                            .fontWeight(.semibold)
+                            .imageScale(.medium)
+                    })
+                    .buttonStyle(HighlightButtonStyle())
+                    .help("Toggle context")
                 }
-                
-                Button(action: {
-                    withAnimation(.spring(dampingFraction: 1)) {
-                        isTranscribing.toggle()
-                    }
-                }, label: {
-                    Image(systemName: isTranscribing ? "mic.fill":"mic")
-                        .fontWeight(.semibold)
-                })
-                .buttonStyle(HighlightButtonStyle())
-                .help("Toggle dictation")
-                
-                Button(action: {
-                    useContext.toggle()
-                    if useContext {
-                        conversationModel.fetchContext()
-                    }
-                }, label: {
-                    Image(systemName: useContext ? "text.viewfinder.fill":"text.viewfinder")
-                        .fontWeight(.semibold)
-                        .imageScale(.medium)
-                })
-                .buttonStyle(HighlightButtonStyle())
-                .help("Toggle context")
-                .transaction { transaction in
-                    transaction.animation = nil
-                }
-            }
                 
                 
                 Spacer()
                 
                 if isTranscribing {
                     AudioBarView()
-                        
+                    
                 } else {
                     let externalModelName = selectedExternalModel.split(separator: "/", maxSplits: 1)[1]
                     Label(isLocal ? selectedLocalModel:String(externalModelName), systemImage: isLocal ? "laptopcomputer":"globe")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.gray.opacity(0.5))
                         .font(.footnote)
                         .fontWeight(.semibold)
                         .labelStyle(SpacedLabelStyle(spacing: 5))
                         .layoutPriority(100)
                         .transition(.movingParts.wipe(
-                                    angle: .degrees(180),
-                                    blurRadius: 50
-                                  ))
+                            angle: .degrees(180),
+                            blurRadius: 50
+                        ))
                 }
                 
                 
-               
+                
             }
             .frame(height: 30)
             
+        }
+        .onChange(of: showingContext) {
+            useContext = showingContext
+            if useContext {
+                conversationModel.fetchContext()
+            }
         }
         .padding(.horizontal)
     }
@@ -274,20 +308,25 @@ struct InputView: View {
         
         do {
             // Check file size - 10MB = 10 * 1024 * 1024 bytes
-//            let fileSize = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
-//            let maxSize = 10 * 1024 * 1024
-//            
-//            guard fileSize <= maxSize else {
-//                throw HFError.fileLimitExceeded
-//            }
+            //            let fileSize = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
+            //            let maxSize = 10 * 1024 * 1024
+            //
+            //            guard fileSize <= maxSize else {
+            //                throw HFError.fileLimitExceeded
+            //            }
             
             guard let typeID = try url.resourceValues(forKeys: [.typeIdentifierKey]).typeIdentifier,
                   let utType = UTType(typeID) else { return }
             guard let supertypes = UTType(typeID)?.supertypes else { return }
             
-            print("TypeID:", typeID)
-            print("UTType:", utType)
-            print("Supertypes:", supertypes)
+            if allAttachments.contains(where: {
+                $0.filename == filename &&
+                $0.fileExtension == fileExtension &&
+                $0.url == url &&
+                $0.fileType == utType
+            }) {
+                return
+            }
             
             if supertypes.contains(.image) {
                 guard let imageData = try? Data(contentsOf: url),
@@ -303,18 +342,22 @@ struct InputView: View {
                     fileType: utType,
                     content: .image(image)
                 )
-                allAttachments.append(attachment)
-               
+                withAnimation(.smooth(duration: 0.3)) {
+                    allAttachments.append(attachment)
+                }
+                
             } else if supertypes.contains(.text) {
                 let textContents = try String(contentsOf: url)
                 if !textContents.isEmpty {
                     let attachment = LLMAttachment(filename: filename,
-                                                 fileExtension: fileExtension,
-                                                 url: url,
-                                                 fileIcon: NSWorkspace.shared.icon(forFile: url.path()),
-                                                 fileType: utType,
-                                                 content: .text(textContents))
-                    allAttachments.append(attachment)
+                                                   fileExtension: fileExtension,
+                                                   url: url,
+                                                   fileIcon: NSWorkspace.shared.icon(forFile: url.path()),
+                                                   fileType: utType,
+                                                   content: .text(textContents))
+                    withAnimation(.smooth(duration: 0.3)) {
+                        allAttachments.append(attachment)
+                    }
                 }
             } else if utType == .pdf || typeID == "com.adobe.pdf" || fileExtension == "pdf" {
                 // PDF handling code here
@@ -330,7 +373,9 @@ struct InputView: View {
                     fileType: utType,
                     content: .pdf(pdfData)
                 )
-                allAttachments.append(attachment)
+                withAnimation(.smooth(duration: 0.3)) {
+                    allAttachments.append(attachment)
+                }
             } else {
                 print("Unsupported file type:", supertypes)
             }
@@ -359,24 +404,24 @@ struct InputView: View {
         isMainTextFieldVisible = false
         isSecondaryTextFieldVisible = true
         
-//        if !allAttachments.isEmpty {
-//            let filteredContents = allAttachments.filter { attachment in
-//                attachment.fileType.conforms(to: .sourceCode) || attachment.fileType.conforms(to: .text)
-//            }
-//            if !filteredContents.isEmpty {
-//                // TODO: Fix this for local when multimodality is added
-//                prompt += "\n\n" + filteredContents.compactMap { attachment in
-//                    switch attachment.content {
-//                    case .text(let content):
-//                        return "\(attachment.filename):\n\(content)"
-//                    case .image(_):
-//                        return prompt
-//                    case .pdf(_):
-//                        return prompt
-//                    }
-//                }.joined(separator: "\n\n")
-//            }
-//        }
+        //        if !allAttachments.isEmpty {
+        //            let filteredContents = allAttachments.filter { attachment in
+        //                attachment.fileType.conforms(to: .sourceCode) || attachment.fileType.conforms(to: .text)
+        //            }
+        //            if !filteredContents.isEmpty {
+        //                // TODO: Fix this for local when multimodality is added
+        //                prompt += "\n\n" + filteredContents.compactMap { attachment in
+        //                    switch attachment.content {
+        //                    case .text(let content):
+        //                        return "\(attachment.filename):\n\(content)"
+        //                    case .image(_):
+        //                        return prompt
+        //                    case .pdf(_):
+        //                        return prompt
+        //                    }
+        //                }.joined(separator: "\n\n")
+        //            }
+        //        }
         if isLocal {
             let localPrompt = prompt
             Task {

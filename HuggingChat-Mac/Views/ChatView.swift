@@ -106,7 +106,7 @@ struct ChatView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             
                             .frame(height: errorSize.height)
-                            .background(.thickMaterial)
+                            .background(.ultraThickMaterial)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                                     .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
@@ -135,7 +135,7 @@ struct ChatView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
                     .frame(height: errorSize.height)
-                    .background(.thickMaterial)
+                    .background(.ultraThickMaterial)
                     .overlay {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .stroke(.secondary.opacity(0.5), lineWidth: 1.0)
@@ -147,8 +147,6 @@ struct ChatView: View {
         .modifier(Shake(animatableData: CGFloat(errorAttempts)))
         .padding()
         .padding(.horizontal, 10) // Allows for shake animation
-        .animation(.smooth, value: allAttachments.count)
-        .animation(.smooth, value: useContext)
         
         .onChange(of: conversationModel.state) {
             if conversationModel.state == .error {
@@ -226,7 +224,7 @@ struct ChatView: View {
             isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
         .padding(.vertical, 7)
-        .background(.thickMaterial)
+        .background(.ultraThickMaterial)
         .overlay(content: {
             if startLoadingAnimation {
                 ZStack {
@@ -257,7 +255,7 @@ struct ChatView: View {
             isResponseVisible: $isResponseVisible, isTranscribing: $isTranscribing
         )
         .padding(.vertical, 7)
-        .background(.thickMaterial)
+        .background(.ultraThickMaterial)
         .overlay(content: {
             if startLoadingAnimation {
                 ZStack {
