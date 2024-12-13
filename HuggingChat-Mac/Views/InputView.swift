@@ -100,17 +100,17 @@ struct InputView: View {
             .animation(.smooth(duration: 0.3), value: allAttachments.isEmpty)
             
             ZStack {
-                if isSecondaryTextFieldVisible {
-                    TextField("", text: $animatablePrompt, axis: .vertical)
-                        .font(ThemingEngine.shared.currentTheme.quickBarFont)
-                        .id("hidden-\(selectedTheme)")
-                        .textFieldStyle(.plain)
-                        .font(.title3)
-                        .lineLimit(4)
-                        .frame(minHeight: 50, alignment: .top)
-                        .allowsHitTesting(false)
-                        .transition(.asymmetric(insertion: .identity, removal: .move(edge: .bottom).combined(with: .opacity)))
-                }
+//                if isSecondaryTextFieldVisible {
+//                    TextField("", text: $animatablePrompt, axis: .vertical)
+//                        .font(ThemingEngine.shared.currentTheme.quickBarFont)
+//                        .id("hidden-\(selectedTheme)")
+//                        .textFieldStyle(.plain)
+//                        .font(.title3)
+//                        .lineLimit(4)
+//                        .frame(minHeight: 50, alignment: .top)
+//                        .allowsHitTesting(false)
+//                        .transition(.asymmetric(insertion: .identity, removal: .move(edge: .bottom).combined(with: .opacity)))
+//                }
                 TextField("Ask anything...", text: $prompt, axis: .vertical)
                     .font(ThemingEngine.shared.currentTheme.quickBarFont)
                     .id("main-\(selectedTheme)")
@@ -456,12 +456,14 @@ struct InputView: View {
 }
 
 #Preview("dark") {
-    ChatView()
-        .frame(height: 300)
-        .environment(ModelManager())
-        .environment(ConversationViewModel())
-        .environment(AudioModelManager())
-        .colorScheme(.dark)
+    ZStack(alignment: .top) {
+        ChatView()
+            .frame(height: 600)
+            .environment(ModelManager())
+            .environment(ConversationViewModel())
+            .environment(AudioModelManager())
+            .colorScheme(.dark)
+    }
 }
 
 //#Preview {

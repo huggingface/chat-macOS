@@ -19,6 +19,7 @@ enum ConversationState: Equatable {
     var isTools: Bool = false
     var model: AnyObject?
     var message: MessageRow? = nil
+    var messages: [MessageRow] = []
     var error: HFError?
     
     // Tools
@@ -80,6 +81,37 @@ enum ConversationState: Equatable {
     
     var state: ConversationState = .none
     
+    func loadConversation(_ conversation: Conversation) {
+        self.conversation = conversation
+        HuggingChatSession.shared.currentConversation = conversation.id
+        loadHistory()
+    }
+    
+    private func loadHistory() {
+        guard let conversation = conversation else { return }
+        state = .loading
+        
+        NetworkService.getConversation(id: conversation.id)
+            .receive(on: DispatchQueue.main)
+            .map { [weak self] (conversation: Conversation) -> [MessageRow] in
+                guard let self else { return [] }
+                self.conversation = conversation
+                return self.buildHistory(conversation: conversation)
+            }
+            .sink { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    print("Error loading conversation: \(error.localizedDescription)")
+                }
+            } receiveValue: { [weak self] messages in
+                self?.messages = messages
+//                self?.internalDelegate?.reloadData()
+//                self?.internalDelegate?.scrollToBottom(animated: false)
+                self?.state = .loaded
+            }.store(in: &cancellables)
+    }
+    
     private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
         if let model = model as? LLMModel {
             createConversation(with: model, prompt: prompt, withFiles: withFiles, usingTools: usingTools)
@@ -122,6 +154,9 @@ enum ConversationState: Equatable {
         
         trimmedText += text.trimmingCharacters(in: .whitespaces)
         
+        let userMessage = MessageRow(type: .user, isInteracting: false, contentType: .rawText(trimmedText))
+        messages.append(userMessage)
+        
         let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002", "00000000000000000000000a"] : nil)
         sendPromptRequest(req: req, conversationID: conversation.id)
     }
@@ -142,14 +177,15 @@ enum ConversationState: Equatable {
         imageURL = nil
         let sendPromptHandler = SendPromptHandler(conversationId: conversationID)
         self.sendPromptHandler = sendPromptHandler
-//        let messageRow = sendPromptHandler.messageRow
+        let messageRow = sendPromptHandler.messageRow
+        messages.append(messageRow)
         
         let pub = sendPromptHandler.update
             .receive(on: RunLoop.main).eraseToAnyPublisher()
 
-        pub.scan((0, nil), { (tuple, prod) in
-            (tuple.0 + 1, prod)
-        }).eraseToAnyPublisher()
+        pub.scan((0, messageRow)) { (tuple, newMessage) in
+            (tuple.0 + 1, newMessage)
+        }.eraseToAnyPublisher()
             .sink { [weak self] completion in
                 guard let self else { return }
                 switch completion {
@@ -161,6 +197,7 @@ enum ConversationState: Equatable {
                 case .failure(let error):
                     switch error {
                     case .httpTooManyRequest:
+                        self.messages.removeLast(2)
                         self.state = .error
                         self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
                     default:
@@ -169,15 +206,22 @@ enum ConversationState: Equatable {
                     }
                 }
             } receiveValue: { [weak self] obj in
+                guard let self else { return }
                 let (count, messageRow) = obj
+                
                 if count == 1 {
-                    self?.updateConversation(conversationID: conversationID)
+                    self.updateConversation(conversationID: conversationID)
                 }
-                self?.message = messageRow
-                if let fileInfo = self?.message?.fileInfo,
+                
+                self.message = messageRow
+                if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
+                    self.messages[lastIndex] = messageRow
+                }
+
+                if let fileInfo = self.message?.fileInfo,
                    fileInfo.mime.hasPrefix("image/"),
-                let conversationID = self?.conversation?.id {
-                    self?.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
+                   let conversationID = self.conversation?.id {
+                    self.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
                 }
                 
             }.store(in: &cancellables)
@@ -217,6 +261,15 @@ enum ConversationState: Equatable {
             self?.isTools = (model as! LLMModel).tools
             
         }.store(in: &cancellables)
+    }
+    
+    private func buildHistory(conversation: Conversation) -> [MessageRow] {
+        let messages = conversation.messages.compactMap({ (message: Message) -> MessageRow? in
+           return MessageRow(message: message)
+        })
+//        let historyParser = HistoryParser(isDarkMode: isDarkMode)
+//        messages = historyParser.parseMessages(messages: messages)
+        return messages
     }
     
     func reset() {

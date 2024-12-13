@@ -41,6 +41,7 @@ enum MessageType: CustomStringConvertible {
 }
 
 final class MessageRow: Identifiable, PromptRequestConvertible {
+    
 
     private(set) var id = UUID().uuidString.lowercased()
 
