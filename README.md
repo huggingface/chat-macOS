@@ -18,9 +18,9 @@ https://github.com/user-attachments/assets/dacc87b2-2242-4ef5-84d5-9f9aae50c453
 ### Installation
 
 1. Go to the [Releases](https://github.com/huggingface/chat-macOS/releases) section of this repository.
-2. Download the latest `HuggingChat-macOS.zip` file.
+2. Download the latest `HuggingChat-Mac.zip` file.
 3. Unzip the downloaded file.
-4. Drag the `HuggingChat.app` to your Applications folder.
+4. Drag the `HuggingChat-Mac.app` to your Applications folder.
 
 #### Homebrew
 HuggingChat is also available via Homebrew. Simply run:
