@@ -63,5 +63,6 @@ struct ContextView: View {
         .environment(ModelManager())
         .environment(ConversationViewModel())
         .environment(AudioModelManager())
+        .environment(MenuViewModel())
         .colorScheme(.dark)
 }

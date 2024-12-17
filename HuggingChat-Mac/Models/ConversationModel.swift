@@ -19,7 +19,26 @@ enum ConversationState: Equatable {
     var isTools: Bool = false
     var model: AnyObject?
     var message: MessageRow? = nil
-    var messages: [MessageRow] = []
+    var messages: [MessageRow] = [
+//        MessageRow(
+//            type: .user,
+//            isInteracting: false,
+//            contentType: .rawText("What is the meaning of life?")
+//        ),
+//        MessageRow(
+//            type: .assistant,
+//            isInteracting: false,
+//            contentType: .rawText("""
+//### How to Sort a List in Python
+//
+//1. **Sort a List of Numbers:**
+//   ```python
+//   numbers = [5, 2, 9, 1, 3]
+//   numbers.sort()
+//   print(numbers)
+//""")
+//        ),
+    ]
     var error: HFError?
     
     // Tools
@@ -75,7 +94,7 @@ enum ConversationState: Equatable {
     private(set) var conversation: Conversation? {
         didSet {
             guard let conversation = conversation else { return }
-            HuggingChatSession.shared.currentConversation = conversation.id
+            HuggingChatSession.shared.currentConversation = conversation.serverId
         }
     }
     
@@ -83,7 +102,7 @@ enum ConversationState: Equatable {
     
     func loadConversation(_ conversation: Conversation) {
         self.conversation = conversation
-        HuggingChatSession.shared.currentConversation = conversation.id
+        HuggingChatSession.shared.currentConversation = conversation.serverId
         loadHistory()
     }
     
@@ -91,7 +110,7 @@ enum ConversationState: Equatable {
         guard let conversation = conversation else { return }
         state = .loading
         
-        NetworkService.getConversation(id: conversation.id)
+        NetworkService.getConversation(id: conversation.serverId)
             .receive(on: DispatchQueue.main)
             .map { [weak self] (conversation: Conversation) -> [MessageRow] in
                 guard let self else { return [] }
@@ -131,6 +150,7 @@ enum ConversationState: Equatable {
                     self.error = .verbose("Something's wrong. Check your internet connection and try again.")
                 }
             } receiveValue: { [weak self] conversation in
+                print("Recieved")
                 self?.conversation = conversation
                 self?.sendAttributed(text: prompt, withFiles: withFiles)
             }.store(in: &cancellables)
@@ -154,11 +174,12 @@ enum ConversationState: Equatable {
         
         trimmedText += text.trimmingCharacters(in: .whitespaces)
         
+        // TODO: Add files here
         let userMessage = MessageRow(type: .user, isInteracting: false, contentType: .rawText(trimmedText))
         messages.append(userMessage)
         
         let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: withFiles, tools: isTools ?  ["000000000000000000000001", "000000000000000000000002", "00000000000000000000000a"] : nil)
-        sendPromptRequest(req: req, conversationID: conversation.id)
+        sendPromptRequest(req: req, conversationID: conversation.serverId)
     }
     
     func sendTranscript(text: String) {
@@ -168,7 +189,7 @@ enum ConversationState: Equatable {
         }
         let trimmedText = text.trimmingCharacters(in: .whitespaces)
         let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebService, files: nil, tools: nil)
-        sendPromptRequest(req: req, conversationID: conversation.id)
+        sendPromptRequest(req: req, conversationID: conversation.serverId)
     }
     
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
@@ -200,9 +221,11 @@ enum ConversationState: Equatable {
                         self.messages.removeLast(2)
                         self.state = .error
                         self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
+                        print(error.localizedDescription)
                     default:
                         self.state = .error
                         self.error = error
+                        print(error.localizedDescription)
                     }
                 }
             } receiveValue: { [weak self] obj in
@@ -214,6 +237,7 @@ enum ConversationState: Equatable {
                 }
                 
                 self.message = messageRow
+                print(messageRow)
                 if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
                     self.messages[lastIndex] = messageRow
                 }

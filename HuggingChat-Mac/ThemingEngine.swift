@@ -171,3 +171,12 @@ struct ThemedFontGroup: MarkdownFontGroup {
     }
 }
 
+#Preview {
+    let themingEngine = ThemingEngine.shared
+    themingEngine.setTheme(.chromeDino)
+    
+    return ConversationView(columnVisibility: .constant(.automatic))
+        .environment(ModelManager())
+        .environment(ConversationViewModel())
+        .environment(themingEngine)
+}

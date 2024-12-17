@@ -36,7 +36,7 @@ class FloatingPanel: NSPanel, NSWindowDelegate {
     var snapPosition: SnapPosition = .topRight
     
     init(contentRect: NSRect, backing: NSWindow.BackingStoreType, defer flag: Bool) {
-        super.init(contentRect: contentRect, styleMask: [.nonactivatingPanel, .fullSizeContentView, .borderless], backing: backing, defer: flag)
+        super.init(contentRect: contentRect, styleMask: [.nonactivatingPanel, .fullSizeContentView, .resizable], backing: backing, defer: flag)
         self.delegate = self
         
         // Spotlight behavior
@@ -47,7 +47,11 @@ class FloatingPanel: NSPanel, NSWindowDelegate {
         self.collectionBehavior.insert(.fullScreenAuxiliary)
         self.collectionBehavior.insert(.canJoinAllSpaces)
         
+        self.titleVisibility = .hidden
         self.titlebarAppearsTransparent = true
+        self.standardWindowButton(.closeButton)?.isHidden = true
+        self.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        self.standardWindowButton(.zoomButton)?.isHidden = true
         
         self.isMovableByWindowBackground = true
         self.isReleasedWhenClosed = false

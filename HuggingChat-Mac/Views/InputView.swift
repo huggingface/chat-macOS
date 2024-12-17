@@ -11,6 +11,11 @@ import Pow
 
 struct InputView: View {
     
+    enum FocusedField {
+        case localInput
+        case serverInput
+    }
+    
     var isLocal: Bool = false
     
     @Environment(ModelManager.self) private var modelManager
@@ -24,9 +29,8 @@ struct InputView: View {
     @Binding var isMainTextFieldVisible: Bool
     @Binding var allAttachments: [LLMAttachment]
     @Binding var startLoadingAnimation: Bool
-    @Binding var isResponseVisible: Bool
     
-    @FocusState private var focusedField: ChatView.FocusedField?
+    @FocusState private var focusedField: FocusedField?
     @FocusState private var isMainTextFieldFocused: Bool
     
     @AppStorage("localModel") private var selectedLocalModel: String = "None"
@@ -66,7 +70,6 @@ struct InputView: View {
          isMainTextFieldVisible: Binding<Bool>,
          allAttachments: Binding<[LLMAttachment]>,
          startLoadingAnimation: Binding<Bool>,
-         isResponseVisible: Binding<Bool>,
          isTranscribing: Binding<Bool>) {
         
         self.isLocal = isLocal
@@ -76,7 +79,6 @@ struct InputView: View {
         _isMainTextFieldVisible = isMainTextFieldVisible
         _allAttachments = allAttachments
         _startLoadingAnimation = startLoadingAnimation
-        _isResponseVisible = isResponseVisible
         _isTranscribing = isTranscribing
         
         // Initialize showingContext with the AppStorage value
@@ -84,7 +86,7 @@ struct InputView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             if showingContext {
                 ContextView(showingContext: $showingContext)
                     .padding(.horizontal, -9)
@@ -130,6 +132,7 @@ struct InputView: View {
                         }
                     }
             }
+            .padding(.top, 10)
             .onChange(of: conversationModel.state) {
                 if conversationModel.state == .generating {
                     withAnimation(.easeIn) {
@@ -175,7 +178,7 @@ struct InputView: View {
                             
                             Divider()
                             
-                            Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.id ?? ""))!, label: {
+                            Link(destination: URL(string: "https://huggingface.co/chat/conversation/" + (conversationModel.conversation?.serverId ?? ""))!, label: {
                                 Label("Open Conversation", systemImage: "globe")
                             })
                             .keyboardShortcut("O")
@@ -289,7 +292,7 @@ struct InputView: View {
                 
                 
             }
-            .frame(height: 30)
+            .frame(height: 20)
             
         }
         .onChange(of: showingContext) {
@@ -393,13 +396,11 @@ struct InputView: View {
             conversationModel.message = nil
         }
         allAttachments.removeAll()
-        isResponseVisible = false
         prompt = ""
         animatablePrompt = ""
     }
     
     private func submitMessage() {
-        isResponseVisible = true
         animatablePrompt = prompt
         isMainTextFieldVisible = false
         isSecondaryTextFieldVisible = true
@@ -462,6 +463,7 @@ struct InputView: View {
             .environment(ModelManager())
             .environment(ConversationViewModel())
             .environment(AudioModelManager())
+            .environment(MenuViewModel())
             .colorScheme(.dark)
     }
 }

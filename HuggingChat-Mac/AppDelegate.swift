@@ -36,6 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @State var modelManager = ModelManager()
     @State var audioModelManager = AudioModelManager()
     @State var conversationModel = ConversationViewModel()
+    @State var menuModel = MenuViewModel()
     @State var themeEngine = ThemingEngine()
     
     var newEntryPanel: FloatingPanel!
@@ -97,9 +98,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = ChatView()
             .environment(themeEngine)
             .environment(modelManager)
+            .environment(menuModel)
             .environment(conversationModel)
             .environment(audioModelManager)
-            .frame(minWidth: 300, idealWidth: 450, maxWidth: 600)
+            .frame(minWidth: 400, idealWidth: 450, maxWidth: 600)
+            .frame(minHeight: 300, idealHeight: 300)
 //            .fixedSize(horizontal: true, vertical: false)
         //            .edgesIgnoringSafeArea(.top)
         //            .frame(width: 500) // TODO: Should be relative to screen size

@@ -116,7 +116,7 @@ struct AttachmentPill: View {
         fileIcon: NSImage(named: "huggy.bp")!,
         fileType: .image,
         content: .image(NSImage(named: "huggy.bp")!)
-    )]), startLoadingAnimation: .constant(true), isResponseVisible: .constant(false), isTranscribing: $isTranscribing)
+    )]), startLoadingAnimation: .constant(true), isTranscribing: $isTranscribing)
             .environment(ModelManager())
             .environment(\.colorScheme, .dark)
             .environment(ConversationViewModel())

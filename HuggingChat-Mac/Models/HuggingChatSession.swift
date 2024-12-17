@@ -19,7 +19,7 @@ import AuthenticationServices
     var token: String?
     var conversations: [Conversation] = []
     var availableLLM: [LLMModel] = []
-    var currentConversation: String = ""
+    var currentConversation: String?
     var currentUser: HuggingChatUser?
     
     private var cancellables: [AnyCancellable] = []

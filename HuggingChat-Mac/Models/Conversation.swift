@@ -9,7 +9,8 @@ import Combine
 import Foundation
 
 final class Conversation: Decodable, Identifiable {
-    let id: String
+    let id = UUID()
+    let serverId: String
     var title: String
     let modelId: String
     let updatedAt: Date
@@ -18,10 +19,10 @@ final class Conversation: Decodable, Identifiable {
     var assistantId: String?
 
     init(
-        id: String, title: String, modelId: String, updatedAt: Date, messages: [Message],
+        serverId: String, title: String, modelId: String, updatedAt: Date, messages: [Message],
         areMessagesLoaded: Bool, assistantId: String? = nil
     ) {
-        self.id = id
+        self.serverId = serverId
         self.title = title
         self.modelId = modelId
         self.updatedAt = updatedAt
@@ -42,7 +43,7 @@ final class Conversation: Decodable, Identifiable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
+        self.serverId = try container.decode(String.self, forKey: .id)
         self.title = try container.decode(String.self, forKey: .title)
         self.modelId = try container.decode(String.self, forKey: .modelId)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
@@ -62,7 +63,7 @@ final class Conversation: Decodable, Identifiable {
     }
 
     func loadMessages() -> AnyPublisher<[Message], HFError> {
-        return NetworkService.getConversation(id: id).map { [weak self] conv in
+        return NetworkService.getConversation(id: serverId).map { [weak self] conv in
             self?.messages = conv.messages
             return conv.messages
         }.eraseToAnyPublisher()
@@ -70,13 +71,13 @@ final class Conversation: Decodable, Identifiable {
 
     static func conversation(with id: String) -> Conversation {
         return Conversation(
-            id: id, title: "Blahblahbla", modelId: "", updatedAt: Date(), messages: [],
+            serverId: id, title: "Blahblahbla", modelId: "", updatedAt: Date(), messages: [],
             areMessagesLoaded: false)
     }
 
     static func conversation(title: String, updatedAt: Date) -> Conversation {
         return Conversation(
-            id: UUID().uuidString, title: title, modelId: "model", updatedAt: updatedAt,
+            serverId: UUID().uuidString, title: title, modelId: "model", updatedAt: updatedAt,
             messages: [], areMessagesLoaded: false)
     }
     

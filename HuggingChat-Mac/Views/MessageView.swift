@@ -37,10 +37,12 @@ struct MessageView: View {
     }
 }
 
-#Preview {
-    MessageView(message: MessageRow(
-        type: .user,
-        isInteracting: false,
-        contentType: .rawText("How can I help you today?")
-    ))
+#Preview("dark") {
+    ChatView()
+        .frame(width: 300, height: 500)
+        .environment(ModelManager())
+        .environment(ConversationViewModel())
+        .environment(AudioModelManager())
+        .environment(MenuViewModel())
+        .colorScheme(.dark)
 }
