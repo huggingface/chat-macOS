@@ -138,6 +138,7 @@ struct DetailContent: View {
                             serverInputView.focused($focusedField, equals: .serverInput)
                         }
                     })
+                    .defaultScrollAnchor(.bottom)
                 }
             }
         }
@@ -261,8 +262,8 @@ struct DetailContent: View {
         .padding(.vertical, 7)
         .background {
             RoundedRectangle(cornerRadius: 20.0)
-                .fill(.quinary)
-                            .opacity(0.25)
+                .fill(.ultraThickMaterial)
+//                            .opacity(0.25)
                             .shadow(radius: 10.0)
                             
         }
