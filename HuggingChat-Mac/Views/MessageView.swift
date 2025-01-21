@@ -27,7 +27,7 @@ struct MessageView: View {
                 .multilineTextAlignment(.leading)
                 .textSelection(.enabled)
                 .padding(.horizontal, message.type == .user ? 10:0)
-                .padding(.vertical, message.type == .user ? 8:0)
+                .padding(.vertical, 8)
                 .background(message.type == .user ? RoundedRectangle(cornerRadius: 20, style: .continuous).fill(.gray.opacity(0.3)):nil)
         }
         .frame(maxWidth: .infinity, alignment: message.type == .user ? .trailing:.leading)

@@ -125,7 +125,8 @@ struct DetailContent: View {
                         }
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
-                    .contentMargins(.vertical, 10, for: .scrollContent)
+                    .contentMargins(.top, 10, for: .scrollContent)
+                    .contentMargins(.bottom, -40, for: .scrollContent)
                     .scrollIndicators(.hidden)
                     .safeAreaInset(edge: .bottom, content: {
                         if selectedLocalModel != "None" {
