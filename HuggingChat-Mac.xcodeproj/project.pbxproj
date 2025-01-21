@@ -45,33 +45,17 @@
 		F1C4B01A2C7A62F100CE47CC /* Exceptions for "HuggingChat-Mac" folder in "HuggingChat-Mac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Fonts/ChicagoFLF.ttf,
-				Fonts/pixChicago.ttf,
-				Fonts/PixeloidSans.ttf,
 				Info.plist,
 			);
 			target = F13631882C6F346A009DEF15 /* HuggingChat-Mac */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		F1E3D1CE2C9FD9B2005A49BE /* Exceptions for "HuggingChat-Mac" folder in "Copy Files" phase from "HuggingChat-Mac" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = F1E4D0402C9FD3C900E69E61 /* CopyFiles */;
-			membershipExceptions = (
-				Fonts/ChicagoFLF.ttf,
-				Fonts/pixChicago.ttf,
-				Fonts/PixeloidSans.ttf,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F136318B2C6F346A009DEF15 /* HuggingChat-Mac */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				F1C4B01A2C7A62F100CE47CC /* Exceptions for "HuggingChat-Mac" folder in "HuggingChat-Mac" target */,
-				F1E3D1CE2C9FD9B2005A49BE /* Exceptions for "HuggingChat-Mac" folder in "Copy Files" phase from "HuggingChat-Mac" target */,
 			);
 			path = "HuggingChat-Mac";
 			sourceTree = "<group>";
