@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appDelegate: AppDelegate
+    @Environment(CoordinatorModel.self) private var coordinator
     
     var body: some View {
         NavigationSplitView(sidebar: {
@@ -29,4 +30,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
 }

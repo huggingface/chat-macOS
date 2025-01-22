@@ -42,29 +42,30 @@ struct ChatView: View {
                         ScrollView(.vertical) {
 #if DEBUG
                             LazyVStack {
-                                ForEach(1...70, id: \.self) { value in
-                                    Text("Row \(value)")
-                                        .id(value)
-                                }
+//                                ForEach(1...70, id: \.self) { value in
+//                                    Text("Row \(value)")
+//                                        .id(value)
+//                                        .frame(height: 50)
+//                                }
                             }
 #endif
                         }
-                        
+                        .defaultScrollAnchor(anchorToBottom ? .bottom : .top)
                         .contentMargins(.bottom, -20, for: .scrollContent)
-                        .contentMargins(.top, 20, for: .scrollContent)
-                        // Anchor to bottom when content view becomes greater than scroll view height
-                        .onScrollGeometryChange(for: Bool.self) { geometry in
-                            return geometry.contentSize.height > geometry.bounds.height
-                        } action: { wasGreater, isGreater in
-                            self.anchorToBottom = isGreater
-                        }
+//                        .contentMargins(.top, 20, for: .scrollContent)
+//                        // Anchor to bottom when content view becomes greater than scroll view height
+//                        .onScrollGeometryChange(for: Bool.self) { geometry in
+//                            return geometry.contentSize.height > geometry.bounds.height
+//                        } action: { wasGreater, isGreater in
+//                            self.anchorToBottom = isGreater
+//                        }
                         .onScrollGeometryChange(for: Bool.self) { geometry in
                             return geometry.contentOffset.y + geometry.bounds.height >=
                                    geometry.contentSize.height - geometry.contentInsets.bottom
                         } action: { wasGreater, isGreater in
                             self.showScrollToBottom = !isGreater
                         }
-                        .defaultScrollAnchor(anchorToBottom ? .bottom : .top)
+                        
                     } else {
                         ScrollView(.vertical) {
 #if DEBUG

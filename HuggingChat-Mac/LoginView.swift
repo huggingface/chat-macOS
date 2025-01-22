@@ -10,55 +10,66 @@ import SwiftUI
 struct LoginView: View {
     
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.openURL) var openURL
     
     var body: some View {
-        VStack {
-            HStack {
-                Text("HuggingChat")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.primary)
-                Image("huggy.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .symbolRenderingMode(.monochrome)
-                    .foregroundStyle(.primary)
-                    .frame(width: 32, height: 32)
-            }
-            .frame(maxHeight: .infinity, alignment: .center)
-            
-            
-            Group {
-                Button(action: {
-                    
-                }, label: {
-                    Text("Sign up")
-                        .fontWeight(.medium)
-                        .foregroundStyle(colorScheme == .dark ? .black:.white)
-                })
-                .frame(height: 45)
-                .frame(maxWidth: .infinity)
-                .background(RoundedRectangle(cornerRadius: 8).fill(.primary))
+        ZStack {
+            Color.white
+            LinearGradient(gradient: Gradient(colors: [Color.yellow.opacity(0.4), Color.yellow.opacity(0.1), Color.yellow.opacity(0)]), startPoint: UnitPoint(x: 0.5, y: 0), endPoint: UnitPoint(x: 0.5, y: 1))
+            VStack {
+                HStack {
+                    Text("HuggingChat")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.black)
+                    Image("huggy.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .symbolRenderingMode(.multicolor)
+                        .foregroundStyle(.primary)
+                        .background(Circle().fill(.black).frame(width: 20))
+                        .frame(width: 32, height: 32)
+                }
+                .frame(maxHeight: .infinity, alignment: .center)
                 
-                .buttonStyle(.plain)
                 
-                Button(action: {
+                Group {
+                    Button(action: {
+                        openURL(URL(string: "https://huggingface.co/join")!)
+                    }, label: {
+                        Text("Sign up")
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(.clear))
+                    })
+                    .frame(height: 35)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(.black))
                     
-                }, label: {
-                    Text("Log in")
-                        .fontWeight(.medium)
-                })
-                .background(RoundedRectangle(cornerRadius: 8).fill(.clear))
-                .frame(height: 45)
-                .frame(maxWidth: .infinity)
-                .foregroundStyle(.primary)
-                .buttonStyle(.highlightOnPress)
-                .padding(.bottom)
+                    .buttonStyle(.highlightOnPress(defaultBackground: .black))
+                    
+                    Button(action: {
+                        
+                    }, label: {
+                        Text("Log in")
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(.clear))
+                    })
+                    .buttonStyle(.highlightOnPress)
+                    .foregroundStyle(.black)
+//                    .padding(.bottom)
+                    
+                    Text("AI models can make mistakes. Please double-check responses.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom)
+                }
+                .padding(.horizontal, 30)
+                
             }
-            .padding(.horizontal, 40)
-            
         }
-        
         
     }
 }

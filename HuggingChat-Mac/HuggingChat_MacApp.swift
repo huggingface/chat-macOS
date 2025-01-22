@@ -35,4 +35,6 @@ struct HuggingChat_MacApp: App {
 #Preview {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
 }
+

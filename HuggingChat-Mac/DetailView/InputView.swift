@@ -49,4 +49,6 @@ struct InputView: View {
 #Preview {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
 }
+

@@ -13,6 +13,7 @@
 		F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F1413D6C2C8ECD190045CD54 /* MarkdownView */; };
 		F18E15D82C810C940091EE53 /* Highlighter in Frameworks */ = {isa = PBXBuildFile; productRef = F18E15D72C810C940091EE53 /* Highlighter */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
+		F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A46BAE2D4196F500BDAA5E /* NukeUI */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
 		F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */; };
 		F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E062CABF22B009CBA98 /* Accelerate.framework */; };
@@ -68,6 +69,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1F76CD02CF6790A00E58778 /* LLM in Frameworks */,
+				F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */,
 				F1B317F62CFF9C6A00120FAE /* WhisperKit in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
@@ -145,6 +147,7 @@
 				F1F76BFB2CF6717300E58778 /* Pow */,
 				F1F76CCF2CF6790A00E58778 /* LLM */,
 				F1B317F52CFF9C6A00120FAE /* WhisperKit */,
+				F1A46BAE2D4196F500BDAA5E /* NukeUI */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -186,6 +189,7 @@
 				F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */,
 				F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
 				F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */,
+				F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -482,6 +486,14 @@
 				minimumVersion = 2.6.4;
 			};
 		};
+		F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 		F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FelixHerrmann/swift-package-list.git";
@@ -554,6 +566,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
+		};
+		F1A46BAE2D4196F500BDAA5E /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
 		};
 		F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */ = {
 			isa = XCSwiftPackageProductDependency;

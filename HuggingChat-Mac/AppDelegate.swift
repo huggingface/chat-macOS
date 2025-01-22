@@ -12,6 +12,8 @@ import KeyboardShortcuts
 
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
+    @State var coordinatorModel = CoordinatorModel()
+    
     var statusBar: NSStatusBar!
     var statusBarItem: NSStatusItem!
     
@@ -118,6 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             )
             .navigationSplitViewColumnWidth(min: 400, ideal: 400)
         })
+        .environment(coordinatorModel)
     }
     
     @objc func toggleChatWindow() {

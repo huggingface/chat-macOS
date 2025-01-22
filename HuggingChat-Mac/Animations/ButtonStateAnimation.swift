@@ -61,4 +61,6 @@ struct ButtonStateAnimation: View {
 #Preview {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
 }
+

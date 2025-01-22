@@ -32,13 +32,19 @@ struct HighlightOnHover: ButtonStyle {
 }
 
 struct HighlightOnPress: ButtonStyle {
+    let defaultBackground: Color
+    
+    init(defaultBackground: Color = .clear) {
+        self.defaultBackground = defaultBackground
+    }
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(.horizontal, 7)
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(configuration.isPressed ? Color.gray.opacity(0.2) : Color.clear)
+                    .fill(configuration.isPressed ? Color.gray.opacity(0.2) : defaultBackground)
             )
             .contentShape(Rectangle())
     }
@@ -52,9 +58,15 @@ extension ButtonStyle where Self == HighlightOnHover {
     static var highlightOnPress: HighlightOnPress {
         HighlightOnPress()
     }
+    
+    static func highlightOnPress(defaultBackground: Color) -> HighlightOnPress {
+        HighlightOnPress(defaultBackground: defaultBackground)
+    }
 }
 
 #Preview {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
 }
+
