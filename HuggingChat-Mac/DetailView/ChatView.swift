@@ -59,8 +59,8 @@ struct ChatView: View {
                                 
                             }
                             
-                            .padding(.horizontal, 7)
-                            .padding(.top, 7)
+                            .padding(.horizontal)
+                            .padding(.top, 10)
 //                            .background(.regularMaterial)
                         }
                     })
@@ -123,7 +123,6 @@ struct ChatView: View {
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    ChatView(isPipMode: true) {
-        
-    }
+    ContentView()
+        .environmentObject(AppDelegate())
 }
