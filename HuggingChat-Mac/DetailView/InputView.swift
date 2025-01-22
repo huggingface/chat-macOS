@@ -38,6 +38,7 @@ struct InputView: View {
             } else {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    .fill(.ultraThickMaterial)
                     .fill(.quinary)
             }
         }
