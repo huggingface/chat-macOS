@@ -26,15 +26,18 @@ struct SidebarView: View {
             Menu {
                 Button {
                 } label: {
-                    Label("New Album", systemImage: "rectangle.stack.badge.plus")
+                    Text(verbatim: "cyril.zakka@huggingface.co")
                 }
+                .disabled(true)
+                Divider()
                 Button {
                 } label: {
-                    Label("New Folder", systemImage: "folder.badge.plus")
+                    Label("Settings", systemImage: "folder.badge.plus")
                 }
+                Divider()
                 Button {
                 } label: {
-                    Label("New Shared Album", systemImage: "rectangle.stack.badge.person.crop")
+                    Label("Log out", systemImage: "rectangle.stack.badge.person.crop")
                 }
             } label: {
                 HStack {
@@ -49,7 +52,7 @@ struct SidebarView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .buttonStyle(.simpleHighlight)
+            .buttonStyle(.highlightOnPress)
             
             .frame(height: 60)
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -17,26 +17,21 @@ struct InputViewToolbar: View {
                 Menu {
                     Button {
                     } label: {
-                        Label("New Album", systemImage: "rectangle.stack.badge.plus")
+                        Label("Upload File", systemImage: "rectangle.stack.badge.plus")
                     }
                     Button {
                     } label: {
-                        Label("New Folder", systemImage: "folder.badge.plus")
-                    }
-                    Button {
-                    } label: {
-                        Label("New Shared Album", systemImage: "rectangle.stack.badge.person.crop")
+                        Label("Upload Photo", systemImage: "folder.badge.plus")
                     }
                 } label: {
                     Image(systemName: "plus")
                     
                 }
+                .buttonStyle(.highlightOnHover)
                 
                 
-                Button {
-                    
-                } label: {
-                    Image(systemName: "globe")
+                ButtonStateAnimation(buttonText: "Search", buttonImage: "globe") {
+                    // Activate web search
                 }
                 
                 Button {
@@ -44,6 +39,7 @@ struct InputViewToolbar: View {
                 } label: {
                     Image(systemName: "doc.viewfinder")
                 }
+                .buttonStyle(.highlightOnHover)
                 
                 Spacer()
                 
@@ -52,8 +48,9 @@ struct InputViewToolbar: View {
                 } label: {
                     Image(systemName: "mic")
                 }
+                .buttonStyle(.highlightOnHover)
             }
-            .buttonStyle(.highlight)
+            
             .fontWeight(.semibold)
             .font(.title3)
             

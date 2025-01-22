@@ -52,7 +52,7 @@ struct LoginView: View {
                 .frame(height: 45)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(.primary)
-                .buttonStyle(.simpleHighlight)
+                .buttonStyle(.highlightOnPress)
                 .padding(.bottom)
             }
             .padding(.horizontal, 40)
