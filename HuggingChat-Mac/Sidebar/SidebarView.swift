@@ -34,5 +34,6 @@ struct SidebarView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppDelegate())
 }
 

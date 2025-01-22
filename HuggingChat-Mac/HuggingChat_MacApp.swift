@@ -23,7 +23,7 @@ struct HuggingChat_MacApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            appDelegate.makeContentView()
                 .navigationTitle("") // Hide tab bar app title
                 .frame(minHeight: 150)
         }
@@ -34,4 +34,5 @@ struct HuggingChat_MacApp: App {
 
 #Preview {
     ContentView()
+        .environmentObject(AppDelegate())
 }

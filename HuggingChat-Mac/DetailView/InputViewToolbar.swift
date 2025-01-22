@@ -82,4 +82,5 @@ struct InputViewToolbar: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AppDelegate())
 }

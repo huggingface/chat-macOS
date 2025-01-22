@@ -39,4 +39,5 @@ extension ButtonStyle where Self == HighlightButtonStyle {
 
 #Preview {
     ContentView()
+        .environmentObject(AppDelegate())
 }

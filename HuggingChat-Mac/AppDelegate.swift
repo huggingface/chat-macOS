@@ -10,18 +10,21 @@ import AppKit
 import SwiftUI
 import KeyboardShortcuts
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     var statusBar: NSStatusBar!
     var statusBarItem: NSStatusItem!
     
     var chatBar: FloatingChatBar!
+    var chatWindow: FloatingChatWindow!
 
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         createMenuBarItem()
         createChatBar()
+        createChatWindow()
         chatBar.center()
+        chatWindow.center()
         
         
         // Set keyboard shortcut
@@ -30,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
     }
     
+    // MARK: Status item
     private func createMenuBarItem() {
         statusBar = NSStatusBar.system
         statusBarItem = statusBar.statusItem(withLength: NSStatusItem.squareLength)
@@ -75,10 +79,52 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc private func toggleChatBar() {
-            if self.chatBar.isVisible {
-                self.chatBar.orderOut(nil)
-            } else {
-                self.chatBar.makeKeyAndOrderFront(nil)
-            }
+        if self.chatBar.isVisible {
+            self.chatBar.orderOut(nil)
+        } else {
+            self.chatBar.makeKeyAndOrderFront(nil)
         }
+    }
+    
+    // MARK: Chat window
+    private func createChatWindow() {
+        let contentView = ChatView(
+            isPipMode: true,
+            onPipToggle: { [weak self] in
+                self?.toggleChatWindow()
+            }
+        )
+        .frame(minWidth: 400, idealWidth: 450, maxWidth: 600)
+        .frame(minHeight: 300, idealHeight: 300)
+        
+        chatWindow = FloatingChatWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 100),
+                                      backing: .buffered,
+                                      defer: false)
+        
+        chatWindow.contentView = NSHostingView(rootView: contentView)
+    }
+    
+    // Update ContentView usage
+    func makeContentView() -> some View {
+        NavigationSplitView(sidebar: {
+            SidebarView()
+                .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
+        }, detail: {
+            ChatView(
+                isPipMode: false,
+                onPipToggle: { [weak self] in
+                    self?.toggleChatWindow()
+                }
+            )
+            .navigationSplitViewColumnWidth(min: 400, ideal: 400)
+        })
+    }
+    
+    @objc func toggleChatWindow() {
+        if self.chatWindow.isVisible {
+            self.chatWindow.orderOut(nil)
+        } else {
+            self.chatWindow.makeKeyAndOrderFront(nil)
+        }
+    }
 }
