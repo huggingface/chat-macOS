@@ -9,6 +9,9 @@ import SwiftUI
 
 struct InputView: View {
     
+    var cornerRadius: CGFloat = 14
+    var isChatBarMode: Bool = false
+    
     @State private var inputText: String = ""
     
     var body: some View {
@@ -24,9 +27,16 @@ struct InputView: View {
         .frame(minHeight: 87)
         
         .background {
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(.separator, lineWidth: 0.5)
-                .fill(.quinary)
+            if isChatBarMode {
+                RoundedRectangle.semiOpaqueWindow()
+                    .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(.gray.opacity(0.5), style: StrokeStyle(lineWidth: 1)))
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                
+            } else {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    .fill(.quinary)
+            }
         }
         .fixedSize(horizontal: false, vertical: true)
     }

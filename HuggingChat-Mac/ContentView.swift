@@ -17,7 +17,7 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
         }, detail: {
             ChatView()
-                .navigationSplitViewColumnWidth(min: 300, ideal: 300)
+                .navigationSplitViewColumnWidth(min: 400, ideal: 400)
         })
         
         
