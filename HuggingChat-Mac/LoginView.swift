@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     
+    @Environment(CoordinatorModel.self) private var coordinator
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.openURL) var openURL
     
@@ -49,7 +50,7 @@ struct LoginView: View {
                     .buttonStyle(.highlightOnPress(defaultBackground: .black))
                     
                     Button(action: {
-                        
+                        coordinator.signin()
                     }, label: {
                         Text("Log in")
                             .fontWeight(.medium)
@@ -77,4 +78,5 @@ struct LoginView: View {
 #Preview {
     LoginView()
         .frame(width: 300, height: 400)
+        .environment(CoordinatorModel())
 }

@@ -24,11 +24,11 @@ struct HuggingChat_MacApp: App {
     var body: some Scene {
         WindowGroup {
             appDelegate.makeContentView()
-                .navigationTitle("") // Hide tab bar app title
-                .frame(minHeight: 150)
+                .navigationTitle("")
         }
         .windowToolbarStyle(.unified)
-        .defaultSize(width: 600, height: 400)
+        .windowResizability(.contentSize)
+//        .defaultSize(width: 600, height: 400)
     }
 }
 

@@ -24,7 +24,10 @@ import Combine
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        let _ = HTTPCookieStorage.shared.cookies!
+        let cookies = HTTPCookieStorage.shared.cookies!
+        for cookie in cookies {
+            print("\(cookie.name): \(cookie.value)")
+        }
         self.refreshLoginState()
     }
 }
@@ -53,16 +56,13 @@ extension CoordinatorModel {
             .receive(on: DispatchQueue.main)
             .sink { completion in
             switch completion {
-            case .finished:
-                print("Successfully Connected")
+            case .finished: break
             case .failure(let error):
                 UserDefaults.standard.set(false, forKey: UserDefaultsKeys.userLoggedIn)
                 self.error = error
             }
         } receiveValue: { _ in
-            print("SignIn Validated")
-//            HuggingChatSession.shared.refreshLoginState()
-            UserDefaults.standard.set(true, forKey: UserDefaultsKeys.userLoggedIn)
+            self.refreshLoginState()
         }.store(in: &cancellables)
     }
     
@@ -74,17 +74,17 @@ extension CoordinatorModel {
         NetworkService.getCurrentUser()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
-            switch completion {
-            case .failure(let error):
-                self?.error = error
-                self?.currentUser = nil
-                UserDefaults.standard.set(false, forKey: UserDefaultsKeys.userLoggedIn)
-            case .finished: break
-            }
-        } receiveValue: { [weak self] user in
-            self?.currentUser = user
-            UserDefaults.standard.set(true, forKey: UserDefaultsKeys.userLoggedIn)
-        }.store(in: &cancellables)
+                switch completion {
+                case .failure(let error):
+                    self?.error = error
+                    self?.currentUser = nil
+                    UserDefaults.standard.set(false, forKey: UserDefaultsKeys.userLoggedIn)
+                case .finished: break
+                }
+            } receiveValue: { [weak self] user in
+                self?.currentUser = user
+                UserDefaults.standard.set(true, forKey: UserDefaultsKeys.userLoggedIn)
+            }.store(in: &cancellables)
     }
     
     func logout() {

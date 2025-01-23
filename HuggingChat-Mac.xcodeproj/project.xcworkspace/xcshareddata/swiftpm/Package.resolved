@@ -1,5 +1,5 @@
 {
-  "originHash" : "7191e9640f5f6c7bb742082946322b55105e1ea5b53be92ce395b683731165a9",
+  "originHash" : "fc0682c8d99ea3df2393a72aa6ade3c4330b2979c4c439d53184c6d1f428d3c2",
   "pins" : [
     {
       "identity" : "gzipswift",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/maiqingqiang/Jinja",
       "state" : {
-        "revision" : "6dbe4c449469fb586d0f7339f900f0dd4d78b167",
-        "version" : "1.0.6"
+        "revision" : "9c0bbbc7f553932661fc791d2c5664311af09583",
+        "version" : "1.1.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/KeyboardShortcuts",
       "state" : {
-        "revision" : "c3c361f409b8dbe1eab186078b41c330a6a82c9a",
-        "version" : "2.2.2"
+        "revision" : "7ecc38bb6edf7d087d30e737057b8d8a9b7f51eb",
+        "version" : "2.2.4"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ml-explore/mlx-swift",
       "state" : {
-        "revision" : "d649c62b77c487c25012910b0d02b30283d388ca",
-        "version" : "0.18.1"
+        "revision" : "70dbb62128a5a1471a5ab80363430adb33470cab",
+        "version" : "0.21.2"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ml-explore/mlx-swift-examples/",
       "state" : {
-        "revision" : "7baf9bc2d7a2b68b4bfcae308e448ec68b8ef049",
-        "version" : "1.18.1"
+        "revision" : "318044f398178e3a6128888c417b25a6017ac05a",
+        "version" : "1.18.2"
       }
     },
     {
@@ -146,12 +146,21 @@
       }
     },
     {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version" : "1.1.4"
+      }
+    },
+    {
       "identity" : "swift-markdown",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-markdown.git",
       "state" : {
         "branch" : "main",
-        "revision" : "82f9258ce53b9da7980d1c1aaf80e5bdbbf98c9b"
+        "revision" : "3588f0449f1592a5c746079a5c7e6c8b62ba55eb"
       }
     },
     {

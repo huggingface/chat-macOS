@@ -10,24 +10,21 @@ import Nuke
 import NukeUI
 
 struct SidebarView: View {
-    
     @Environment(CoordinatorModel.self) private var coordinator
     @State private var searchChat: String = ""
     
     var body: some View {
         VStack {
             List {
-                Section("Chats", content: {
+                Section("Chats") {
                     LazyHStack {
-                        
+                        // Your chat content here
                     }
-                })
-                
+                }
             }
-            
-            // Profile Pic
+            // Profile Menu
             Menu {
-                if let email = coordinator.currentUser?.email, email != "" {
+                if let email = coordinator.currentUser?.email, !email.isEmpty {
                     Button {
                     } label: {
                         Text(verbatim: email)
@@ -36,22 +33,21 @@ struct SidebarView: View {
                     Divider()
                 }
                 
-                
                 Button {
                     // TODO: Open settings
                 } label: {
-                    Label("Settings", systemImage: "folder.badge.plus")
+                    Label("Settings", systemImage: "gearshape")
                 }
                 Divider()
                 Button {
                     coordinator.logout()
                 } label: {
-                    Label("Log out", systemImage: "rectangle.stack.badge.person.crop")
+                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.forward")
                 }
             } label: {
                 HStack {
-                    if let avatarURL = coordinator.currentUser?.avatarUrl {
-                        LazyImage(url: URL(string: avatarURL.absoluteString)) { state in
+                    if let avatarURL = coordinator.currentUser?.avatarUrl, let url = URL(string: avatarURL.absoluteString) {
+                        LazyImage(url: url) { state in
                             if let image = state.image {
                                 image
                                     .resizable()
@@ -59,45 +55,26 @@ struct SidebarView: View {
                                     .frame(width: 28, height: 28)
                                     .clipShape(Circle())
                             } else if state.error != nil {
-                                ZStack {
-                                    Color.secondary
-                                }
-                                .frame(width: 28, height: 28)
-                                .clipShape(Circle())
+                                DefaultAvatarView()
                             } else {
-                                ZStack {
-                                    Color.secondary
-                                    ProgressView()
-                                }
-                                .frame(width: 28, height: 28)
-                                .clipShape(Circle())
+                                LoadingAvatarView()
                             }
                         }
-                            
-                                                    
                     } else {
-                        ZStack {
-                            Circle()
-                                .foregroundStyle(.quinary)
-                                .frame(width: 28, height: 28)
-                            Text("🤗")
-                        }
+                        DefaultAvatarView()
                     }
-//                    LazyImage(url: URL(string: thumbnail)) { state in
-//
-//                    }
 
-                    Text(coordinator.currentUser?.username ?? "Cyril Zakka")
-                        
+                    Text(coordinator.currentUser?.username ?? "User")
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.highlightOnPress)
-            
             .frame(height: 60)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
             .buttonStyle(.plain)
+            
         }
         .searchable(text: $searchChat, placement: .sidebar)
         .toolbar {
@@ -105,14 +82,32 @@ struct SidebarView: View {
                 Button(action: {}, label: {
                     Image(systemName: "square.and.pencil")
                 })
-                
             }
         }
     }
-    
-    
-    // MARK: Helper functions
-    
+}
+
+// Extracted views for better organization
+private struct DefaultAvatarView: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .foregroundStyle(.quinary)
+                .frame(width: 28, height: 28)
+            Text("🤗")
+        }
+    }
+}
+
+private struct LoadingAvatarView: View {
+    var body: some View {
+        ZStack {
+            Color.secondary
+            ProgressView()
+        }
+        .frame(width: 28, height: 28)
+        .clipShape(Circle())
+    }
 }
 
 #Preview {
@@ -120,5 +115,3 @@ struct SidebarView: View {
         .environmentObject(AppDelegate())
         .environment(CoordinatorModel())
 }
-
-

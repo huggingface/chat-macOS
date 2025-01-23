@@ -28,7 +28,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         chatBar.center()
         chatWindow.center()
         
-        
         // Set keyboard shortcut
         KeyboardShortcuts.onKeyUp(for: .showChatBar, action: {
             self.toggleChatBar()
@@ -52,7 +51,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         if let event = NSApp.currentEvent, event.isRightClickUp {
             showContextMenu()
         } else {
-//            toggleFloatingPanel()
+            toggleChatBar()
         }
     }
     
@@ -108,19 +107,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     // Update ContentView usage
     func makeContentView() -> some View {
-        NavigationSplitView(sidebar: {
-            SidebarView()
-                .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
-        }, detail: {
-            ChatView(
-                isPipMode: false,
-                onPipToggle: { [weak self] in
-                    self?.toggleChatWindow()
+        ContentView()
+            .environment(coordinatorModel)
+            .onOpenURL { url in
+                if let component = URLComponents(string: url.absoluteString),
+                   let code = component.queryItems?.first(where: { $0.name == "code"})?.value,
+                   let state = component.queryItems?.first(where: { $0.name == "state"})?.value {
+                    self.coordinatorModel.validateSignup(code: code, state: state)
                 }
-            )
-            .navigationSplitViewColumnWidth(min: 400, ideal: 400)
-        })
-        .environment(coordinatorModel)
+            }
     }
     
     @objc func toggleChatWindow() {
