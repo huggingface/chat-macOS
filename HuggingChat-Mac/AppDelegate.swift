@@ -95,8 +95,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
                 self?.toggleChatWindow()
             }
         )
+        .environment(coordinatorModel)
         .frame(minWidth: 400, idealWidth: 450, maxWidth: 600)
         .frame(minHeight: 300, idealHeight: 300)
+        
+    
         
         chatWindow = FloatingChatWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 100),
                                       backing: .buffered,

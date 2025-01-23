@@ -24,6 +24,21 @@ final class NetworkService {
     }
 }
 
+// MARK: Conversations and Messages
+extension NetworkService {
+    static func getConversations() -> AnyPublisher<[Conversation], HFError> {
+        let endpoint = "\(BASE_URL)/chat/api/conversations"
+        let request = URLRequest(url: URL(string: endpoint)!)
+        return resolveRequest(request, decoder: JSONDecoder.ISO8601Millisec())
+    }
+    
+    static func getConversation(id: String) -> AnyPublisher<Conversation, HFError> {
+        let endpoint = "\(BASE_URL)/chat/api/conversation/\(id)"
+        let request = URLRequest(url: URL(string: endpoint)!)
+        return resolveRequest(request, decoder: JSONDecoder.ISO8601Millisec())
+    }
+}
+
 // MARK: Login/Sign up functions
 extension NetworkService {
     static func loginChat() -> AnyPublisher<LoginChat, HFError> {

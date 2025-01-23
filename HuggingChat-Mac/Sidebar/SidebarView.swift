@@ -14,14 +14,49 @@ struct SidebarView: View {
     @State private var searchChat: String = ""
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            @Bindable var coordinator = coordinator
             List {
-                Section("Chats") {
-                    LazyHStack {
-                        // Your chat content here
+                Section {
+                    if !coordinator.conversations.isEmpty {
+                        ForEach(coordinator.conversations) { conversation in
+                            Text(conversation.title.withoutEmoji())
+                                .lineLimit(1)
+                                .font(.headline)
+                                .padding(.leading, 5)
+                                .fontWeight(.medium)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .frame(height: 35)
+                                .contentShape(Rectangle())
+                                .background {
+                                    if
+                                        coordinator.selectedConversation == conversation.id {
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(.quinary)
+                                            .ignoresSafeArea(edges: .horizontal)
+//                                            .offset(x: -5)
+                                    }
+                                }
+                                .listRowInsets(EdgeInsets(top: 0, leading: -7, bottom: 0, trailing: -7))
+                                .tag(conversation.id)
+                                .onTapGesture {
+                                    coordinator.selectedConversation = conversation.id
+                                }
+                        }
                     }
+                    
+                } header: {
+                    Text("Chats")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+//                        .padding(.horizontal, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
                 }
             }
+            .listStyle(.sidebar)
+            
+            
             // Profile Menu
             Menu {
                 if let email = coordinator.currentUser?.email, !email.isEmpty {

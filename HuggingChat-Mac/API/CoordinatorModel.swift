@@ -11,16 +11,22 @@ import Combine
 
 @Observable class CoordinatorModel {
     
+    // Conversations
+    var conversations: [Conversation] = []
+    var selectedConversation: Conversation.ID?
+    
+    // Auth
     var currentUser: HuggingChatUser?
     var token: String?
-    
-    var error: HFError?
     var hfChatToken: String? {
         guard let token = HTTPCookieStorage.shared.cookies?.first(where: { $0.name == "hf-chat" })?.value else {
             return nil
         }
         return token
     }
+    
+    // Misc
+    var error: HFError?
     private var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -31,7 +37,6 @@ import Combine
         self.refreshLoginState()
     }
 }
-
 
 // MARK: Login functions
 extension CoordinatorModel {
@@ -114,5 +119,24 @@ extension CoordinatorModel {
         component.queryItems = queryItems
 
         return component.url
+    }
+}
+
+// MARK: Conversation functions
+extension CoordinatorModel {
+    func fetchConversations() {
+        NetworkService.getConversations()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    self?.error = error
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] conversations in
+                self?.conversations = conversations
+            }
+            .store(in: &cancellables)
     }
 }

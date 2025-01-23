@@ -38,6 +38,9 @@ struct ContentView: View {
             .navigationSplitViewColumnWidth(min: 400, ideal: 400)
         })
         .frame(minHeight: 150)
+        .task {
+            coordinator.fetchConversations()
+        }
     }
 }
 
