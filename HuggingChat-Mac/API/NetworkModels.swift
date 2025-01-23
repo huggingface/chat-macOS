@@ -55,21 +55,16 @@ final class Conversation: Decodable, Identifiable, Hashable {
     var title: String
     let modelId: String
     let updatedAt: Date
-    var messages: [Message]
-    var areMessagesLoaded: Bool
-    var assistantId: String?
+    var messages: [Message] = []
 
     init(
-        serverId: String, title: String, modelId: String, updatedAt: Date, messages: [Message],
-        areMessagesLoaded: Bool, assistantId: String? = nil
+        serverId: String, title: String, modelId: String, updatedAt: Date, messages: [Message] = []
     ) {
         self.serverId = serverId
         self.title = title
         self.modelId = modelId
         self.updatedAt = updatedAt
         self.messages = messages
-        self.areMessagesLoaded = areMessagesLoaded
-        self.assistantId = assistantId
     }
 
     enum CodingKeys: CodingKey {
@@ -78,8 +73,6 @@ final class Conversation: Decodable, Identifiable, Hashable {
         case modelId
         case updatedAt
         case messages
-        case areMessagesLoaded
-        case assistantId
     }
 
     init(from decoder: Decoder) throws {
@@ -88,58 +81,13 @@ final class Conversation: Decodable, Identifiable, Hashable {
         self.title = try container.decode(String.self, forKey: .title)
         self.modelId = try container.decode(String.self, forKey: .modelId)
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
-
         do {
             let messages = try container.decode([Message].self, forKey: .messages)
             self.messages = messages
-            self.areMessagesLoaded = true
         } catch {
-            //ToDo: Handle Error
-//            print("error: \(error)")
             self.messages = []
-            self.areMessagesLoaded = false
         }
-        
-        self.assistantId = try container.decodeIfPresent(String.self, forKey: .assistantId)
     }
-
-    func loadMessages() -> AnyPublisher<[Message], HFError> {
-        return NetworkService.getConversation(id: serverId).map { [weak self] conv in
-            self?.messages = conv.messages
-            return conv.messages
-        }.eraseToAnyPublisher()
-    }
-
-    static func conversation(with id: String) -> Conversation {
-        return Conversation(
-            serverId: id, title: "Blahblahbla", modelId: "", updatedAt: Date(), messages: [],
-            areMessagesLoaded: false)
-    }
-
-    static func conversation(title: String, updatedAt: Date) -> Conversation {
-        return Conversation(
-            serverId: UUID().uuidString, title: title, modelId: "model", updatedAt: updatedAt,
-            messages: [], areMessagesLoaded: false)
-    }
-    
-//    func toTitleEditionBody() -> TitleEditionBody {
-//        return TitleEditionBody(title: title)
-//    }
-    
-    func isFirstMessageSystem() -> Bool {
-        if case .system = messages.first?.author {
-            return true
-        }
-        
-        return false
-    }
-//
-//    func areMessagesConsistent(with rMessages: [MessageRow]) -> Bool {
-//        var rIDs = rMessages.map { $0.id }
-//        let mIDs = messages.map { $0.id }.dropFirst()
-//
-//        return rIDs == mIDs
-//    }
     
     static func == (lhs: Conversation, rhs: Conversation) -> Bool {
        lhs.id == rhs.id
@@ -157,8 +105,7 @@ enum Author: String, Decodable {
 }
 
 // MARK: - Message
-final class Message: Decodable {
-    var contentHeight: CGFloat = 50
+final class Message: Decodable, Identifiable, Hashable {
     let id: String
     var content: String
     let author: Author
@@ -171,7 +118,6 @@ final class Message: Decodable {
         case id, content
         case author = "from"
         case createdAt, updatedAt, webSearch
-        //        , updates
     }
 
     init(id: String, content: String, author: Author, createdAt: Date, updatedAt: Date) {
@@ -197,6 +143,14 @@ final class Message: Decodable {
         self.updatedAt = updatedAt
         self.createdAt = (try? container.decode(Date.self, forKey: .createdAt)) ?? updatedAt
         self.webSearch = try container.decodeIfPresent(MessageWebSearch.self, forKey: .webSearch)
+    }
+    
+    static func == (lhs: Message, rhs: Message) -> Bool {
+       lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+       hasher.combine(id)
     }
 }
 

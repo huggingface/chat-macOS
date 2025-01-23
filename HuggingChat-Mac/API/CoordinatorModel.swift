@@ -13,6 +13,7 @@ import Combine
     
     // Conversations
     var conversations: [Conversation] = []
+    var messages: [Message] = []
     var selectedConversation: Conversation.ID?
     
     // Auth
@@ -136,7 +137,40 @@ extension CoordinatorModel {
                 }
             } receiveValue: { [weak self] conversations in
                 self?.conversations = conversations
+#if DEBUG
+                self?.selectedConversation = conversations.first?.id
+                self?.loadConversationHistory()
+#endif
             }
             .store(in: &cancellables)
     }
+    
+    func loadConversationHistory() {
+       guard let selectedId = selectedConversation,
+             let conversation = conversations.first(where: { $0.id == selectedId }) else {
+           return
+       }
+        self.messages = []
+       NetworkService.getConversation(id: conversation.serverId)
+           .receive(on: DispatchQueue.main)
+           .sink { [weak self] completion in
+               switch completion {
+               case .failure(let error):
+                   self?.error = error
+               case .finished: break
+               }
+           } receiveValue: { [weak self] conv in
+               self?.messages = conv.messages
+           }
+           .store(in: &cancellables)
+    }
+//
+//    private func buildHistory(conversation: Conversation) -> [MessageRow] {
+//        let messages = conversation.messages.compactMap({ (message: Message) -> MessageRow? in
+//           return MessageRow(message: message)
+//        })
+////        let historyParser = HistoryParser(isDarkMode: isDarkMode)
+////        messages = historyParser.parseMessages(messages: messages)
+//        return messages
+//    }
 }

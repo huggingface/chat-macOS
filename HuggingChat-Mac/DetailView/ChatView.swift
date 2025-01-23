@@ -25,6 +25,7 @@ struct ChatView: View {
     @State var anchorToBottom: Bool = false
     @State var showScrollToBottom: Bool = false
     @State var contentHeight : CGFloat = 0
+    @State var size: CGSize = .zero
     
     private var backgroundMaterial: some View {
         ZStack {
@@ -35,17 +36,29 @@ struct ChatView: View {
     
     var body: some View {
         ZStack {
-            backgroundMaterial
-            Group {
-                if coordinator.selectedConversation != nil {
-                    ScrollViewReader { value in
+            backgroundMaterial.onGeometryChange(for: CGSize.self) { geometry in
+                return geometry.size
+            } action: { newValue in
+                size = newValue
+            }
+            ScrollViewReader { proxy in
+                Group {
+                    if let _ = coordinator.selectedConversation {
+                        
                         if #available(macOS 15.0, *) {
-                            ScrollView(.vertical) {
+                            ScrollView {
                                 LazyVStack {
+                                    ForEach(coordinator.messages) { message in
+                                        MessageView(message: message, parentWidth: size.width)
+                                            .listRowSeparator(.hidden)
+                                            .id(message.id)
+                                    }
                                 }
                             }
-                            .defaultScrollAnchor(anchorToBottom ? .bottom : .top)
+                            
+//                            .defaultScrollAnchor(.bottom) // Fix this
                             .contentMargins(.bottom, -20, for: .scrollContent)
+                            .contentMargins(.top, 20, for: .scrollContent)
                             .onScrollGeometryChange(for: Bool.self) { geometry in
                                 return geometry.contentOffset.y + geometry.bounds.height >=
                                 geometry.contentSize.height - geometry.contentInsets.bottom
@@ -54,122 +67,116 @@ struct ChatView: View {
                             }
                             
                         } else {
-                            ScrollView(.vertical) {
-                                LazyVStack {
-                                    
+                            List {
+                                //                                ForEach(conversation.messages) { message in
+                                //                                    MessageView(message: message)
+                                //                                }
+                            }
+                        }
+                        
+                    } else {
+                        makeNoContentView()
+                    }
+                }
+                .safeAreaInset(edge: .bottom, content: {
+                    if #available(macOS 15.0, *) {
+                        InputView()
+                            .padding([.horizontal, .bottom])
+                            .padding(.top, 50)
+                            .overlay(alignment: .top) {
+                                if showScrollToBottom {
+                                    Button(action: {
+                                        withAnimation(.easeOut) {
+                                            proxy.scrollTo(coordinator.messages.last?.id, anchor: .bottom)
+                                        }
+                                    }, label: {
+                                        Image(systemName: "arrow.down")
+                                            .fontWeight(.bold)
+                                            .imageScale(.small)
+                                            .foregroundStyle(colorScheme == .dark ? .white:.black)
+                                            .padding(5)
+                                            .background {
+                                                Circle()
+                                                    .fill(colorScheme == .dark ? Color(.windowBackgroundColor):.white)
+                                                    .frame(width: 30, height: 30)
+                                                    .shadow(radius: 2)
+                                            }
+                                        
+                                    })
+                                    .frame(width: 30, height: 30)
+                                    .buttonStyle(.plain)
+                                    .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
                                 }
                             }
-                        }
-                    }
-                } else {
-                    makeNoContentView()
-                }
-            }
-            .overlay {
-                VStack {
-                    if isPipMode && showPipToolbar {
-                        HStack {
-                            Button(action: {
-                                onPipToggle()
-                            }, label: {
-                                Image(systemName: "xmark.circle.fill")
-                            })
-                            .buttonStyle(.plain)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                // Exit pip mode
-                            }, label: {
-                                Image(systemName: "pip.exit")
-                            })
-                            .buttonStyle(.accessoryBar)
-                            
-                            
-                            Button(action: {
-                                // new conversation
-                            }, label: {
-                                Image(systemName: "square.and.pencil")
-                            })
-                            .buttonStyle(.accessoryBar)
-                            
-                        }
-                        
-                        .padding(.horizontal)
-                        .padding(.top, 10)
-                        .background {
-                            backgroundMaterial
-                        }
-                        
-                        Spacer()
-                            .allowsHitTesting(false)
-                        
-                    }
-                }
-                
-                
-            }
-            .safeAreaInset(edge: .bottom, content: {
-                if #available(macOS 15.0, *) {
-                    InputView()
-                        .padding([.horizontal, .bottom])
-                        .padding(.top, 50)
-                        .overlay(alignment: .top) {
-                            if showScrollToBottom {
-                                Button(action: {
-                                    //                                            scrollToBottom(proxy: value)
-                                }, label: {
-                                    Image(systemName: "arrow.down")
-                                        .fontWeight(.bold)
-                                        .imageScale(.small)
-                                        .foregroundStyle(colorScheme == .dark ? .white:.black)
-                                        .padding(5)
-                                        .background {
-                                            Circle()
-                                                .fill(colorScheme == .dark ? Color(.windowBackgroundColor):.white)
-                                                .frame(width: 30, height: 30)
-                                                .shadow(radius: 2)
-                                        }
-                                    
-                                })
-                                .frame(width: 30, height: 30)
-                                //                                        .offset(y: -40)
-                                .buttonStyle(.plain)
-                                .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
+                            .background {
+                                backgroundMaterial
+                                    .mask(LinearGradient(gradient: Gradient(stops: [
+                                        .init(color: .black, location: 0),
+                                        .init(color: .black, location: 0.7),
+                                        .init(color: .clear, location: 1)
+                                    ]), startPoint: .bottom, endPoint: .top))
+                                
                             }
-                        }
-                        .background {
-                            backgroundMaterial
-                                .mask(LinearGradient(gradient: Gradient(stops: [
-                                    .init(color: .black, location: 0),
-                                    .init(color: .black, location: 0.7),
-                                    .init(color: .clear, location: 1)
-                                ]), startPoint: .bottom, endPoint: .top))
-                            
-                        }
-                } else {
-                    InputView()
-                        .padding([.horizontal, .bottom])
-                        .padding(.top, 50)
-                        .background {
-                            backgroundMaterial
-                                .mask(LinearGradient(gradient: Gradient(stops: [
-                                    .init(color: .black, location: 0),
-                                    .init(color: .black, location: 0.7),
-                                    .init(color: .clear, location: 1)
-                                ]), startPoint: .bottom, endPoint: .top))
-                            
-                        }
-                }
-                
-                
-            })
-            
-        }
-        .onHover { over in
-            showPipToolbar = over
+                    } else {
+                        InputView()
+                            .padding([.horizontal, .bottom])
+                            .padding(.top, 50)
+                            .background {
+                                backgroundMaterial
+                                    .mask(LinearGradient(gradient: Gradient(stops: [
+                                        .init(color: .black, location: 0),
+                                        .init(color: .black, location: 0.7),
+                                        .init(color: .clear, location: 1)
+                                    ]), startPoint: .bottom, endPoint: .top))
+                                
+                            }
+                    }
+                    
+                    
+                })
+            }
         }
         .overlay(content: {
+            VStack {
+                if isPipMode && showPipToolbar {
+                    HStack {
+                        Button(action: {
+                            onPipToggle()
+                        }, label: {
+                            Image(systemName: "xmark.circle.fill")
+                        })
+                        .buttonStyle(.plain)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            // Exit pip mode
+                        }, label: {
+                            Image(systemName: "pip.exit")
+                        })
+                        .buttonStyle(.accessoryBar)
+                        
+                        
+                        Button(action: {
+                            // new conversation
+                        }, label: {
+                            Image(systemName: "square.and.pencil")
+                        })
+                        .buttonStyle(.accessoryBar)
+                        
+                    }
+                    
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+                    .background {
+                        backgroundMaterial
+                    }
+                    
+                    Spacer()
+                        .allowsHitTesting(false)
+                    
+                }
+            }
             if isPipMode {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .stroke(.gray.opacity(0.5), lineWidth: 1.0)
@@ -212,6 +219,9 @@ struct ChatView: View {
                 })
             }
         }
+        .onHover { over in
+            showPipToolbar = over
+        }
     }
     
     @ViewBuilder
@@ -223,17 +233,10 @@ struct ChatView: View {
                 .symbolRenderingMode(.none)
                 .foregroundStyle(.tertiary)
                 .frame(width: 55, height: 55)
+            
         }
         .frame(maxHeight: .infinity, alignment: .center)
-    }
-    
-    private func scrollToBottom(proxy: ScrollViewProxy) {
-        //        if let lastMessage = userModel.conversation.last {
-        //            withAnimation(.linear, {
-        //                proxy.scrollTo(lastMessage.id, anchor: .bottom)
-        //            })
-        //
-        //        }
+        .ignoresSafeArea(.container)
     }
 }
 

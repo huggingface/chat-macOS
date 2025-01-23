@@ -40,7 +40,9 @@ struct SidebarView: View {
                                 .listRowInsets(EdgeInsets(top: 0, leading: -7, bottom: 0, trailing: -7))
                                 .tag(conversation.id)
                                 .onTapGesture {
+                                    
                                     coordinator.selectedConversation = conversation.id
+                                    coordinator.loadConversationHistory()
                                 }
                         }
                     }
