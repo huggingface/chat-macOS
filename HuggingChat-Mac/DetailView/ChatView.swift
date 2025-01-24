@@ -29,112 +29,108 @@ struct ChatView: View {
     
     private var backgroundMaterial: some View {
         ZStack {
-            Rectangle.semiOpaqueWindow()
-            Rectangle().fill(.regularMaterial)
+            if isPipMode {
+                Rectangle.semiOpaqueWindow(withStyle: .toolTip)
+                Rectangle().fill(.regularMaterial)
+            } else {
+                Rectangle.semiOpaqueWindow()
+                Rectangle().fill(.regularMaterial)
+            }
+            
         }
     }
     
     var body: some View {
         ZStack {
-            backgroundMaterial.onGeometryChange(for: CGSize.self) { geometry in
-                return geometry.size
-            } action: { newValue in
-                size = newValue
-            }
+            backgroundMaterial
             ScrollViewReader { proxy in
-                Group {
-                    if let _ = coordinator.selectedConversation {
-                        
-                        if #available(macOS 15.0, *) {
-                            ScrollView {
-                                LazyVStack {
+                VStack(spacing: 0) {
+                    Group {
+                        if let _ = coordinator.selectedConversation {
+                            if #available(macOS 15.0, *) {
+                                List {
                                     ForEach(coordinator.messages) { message in
                                         MessageView(message: message, parentWidth: size.width)
-                                            .listRowSeparator(.hidden)
                                             .id(message.id)
+                                            .listRowSeparator(.hidden)
                                     }
+                                    
                                 }
-                            }
-                            
-//                            .defaultScrollAnchor(.bottom) // Fix this
-                            .contentMargins(.bottom, -20, for: .scrollContent)
-                            .contentMargins(.top, 20, for: .scrollContent)
-                            .onScrollGeometryChange(for: Bool.self) { geometry in
-                                return geometry.contentOffset.y + geometry.bounds.height >=
-                                geometry.contentSize.height - geometry.contentInsets.bottom
-                            } action: { wasGreater, isGreater in
-                                self.showScrollToBottom = !isGreater
+                                .scrollContentBackground(.hidden)
+                                .contentMargins(.bottom, 50, for: .scrollContent)
+                                .contentMargins(.bottom, 50, for: .scrollIndicators)
+                               
+                                .onScrollGeometryChange(for: Bool.self) { geometry in
+                                    return geometry.contentOffset.y + geometry.bounds.height >=
+                                    geometry.contentSize.height - 50 // Added padding
+                                } action: { wasGreater, isGreater in
+                                    self.showScrollToBottom = !isGreater
+                                }
+                                
+                            } else {
+                                List {
+                                    //                                ForEach(conversation.messages) { message in
+                                    //                                    MessageView(message: message)
+                                    //                                }
+                                }
                             }
                             
                         } else {
-                            List {
-                                //                                ForEach(conversation.messages) { message in
-                                //                                    MessageView(message: message)
-                                //                                }
+                            makeNoContentView()
+                        }
+                    }
+                    .overlay {
+                        VStack {
+                            Spacer()
+                            backgroundMaterial
+                                .frame(height: 50, alignment: .bottom)
+                                .mask(LinearGradient(gradient: Gradient(stops: [
+                                    .init(color: .black, location: 0),
+                                    .init(color: .black, location: 0.01),
+                                    .init(color: .clear, location: 1)
+                                ]), startPoint: .bottom, endPoint: .top))
+                        }
+                            .allowsHitTesting(false)
+                    }
+                    InputView()
+                        .padding([.horizontal, .bottom])
+                        .overlay(alignment: .top) {
+                            if showScrollToBottom {
+                                Button(action: {
+                                    withAnimation(.easeOut) {
+                                        proxy.scrollTo(coordinator.messages.last?.id, anchor: .bottom)
+                                    }
+                                }, label: {
+                                    Image(systemName: "arrow.down")
+                                        .fontWeight(.bold)
+                                        .imageScale(.small)
+                                        .foregroundStyle(colorScheme == .dark ? .white:.black)
+                                        .padding(5)
+                                        .background {
+                                            Circle()
+                                                .fill(colorScheme == .dark ? Color(.windowBackgroundColor):.white)
+                                                .frame(width: 30, height: 30)
+                                                .shadow(radius: 2)
+                                        }
+                                    
+                                })
+                                .frame(width: 30, height: 30)
+                                .offset(y: -40)
+                                .buttonStyle(.plain)
+                                .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
                             }
                         }
                         
-                    } else {
-                        makeNoContentView()
-                    }
                 }
-                .safeAreaInset(edge: .bottom, content: {
-                    if #available(macOS 15.0, *) {
-                        InputView()
-                            .padding([.horizontal, .bottom])
-                            .padding(.top, 50)
-                            .overlay(alignment: .top) {
-                                if showScrollToBottom {
-                                    Button(action: {
-                                        withAnimation(.easeOut) {
-                                            proxy.scrollTo(coordinator.messages.last?.id, anchor: .bottom)
-                                        }
-                                    }, label: {
-                                        Image(systemName: "arrow.down")
-                                            .fontWeight(.bold)
-                                            .imageScale(.small)
-                                            .foregroundStyle(colorScheme == .dark ? .white:.black)
-                                            .padding(5)
-                                            .background {
-                                                Circle()
-                                                    .fill(colorScheme == .dark ? Color(.windowBackgroundColor):.white)
-                                                    .frame(width: 30, height: 30)
-                                                    .shadow(radius: 2)
-                                            }
-                                        
-                                    })
-                                    .frame(width: 30, height: 30)
-                                    .buttonStyle(.plain)
-                                    .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
-                                }
-                            }
-                            .background {
-                                backgroundMaterial
-                                    .mask(LinearGradient(gradient: Gradient(stops: [
-                                        .init(color: .black, location: 0),
-                                        .init(color: .black, location: 0.7),
-                                        .init(color: .clear, location: 1)
-                                    ]), startPoint: .bottom, endPoint: .top))
-                                
-                            }
-                    } else {
-                        InputView()
-                            .padding([.horizontal, .bottom])
-                            .padding(.top, 50)
-                            .background {
-                                backgroundMaterial
-                                    .mask(LinearGradient(gradient: Gradient(stops: [
-                                        .init(color: .black, location: 0),
-                                        .init(color: .black, location: 0.7),
-                                        .init(color: .clear, location: 1)
-                                    ]), startPoint: .bottom, endPoint: .top))
-                                
-                            }
-                    }
-                    
-                    
-                })
             }
+        }
+        .onGeometryChange(for: CGSize.self) { geometry in
+            return geometry.size
+        } action: { newValue in
+            size = newValue
+        }
+        .onChange(of: size) { oldValue, newValue in
+            size = newValue
         }
         .overlay(content: {
             VStack {
@@ -222,6 +218,7 @@ struct ChatView: View {
         .onHover { over in
             showPipToolbar = over
         }
+        
     }
     
     @ViewBuilder
@@ -236,12 +233,21 @@ struct ChatView: View {
             
         }
         .frame(maxHeight: .infinity, alignment: .center)
-        .ignoresSafeArea(.container)
+//        .ignoresSafeArea(.container)
     }
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
     ContentView()
         .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
+}
+
+#Preview {
+    ChatView(
+        isPipMode: true,
+        onPipToggle: { }
+    )
+        .frame(width: 300, height: 500)
         .environment(CoordinatorModel())
 }

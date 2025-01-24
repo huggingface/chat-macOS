@@ -18,11 +18,12 @@ struct MessageView: View {
         ZStack(alignment: message.author == .user ? .trailing : .leading) {
             HStack(alignment: .firstTextBaseline) {
                 if message.author == .assistant {
-                    Image("")
+                    Image("huggy.fill")
                         .resizable()
                         .fontWeight(.medium)
+                        .imageScale(.small)
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 15, height: 15)
+                        .frame(width: 10, height: 10)
                         .foregroundStyle(.primary)
                         .background {
                             RoundedRectangle(cornerRadius: 20)
@@ -31,13 +32,14 @@ struct MessageView: View {
                                 .frame(width: 24, height: 24)
                         }
                     
-                        .offset(y: 5)
+//                        .offset(y: 5)
                         .padding(.horizontal, 10)
                 }
                 
                 VStack {
                     if message.author == .user  {
                         Text(message.content)
+                            .textSelection(.enabled)
                             .padding(.vertical, 9)
                             .padding(.horizontal, 15)
                             .background {
@@ -50,17 +52,17 @@ struct MessageView: View {
                             .padding(message.author == .user ? .trailing:.leading, message.author == .user ? 10 : 0)
                     } else if message.author == .assistant {
                         MarkdownView(text: message.content)
-                            .markdownRenderingThread(.background)
+                            .markdownRenderingThread(.main)
+                            .textSelection(.enabled)
                             .padding(.vertical, 9)
                             .padding(.trailing, 15)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: message.author == .user ? .trailing : .leading)
-        .padding(.horizontal)
+//        .padding(.horizontal)
     }
 }
 
