@@ -225,11 +225,11 @@ struct ChatMessageListView: View {
                     MessageView(message: message, parentWidth: parentWidth)
                         .id(message.id)
                         .listRowSeparator(.hidden)
+                        .padding(.bottom)
                 }
             }
             .scrollContentBackground(.hidden)
             .scrollClipDisabled(isPipMode && !showPipToolbar)
-            
            
             .onScrollGeometryChange(for: Bool.self) { geometry in
                 return geometry.contentOffset.y + geometry.bounds.height >=

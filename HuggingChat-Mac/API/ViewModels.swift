@@ -15,12 +15,14 @@ struct MessageViewModel: Identifiable, Hashable {
     let author: Author
     let webSources: [WebSearchSource]?
     let files: [String]?
+    let reasoning: String?
     
     init(message: Message) {
         self.id = message.id
         self.content = message.content
         self.author = message.author
         self.files = message.files
+        self.reasoning = message.reasoning
         
         // Extract web sources from updates
         if let updates = message.updates {

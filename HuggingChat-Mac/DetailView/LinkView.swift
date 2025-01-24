@@ -208,7 +208,7 @@ struct SourcesPillView: View {
             .padding(.horizontal, 8)
             .background {
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray.quinary, lineWidth: 1.5)
+                    .stroke(Color.gray.quinary, lineWidth: 1)
                     .fill(highlightOnHover ? Color.gray.quinary:Color.clear.quinary)
             }
         })

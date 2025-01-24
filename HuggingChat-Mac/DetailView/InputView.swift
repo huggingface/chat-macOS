@@ -32,12 +32,12 @@ struct InputView: View {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(.ultraThickMaterial)
                     .fill(colorScheme == .dark ? .black.opacity(0.4) : .white.opacity(0.4))
-                    .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(.gray.opacity(0.5), style: StrokeStyle(lineWidth: 1)))
+                    .overlay(RoundedRectangle(cornerRadius: cornerRadius).stroke(.gray.opacity(0.5), style: StrokeStyle(lineWidth: 0.5)))
                     .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
             } else {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    .stroke(.gray.opacity(0.5), lineWidth: 0.5)
 //                    .fill(.ultraThickMaterial)
                     .fill(.quinary)
             }

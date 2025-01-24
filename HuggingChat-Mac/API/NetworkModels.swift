@@ -113,11 +113,12 @@ final class Message: Decodable, Identifiable, Hashable {
     let updatedAt: Date
     let updates: [Update]?
     let files: [String]?
+    let reasoning: String?
     
     private enum CodingKeys: String, CodingKey {
         case id, content
         case author = "from"
-        case createdAt, updatedAt, updates, files
+        case createdAt, updatedAt, updates, files, reasoning
     }
 
     init(id: String, content: String, author: Author, createdAt: Date, updatedAt: Date) {
@@ -128,6 +129,7 @@ final class Message: Decodable, Identifiable, Hashable {
         self.updatedAt = updatedAt
         self.updates = nil
         self.files = nil
+        self.reasoning = nil
     }
 
     init(from decoder: Decoder) throws {
@@ -145,6 +147,7 @@ final class Message: Decodable, Identifiable, Hashable {
         self.createdAt = (try? container.decode(Date.self, forKey: .createdAt)) ?? updatedAt
         self.updates = try? container.decodeIfPresent([Update].self, forKey: .updates)
         self.files = try? container.decodeIfPresent([String].self, forKey: .files)
+        self.reasoning = try? container.decodeIfPresent(String.self, forKey: .reasoning)
     }
     
     static func == (lhs: Message, rhs: Message) -> Bool {
