@@ -42,40 +42,15 @@ struct ChatView: View {
     
     var body: some View {
         ZStack {
-            backgroundMaterial
+            ChatBackgroundView(isPipMode: isPipMode)
             ScrollViewReader { proxy in
                 VStack(spacing: 0) {
                         if isPipMode {
                             if showPipToolbar {
-                                HStack {
-                                    Button(action: {
-                                        onPipToggle()
-                                    }, label: {
-                                        Image(systemName: "xmark.circle.fill")
-                                    })
-                                    .buttonStyle(.plain)
-                                    
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        // Exit pip mode
-                                    }, label: {
-                                        Image(systemName: "pip.exit")
-                                    })
-                                    .buttonStyle(.accessoryBar)
-                                    
-                                    
-                                    Button(action: {
-                                        // new conversation
-                                    }, label: {
-                                        Image(systemName: "square.and.pencil")
-                                    })
-                                    .buttonStyle(.accessoryBar)
-                                    
-                                }
-                                .frame(height: 40)
-                                .foregroundStyle(.primary)
-                                .padding(.horizontal)
+                                PiPToolbarView(
+                                    onPipToggle: onPipToggle,
+                                    onNewConversation: { /* Handle new conversation */ }
+                                )
                                 
                             } else {
                                 Rectangle()
@@ -87,51 +62,22 @@ struct ChatView: View {
                     
                     Group {
                         if let _ = coordinator.selectedConversation {
-                            if #available(macOS 15.0, *) {
-                                List {
-                                    ForEach(coordinator.messages) { message in
-                                        MessageView(message: message, parentWidth: size.width)
-                                            .id(message.id)
-                                            .listRowSeparator(.hidden)
-                                    }
-                                    
-                                }
-                                .mask {
-
-                                    Rectangle()
-                                        .frame(height: size.height - 70)
-                                        .offset(y: -40)
-                                }
-                                .scrollContentBackground(.hidden)
-                                .scrollClipDisabled(isPipMode && !showPipToolbar)
-                                
-                               
-                                .onScrollGeometryChange(for: Bool.self) { geometry in
-                                    return geometry.contentOffset.y + geometry.bounds.height >=
-                                    geometry.contentSize.height - 50 // Added padding
-                                } action: { wasGreater, isGreater in
-                                    self.showScrollToBottom = !isGreater
-                                }
-                                .contentMargins(.bottom, 50, for: .scrollContent)
-                                .contentMargins(.bottom, 50, for: .scrollIndicators)
-//                                .contentMargins(.top, isPipMode ? 50:0, for: .scrollIndicators)
-                                
-                            } else {
-                                List {
-                                    //                                ForEach(conversation.messages) { message in
-                                    //                                    MessageView(message: message)
-                                    //                                }
-                                }
-                            }
+                            ChatMessageListView(
+                                                            parentWidth: size.width,
+                                                            contentHeight: size.height,
+                                                            isPipMode: isPipMode,
+                                                            showPipToolbar: showPipToolbar,
+                                                            showScrollToBottom: $showScrollToBottom
+                                                        )
                             
                         } else {
-                            makeNoContentView()
+                            ChatEmptyStateView()
                         }
                     }
                     .overlay {
                         VStack {
                             Spacer()
-                            backgroundMaterial
+                            ChatBackgroundView(isPipMode: isPipMode)
                                 .frame(height: 50, alignment: .bottom)
                                 .mask(LinearGradient(gradient: Gradient(stops: [
                                     .init(color: .black, location: 0),
@@ -145,28 +91,11 @@ struct ChatView: View {
                         .padding([.horizontal, .bottom])
                         .overlay(alignment: .top) {
                             if showScrollToBottom {
-                                Button(action: {
+                                ScrollToBottomButton {
                                     withAnimation(.easeOut) {
                                         proxy.scrollTo(coordinator.messages.last?.id, anchor: .bottom)
                                     }
-                                }, label: {
-                                    Image(systemName: "arrow.down")
-                                        .fontWeight(.bold)
-                                        .imageScale(.small)
-                                        .foregroundStyle(colorScheme == .dark ? .white:.black)
-                                        .padding(5)
-                                        .background {
-                                            Circle()
-                                                .fill(colorScheme == .dark ? Color(.windowBackgroundColor):.white)
-                                                .frame(width: 30, height: 30)
-                                                .shadow(radius: 2)
-                                        }
-                                    
-                                })
-                                .frame(width: 30, height: 30)
-                                .offset(y: -40)
-                                .buttonStyle(.plain)
-                                .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
+                                }
                             }
                         }
                         
@@ -230,9 +159,123 @@ struct ChatView: View {
         }
         
     }
+}
+
+// MARK: Subviews
+// 1. Background Material View
+struct ChatBackgroundView: View {
+    let isPipMode: Bool
     
-    @ViewBuilder
-    func makeNoContentView() -> some View {
+    var body: some View {
+        ZStack {
+            if isPipMode {
+                Rectangle.semiOpaqueWindow(withStyle: .toolTip)
+                Rectangle().fill(.regularMaterial)
+            } else {
+                Rectangle.semiOpaqueWindow()
+                Rectangle().fill(.regularMaterial)
+            }
+        }
+    }
+}
+
+// 2. PiP Toolbar View
+struct PiPToolbarView: View {
+    let onPipToggle: () -> Void
+    let onNewConversation: () -> Void
+    
+    var body: some View {
+        HStack {
+            Button(action: onPipToggle) {
+                Image(systemName: "xmark.circle.fill")
+            }
+            .buttonStyle(.plain)
+            
+            Spacer()
+            
+            Button(action: { /* Exit pip mode */ }) {
+                Image(systemName: "pip.exit")
+            }
+            .buttonStyle(.accessoryBar)
+            
+            Button(action: onNewConversation) {
+                Image(systemName: "square.and.pencil")
+            }
+            .buttonStyle(.accessoryBar)
+        }
+        .frame(height: 40)
+        .foregroundStyle(.primary)
+        .padding(.horizontal)
+    }
+}
+
+// 3. Message List View
+struct ChatMessageListView: View {
+    @Environment(CoordinatorModel.self) private var coordinator
+    let parentWidth: CGFloat
+    let contentHeight: CGFloat
+    let isPipMode: Bool
+    let showPipToolbar: Bool
+    @Binding var showScrollToBottom: Bool
+    
+    var body: some View {
+        if #available(macOS 15.0, *) {
+            List {
+                ForEach(coordinator.messages) { message in
+                    MessageView(message: message, parentWidth: parentWidth)
+                        .id(message.id)
+                        .listRowSeparator(.hidden)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .scrollClipDisabled(isPipMode && !showPipToolbar)
+            
+           
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                return geometry.contentOffset.y + geometry.bounds.height >=
+                geometry.contentSize.height - 50 // Added padding
+            } action: { wasGreater, isGreater in
+                showScrollToBottom = !isGreater
+            }
+            .contentMargins(.bottom, 50, for: .scrollContent)
+            .contentMargins(.bottom, 50, for: .scrollIndicators)
+        } else {
+            List {
+                // Fallback for older versions
+            }
+        }
+    }
+}
+
+// 4. Scroll To Bottom Button
+struct ScrollToBottomButton: View {
+    let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "arrow.down")
+                .fontWeight(.medium)
+                .imageScale(.small)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .padding(5)
+                .background {
+                    Circle()
+                        .fill(colorScheme == .dark ? Color(.windowBackgroundColor) : .white)
+                        .frame(width: 30, height: 30)
+                        .shadow(radius: 2)
+                }
+        }
+        .frame(width: 30, height: 30)
+        .offset(y: -40)
+        .buttonStyle(.plain)
+        .transition(.scale(0.8, anchor: .bottom).combined(with: .opacity))
+    }
+}
+
+// 5. Empty State View
+struct ChatEmptyStateView: View {
+    var body: some View {
         ZStack {
             Image("huggy")
                 .resizable()
@@ -240,10 +283,8 @@ struct ChatView: View {
                 .symbolRenderingMode(.none)
                 .foregroundStyle(.tertiary)
                 .frame(width: 55, height: 55)
-            
         }
         .frame(maxHeight: .infinity, alignment: .center)
-//        .ignoresSafeArea(.container)
     }
 }
 

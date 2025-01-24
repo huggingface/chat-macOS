@@ -21,7 +21,7 @@ struct InputView: View {
                 .textFieldStyle(.plain)
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
-            InputViewToolbar()
+            InputViewToolbar(inputText: inputText)
         }
         .padding(.horizontal)
         .padding(.vertical, 10)

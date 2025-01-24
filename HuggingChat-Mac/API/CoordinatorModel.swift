@@ -164,13 +164,4 @@ extension CoordinatorModel {
            }
            .store(in: &cancellables)
     }
-//
-//    private func buildHistory(conversation: Conversation) -> [MessageRow] {
-//        let messages = conversation.messages.compactMap({ (message: Message) -> MessageRow? in
-//           return MessageRow(message: message)
-//        })
-////        let historyParser = HistoryParser(isDarkMode: isDarkMode)
-////        messages = historyParser.parseMessages(messages: messages)
-//        return messages
-//    }
 }

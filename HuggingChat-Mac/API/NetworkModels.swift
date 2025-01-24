@@ -111,13 +111,13 @@ final class Message: Decodable, Identifiable, Hashable {
     let author: Author
     let createdAt: Date
     let updatedAt: Date
-    let webSearch: MessageWebSearch?
-    //    let updates: [Update]
-
+    let updates: [Update]?
+    let files: [String]?
+    
     private enum CodingKeys: String, CodingKey {
         case id, content
         case author = "from"
-        case createdAt, updatedAt, webSearch
+        case createdAt, updatedAt, updates, files
     }
 
     init(id: String, content: String, author: Author, createdAt: Date, updatedAt: Date) {
@@ -126,7 +126,8 @@ final class Message: Decodable, Identifiable, Hashable {
         self.author = author
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-        self.webSearch = nil
+        self.updates = nil
+        self.files = nil
     }
 
     init(from decoder: Decoder) throws {
@@ -142,7 +143,8 @@ final class Message: Decodable, Identifiable, Hashable {
         let updatedAt = (try? container.decode(Date.self, forKey: .updatedAt)) ?? Date()
         self.updatedAt = updatedAt
         self.createdAt = (try? container.decode(Date.self, forKey: .createdAt)) ?? updatedAt
-        self.webSearch = try container.decodeIfPresent(MessageWebSearch.self, forKey: .webSearch)
+        self.updates = try? container.decodeIfPresent([Update].self, forKey: .updates)
+        self.files = try? container.decodeIfPresent([String].self, forKey: .files)
     }
     
     static func == (lhs: Message, rhs: Message) -> Bool {
@@ -156,13 +158,36 @@ final class Message: Decodable, Identifiable, Hashable {
 
 // MARK: - Update
 struct Update: Decodable {
-    let type: String
-    let status, text: String?
+    let type: UpdateType
+    let subtype: String?
+    let status: String?
+    let message: String?
+    let title: String?
+    let text: String?
+    let args: [String]?
+    let sources: [WebSearchSource]?
+    let interrupted: Bool?
+    let webSources: [WebSearchSource]?
+    
+    private enum CodingKeys: String, CodingKey {
+        case type, subtype, status, message, title, text, args, sources
+        case interrupted, webSources
+    }
 }
 
-struct MessageWebSearch: Decodable {
-    let prompt: String
-    let contextSources: [WebSearchSource]
+enum UpdateType: String, Decodable {
+    case status
+    case webSearch
+    case title
+    case reasoning
+    case finalAnswer
+    case unknown
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = UpdateType(rawValue: rawValue) ?? .unknown
+    }
 }
 
 struct WebSearchSource: Identifiable, Decodable {
@@ -190,8 +215,8 @@ struct WebSearchSource: Identifiable, Decodable {
     
     // Convenience Init
     init(link: URL, title: String, hostname: String) {
-           self.link = link
-           self.title = title
-           self.hostname = hostname
-       }
+        self.link = link
+        self.title = title
+        self.hostname = hostname
+    }
 }

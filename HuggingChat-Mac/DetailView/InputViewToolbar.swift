@@ -10,6 +10,7 @@ import SwiftUI
 struct InputViewToolbar: View {
     
     @Environment(\.colorScheme) var colorScheme
+    var inputText: String
     
     var body: some View {
         HStack {
@@ -62,13 +63,14 @@ struct InputViewToolbar: View {
             }
             .background(
                 Circle()
-                    .fill(colorScheme == .dark ? Color.white : Color.black)
+                    .fill(inputText.isEmpty ? Color.gray.opacity(0.5) : (colorScheme == .dark ? Color.white : Color.black))
                 .frame(width: 27, height: 27)
             )
             .buttonStyle(.plain)
             .fontWeight(.bold)
             .padding(.leading, 5)
             .font(.title3)
+            .disabled(inputText.isEmpty)
         }
         
         .fontDesign(.rounded)
