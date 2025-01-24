@@ -45,6 +45,46 @@ struct ChatView: View {
             backgroundMaterial
             ScrollViewReader { proxy in
                 VStack(spacing: 0) {
+                        if isPipMode {
+                            if showPipToolbar {
+                                HStack {
+                                    Button(action: {
+                                        onPipToggle()
+                                    }, label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                    })
+                                    .buttonStyle(.plain)
+                                    
+                                    Spacer()
+                                    
+                                    Button(action: {
+                                        // Exit pip mode
+                                    }, label: {
+                                        Image(systemName: "pip.exit")
+                                    })
+                                    .buttonStyle(.accessoryBar)
+                                    
+                                    
+                                    Button(action: {
+                                        // new conversation
+                                    }, label: {
+                                        Image(systemName: "square.and.pencil")
+                                    })
+                                    .buttonStyle(.accessoryBar)
+                                    
+                                }
+                                .frame(height: 40)
+                                .foregroundStyle(.primary)
+                                .padding(.horizontal)
+                                
+                            } else {
+                                Rectangle()
+                                    .fill(.clear)
+                                    .frame(height: 40).zIndex(100)
+                                    
+                            }
+                        }
+                    
                     Group {
                         if let _ = coordinator.selectedConversation {
                             if #available(macOS 15.0, *) {
@@ -56,9 +96,15 @@ struct ChatView: View {
                                     }
                                     
                                 }
+                                .mask {
+
+                                    Rectangle()
+                                        .frame(height: size.height - 70)
+                                        .offset(y: -40)
+                                }
                                 .scrollContentBackground(.hidden)
-                                .contentMargins(.bottom, 50, for: .scrollContent)
-                                .contentMargins(.bottom, 50, for: .scrollIndicators)
+                                .scrollClipDisabled(isPipMode && !showPipToolbar)
+                                
                                
                                 .onScrollGeometryChange(for: Bool.self) { geometry in
                                     return geometry.contentOffset.y + geometry.bounds.height >=
@@ -66,6 +112,9 @@ struct ChatView: View {
                                 } action: { wasGreater, isGreater in
                                     self.showScrollToBottom = !isGreater
                                 }
+                                .contentMargins(.bottom, 50, for: .scrollContent)
+                                .contentMargins(.bottom, 50, for: .scrollIndicators)
+//                                .contentMargins(.top, isPipMode ? 50:0, for: .scrollIndicators)
                                 
                             } else {
                                 List {
@@ -121,6 +170,7 @@ struct ChatView: View {
                             }
                         }
                         
+                        
                 }
             }
         }
@@ -133,46 +183,6 @@ struct ChatView: View {
             size = newValue
         }
         .overlay(content: {
-            VStack {
-                if isPipMode && showPipToolbar {
-                    HStack {
-                        Button(action: {
-                            onPipToggle()
-                        }, label: {
-                            Image(systemName: "xmark.circle.fill")
-                        })
-                        .buttonStyle(.plain)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            // Exit pip mode
-                        }, label: {
-                            Image(systemName: "pip.exit")
-                        })
-                        .buttonStyle(.accessoryBar)
-                        
-                        
-                        Button(action: {
-                            // new conversation
-                        }, label: {
-                            Image(systemName: "square.and.pencil")
-                        })
-                        .buttonStyle(.accessoryBar)
-                        
-                    }
-                    
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-                    .background {
-                        backgroundMaterial
-                    }
-                    
-                    Spacer()
-                        .allowsHitTesting(false)
-                    
-                }
-            }
             if isPipMode {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .stroke(.gray.opacity(0.5), lineWidth: 1.0)
