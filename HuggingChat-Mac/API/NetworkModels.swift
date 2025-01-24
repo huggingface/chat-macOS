@@ -167,7 +167,7 @@ struct Update: Decodable {
     let args: [String]?
     let sources: [WebSearchSource]?
     let interrupted: Bool?
-    let webSources: [WebSearchSource]?
+    let webSources: [WebSearchSource]? // Potentiall deprecated? Do not use
     
     private enum CodingKeys: String, CodingKey {
         case type, subtype, status, message, title, text, args, sources

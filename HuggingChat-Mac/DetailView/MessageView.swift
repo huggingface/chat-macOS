@@ -11,7 +11,7 @@ import MarkdownView
 struct MessageView: View {
     
     @Environment(\.colorScheme) var colorScheme
-    var message: Message
+    var message: MessageViewModel
     var parentWidth: CGFloat = 0
     
     var body: some View {
@@ -58,11 +58,18 @@ struct MessageView: View {
                             .padding(.trailing, 15)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    
+                    
+                    // Web sources
+                    if let webSources = message.webSources, webSources.count > 0 {
+                        SourcesPillView(webSources: webSources)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                   
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: message.author == .user ? .trailing : .leading)
-//        .padding(.horizontal)
     }
 }
 

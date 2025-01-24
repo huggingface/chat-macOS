@@ -13,7 +13,7 @@ import Combine
     
     // Conversations
     var conversations: [Conversation] = []
-    var messages: [Message] = []
+    var messages: [MessageViewModel] = []
     var selectedConversation: Conversation.ID?
     
     // Auth
@@ -153,14 +153,21 @@ extension CoordinatorModel {
         self.messages = []
        NetworkService.getConversation(id: conversation.serverId)
            .receive(on: DispatchQueue.main)
+           .map { [weak self] (conversation: Conversation) -> [MessageViewModel] in
+               guard let self else { return [] }
+//               self.conversation = conversation
+               return conversation.messages.compactMap({ (message: Message) -> MessageViewModel? in
+                   return MessageViewModel(message: message)
+                })
+           }
            .sink { [weak self] completion in
                switch completion {
                case .failure(let error):
                    self?.error = error
                case .finished: break
                }
-           } receiveValue: { [weak self] conv in
-               self?.messages = conv.messages
+           } receiveValue: { [weak self] messages in
+               self?.messages = messages
            }
            .store(in: &cancellables)
     }
