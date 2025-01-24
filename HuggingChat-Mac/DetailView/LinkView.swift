@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import LinkPresentation
-import NukeUI
 
 // Cache manager to avoid fetching link metadata from web when needed
 final class MetadataCacheManager {
@@ -33,72 +32,85 @@ final class MetadataCacheManager {
     }
 }
 
-
 struct LinkPreview: View {
     var link: WebSearchSource
+    var iconOnly: Bool = false
+    
     @State private var metadata: LPLinkMetadata?
     @State private var isLoading = true
     @State private var error: Error?
-    @State private var averageColor: Color = .gray.opacity(0.3)
+    @State private var icon: NSImage?
     
     var body: some View {
-        HStack(spacing: 7) {
-            Group {
-                if isLoading {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 25, height: 25)
-                        .overlay(ProgressView().controlSize(.small))
-                } else if let iconProvider = metadata?.iconProvider {
-                    Circle()
-//                    IconView(iconProvider: iconProvider, averageColor: $averageColor)
-//                        .frame(width: 25, height: 25)
-                } else {
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.gray.tertiary)
-                        .frame(width: 25, height: 25)
-                        .overlay {
-                            Image(systemName: "link")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundStyle(.tertiary)
-                                .frame(width: 15, height: 15)
+        
+        HStack(alignment: .top) {
+                Group {
+                    if isLoading {
+                        ZStack {
+                            Circle()
+                                .fill(.gray.quinary)
+                                .overlay {
+                                    ProgressView()
+                                        .controlSize(.mini)
+                                }
                         }
+                    } else if let icon = icon {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(Circle())
+                    } else {
+                        ZStack {
+                            Circle()
+                                .fill(.gray.quinary)
+                                .overlay {
+                                    Image(systemName: "link")
+                                        .imageScale(.small)
+                                }
+                        }
+                    }
+                }
+                .frame(width: 18, height: 18)
+                
+                VStack(alignment: .leading) {
+                    if !iconOnly {
+                        Text(link.title)
+                            .fontWeight(.medium)
+                        
+                        if let metaURL = metadata?.url {
+                            Text(metaURL.absoluteString)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        .padding(.vertical, 5)
+        
+        .task {
+            await loadMetadata()
+        }
+        .onChange(of: metadata) { oldValue, newValue in
+            if newValue != nil {
+                if let iconProvider = newValue?.iconProvider {
+                    Task {
+                        do {
+                            let loadedIcon = try await loadIcon(iconProvider: iconProvider)
+                            await MainActor.run {
+                                self.icon = loadedIcon
+                            }
+                        } catch {
+                            self.error = error
+                        }
+                    }
                 }
             }
             
-            VStack(alignment: .leading, spacing: 0) {
-                Text(metadata?.title ?? link.link.absoluteString)
-                    .foregroundColor(.primary)
-                    .fontWeight(.semibold)
-                    .font(.caption2)
-                    .lineLimit(1)
-                Text(link.link.absoluteString)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 7)
-        .padding(.horizontal, 10)
-        .background(Color.gray.quinary)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(.secondary.opacity(0.2), lineWidth: 1.0))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .onTapGesture {
-//            if let validURL = URL(string: link.url) {
-//                UIApplication.shared.open(validURL)
-//            }
-        }
-        .task {
-            await loadMetadata()
         }
     }
     
     private func loadMetadata() async {
-        print("Loading metatadata")
         if let cachedMetadata = MetadataCacheManager.shared.metadata(for: link.link.absoluteString) {
-            print("Found metatadata in cache")
             await MainActor.run {
                 self.metadata = cachedMetadata
                 self.isLoading = false
@@ -107,17 +119,15 @@ struct LinkPreview: View {
         }
         
         isLoading = true
-        error = nil
+        defer { isLoading = false }
         
+        error = nil
         guard let validURL = URL(string: link.link.absoluteString) else {
-            print("Invalid URL")
-            self.isLoading = false
             self.error = URLError(.badURL)
             return
         }
         
         let provider = LPMetadataProvider()
-        
         do {
             let fetchedMetadata = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<LPLinkMetadata, Error>) in
                 provider.startFetchingMetadata(for: validURL) { metadata, error in
@@ -139,13 +149,30 @@ struct LinkPreview: View {
             }
         } catch {
             await MainActor.run {
-                print("Error fetching metadata: \(error)")
                 self.error = error
             }
         }
-        
-        await MainActor.run {
-            self.isLoading = false
+    }
+    
+    private func loadIcon(iconProvider: NSItemProvider) async throws -> NSImage {
+        return try await withCheckedThrowingContinuation { continuation in
+            iconProvider.loadObject(ofClass: NSImage.self) { image, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                guard let nsImage = image as? NSImage else {
+                    continuation.resume(throwing: NSError(
+                        domain: "IconLoaderError",
+                        code: -1,
+                        userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to NSImage"]
+                    ))
+                    return
+                }
+                
+                continuation.resume(returning: nsImage)
+            }
         }
     }
 }
@@ -164,7 +191,7 @@ struct SourcesPillView: View {
         }, label: {
             HStack {
                 Text("Sources")
-                    .font(.subheadline)
+                    .font(.headline)
                     .fontWeight(.medium)
                 
                 linkPhotoArray()
@@ -181,16 +208,15 @@ struct SourcesPillView: View {
             .padding(.horizontal, 8)
             .background {
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray.quinary, lineWidth: 1)
+                    .stroke(Color.gray.quinary, lineWidth: 1.5)
                     .fill(highlightOnHover ? Color.gray.quinary:Color.clear.quinary)
             }
         })
         .buttonStyle(.plain)
         .popover(isPresented: $showPopover, arrowEdge: .top) {
-                    Text("Your content here")
-                        .font(.headline)
-                        .padding()
-                }
+            SourcesListView(webSources: webSources)
+                .frame(width: 400, height: 400)
+        }
         .onHover { isHovering in
             highlightOnHover = isHovering
         }
@@ -200,21 +226,17 @@ struct SourcesPillView: View {
     
     @ViewBuilder
     func linkPhotoArray() -> some View {
-       
-
             HStack(spacing: -5) {
                 // First circle without mask
                 if let firstSource = webSources.first {
-                    Circle()
-                        .fill(.gray.quinary)
+                    LinkPreview(link: firstSource, iconOnly: true)
                         .frame(width: 18, height: 18)
                         .zIndex(Double(webSources.prefix(4).count))
                 }
                 
                 // Subsequent circles with mask
                 ForEach(Array(zip(webSources.prefix(4).dropFirst().indices, webSources.prefix(4).dropFirst())), id: \.0) { index, item in
-                    Circle()
-                        .fill(.gray.quinary)
+                    LinkPreview(link: item, iconOnly: true)
                         .frame(width: 18, height: 18)
                         .zIndex(Double(webSources.prefix(4).count - index - 1))
                         .blendMode(.destinationOver)
@@ -232,15 +254,36 @@ struct SourcesPillView: View {
     }
 }
 
+// MARK: Subviews
+struct SourcesListView: View {
+    
+    var webSources: [WebSearchSource]
+    
+    var body: some View {
+        List {
+            Section("Citations", content: {
+                ForEach(webSources) { source in
+                    LazyVStack(alignment: .leading, pinnedViews: [.sectionHeaders]) {
+                        LinkPreview(link: source, iconOnly: false)
+                            .padding(.horizontal, 5)
+                    }
+                }
+            })
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        
+    }
+}
 
 
 #Preview {
-    SourcesPillView(webSources: [
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google"),
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google"),
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google"),
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google"),
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google"),
-        WebSearchSource(link: URL(string: "https://www.google.com")!, title: "", hostname: "Google")
+    SourcesListView(webSources: [
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google"),
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google"),
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google"),
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google"),
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google"),
+        WebSearchSource(link: URL(string: "http://huggingface.co")!, title: "HuggingFace", hostname: "Google")
     ])
 }
