@@ -59,17 +59,18 @@ struct MessageView: View {
                                 showReasoning = true
                             }, label: {
                                 HStack {
-                                    Text("Thought for 17 seconds")
+                                    Text(message.reasoningUpdates.last ?? "Finished thinking")
                                     Image(systemName: "chevron.down")
                                 }
                                 .fontWeight(.medium)
                                 .foregroundStyle(.secondary)
                                 .popover(isPresented: $showReasoning) {
                                     ScrollView {
-                                        MarkdownView(text: reasoning).padding()
+                                        MarkdownView(text: reasoning)
+                                            .padding(.horizontal, 30)
                                     }
                                     .frame(width: 400, height: 400)
-                                        
+                                    .contentMargins(.vertical, 40, for: .scrollContent)
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 

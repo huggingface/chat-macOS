@@ -17,6 +17,10 @@ struct MessageViewModel: Identifiable, Hashable {
     let files: [String]?
     let reasoning: String?
     
+    // Updates
+    var reasoningUpdates: [String] = []
+    var webSearchUpdates: [String] = []
+    
     init(message: Message) {
         self.id = message.id
         self.content = message.content
@@ -26,6 +30,16 @@ struct MessageViewModel: Identifiable, Hashable {
         
         // Extract web sources from updates
         if let updates = message.updates {
+            for update in updates {
+                if update.type == .reasoning,
+                   update.subtype == "status",
+                   let status = update.status {
+                    reasoningUpdates.append(status)
+                }
+                if update.type == .webSearch,  update.subtype == "update", let webUpdate = update.message {
+                    webSearchUpdates.append(webUpdate)
+                }
+            }
             self.webSources = updates.first { update in
                 update.type == .webSearch &&
                 update.subtype == "sources" &&
