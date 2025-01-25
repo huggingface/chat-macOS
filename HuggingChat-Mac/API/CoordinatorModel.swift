@@ -16,6 +16,9 @@ import Combine
     var messages: [MessageViewModel] = []
     var selectedConversation: Conversation.ID?
     
+    // Model
+    var activeModel: LLMViewModel?
+    
     // Auth
     var currentUser: HuggingChatUser?
     var token: String?
@@ -36,6 +39,13 @@ import Combine
             print("\(cookie.name): \(cookie.value)")
         }
         self.refreshLoginState()
+        
+        // Fetch models
+        getModels(shouldForceRefresh: true).sink(
+            receiveCompletion: { _ in }, receiveValue: { _ in }
+        ).store(in: &cancellables)
+        
+        self.activeModel = self.getLocalActiveModel()
     }
 }
 
@@ -106,8 +116,8 @@ extension CoordinatorModel {
         
         DispatchQueue.main.async { [weak self] in
             self?.currentUser = nil
-//            self?.currentConversation = ""
-//            DataService.shared.resetLocalModels()
+            self?.selectedConversation = nil
+            self?.resetLocalModels()
             UserDefaults.standard.setValue(false, forKey: UserDefaultsKeys.userLoggedIn)
         }
     }
@@ -154,7 +164,7 @@ extension CoordinatorModel {
        NetworkService.getConversation(id: conversation.serverId)
            .receive(on: DispatchQueue.main)
            .map { [weak self] (conversation: Conversation) -> [MessageViewModel] in
-               guard let self else { return [] }
+               guard self != nil else { return [] }
 //               self.conversation = conversation
                return conversation.messages.compactMap({ (message: Message) -> MessageViewModel? in
                    return MessageViewModel(message: message)
@@ -170,5 +180,86 @@ extension CoordinatorModel {
                self?.messages = messages
            }
            .store(in: &cancellables)
+    }
+}
+
+// MARK: Model functions
+extension CoordinatorModel {
+    func getModels(shouldForceRefresh: Bool = false) -> AnyPublisher<[LLMModel], HFError> {
+        if let models = self.getLocalModels(), !shouldForceRefresh {
+            return Just(models).setFailureType(to: HFError.self).eraseToAnyPublisher()
+        }
+
+        return NetworkService.getModels().handleEvents(receiveOutput: { [weak self] models in
+            guard let self = self else { return }
+            let localModels = self.getLocalModels()
+            if let locals = localModels {
+                for model in models {
+                    guard let local = locals.first(where: { $0.id == model.id }) else { continue }
+                    model.preprompt = local.preprompt
+                }
+            }
+            
+            self.saveModels(models)
+        }).eraseToAnyPublisher()
+    }
+    
+    private func getLocalModels() -> [LLMModel]? {
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models) else {
+            return nil
+        }
+        do {
+            let decoder = JSONDecoder()
+            let models = try decoder.decode([LLMModel].self, from: data)
+            return models
+        } catch {
+            print("Unable to Decode [LLModel] (\(error))")
+            return nil
+        }
+    }
+    
+    private func saveModels(_ models: [LLMModel]) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(models)
+            UserDefaults.standard.set(data, forKey: UserDefaultsKeys.models)
+        } catch {
+            print("Unable to Encode [LLModel] (\(error))")
+        }
+    }
+    
+    private func getLocalActiveModel() -> LLMViewModel? {
+        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.activeModel) else {
+            return nil
+        }
+        do {
+            let decoder = JSONDecoder()
+            let activeModel = try decoder.decode(LLMViewModel.self, from: data)
+            return activeModel
+        } catch {
+            print("Unable to Decode Active Model (\(error))")
+            return nil
+        }
+    }
+    
+    func setActiveModel(_ activeModel: LLMViewModel) {
+        self.activeModel = activeModel
+        self.saveActiveModel(activeModel)
+    }
+    
+    func saveActiveModel(_ activeModel: LLMViewModel) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(activeModel)
+            UserDefaults.standard.set(data, forKey: UserDefaultsKeys.activeModel)
+        } catch {
+            print("Unable to Encode Active Model (\(error))")
+        }
+    }
+    
+    func resetLocalModels() {
+        UserDefaults.standard.setValue(nil, forKey: UserDefaultsKeys.models)
+        UserDefaults.standard.set(nil, forKey: UserDefaultsKeys.activeModel)
+        activeModel = nil
     }
 }

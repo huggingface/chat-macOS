@@ -223,3 +223,80 @@ struct WebSearchSource: Identifiable, Decodable {
         self.hostname = hostname
     }
 }
+
+// MARK: LLM Model
+struct PromptExample: Codable {
+    let title: String
+    let prompt: String
+}
+
+
+final class LLMModel: Codable, Identifiable, Hashable {
+    
+    let id: String
+    let name: String
+    let displayName: String
+    let websiteUrl: URL
+    let modelUrl: URL
+    let tools: Bool
+    let promptExamples: [PromptExample]
+    let multimodal: Bool
+    let unlisted: Bool
+    let description: String
+    var preprompt: String
+
+    init(
+        id: String, name: String, displayName: String, websiteUrl: URL, modelUrl: URL,
+        promptExamples: [PromptExample], multimodal: Bool, unlisted: Bool, description: String,
+        isActive: Bool, preprompt: String, tools: Bool
+    ) {
+        self.id = id
+        self.name = name
+        self.displayName = displayName
+        self.websiteUrl = websiteUrl
+        self.modelUrl = modelUrl
+        self.promptExamples = promptExamples
+        self.multimodal = multimodal
+        self.unlisted = unlisted
+        self.description = description
+        self.preprompt = preprompt
+        self.tools = tools
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.displayName = try container.decode(String.self, forKey: .displayName)
+
+        if let url = try? container.decode(URL.self, forKey: .websiteUrl) {
+            self.websiteUrl = url
+        } else {
+            self.websiteUrl = URL(string: "https://huggingface.co/\(self.name)")!
+        }
+        
+        if let url = try? container.decode(URL.self, forKey: .modelUrl) {
+            self.modelUrl = url
+        } else {
+            self.modelUrl = URL(string: "https://huggingface.co/\(self.name)")!
+        }
+
+        self.promptExamples = (try? container.decode([PromptExample].self, forKey: .promptExamples)) ?? []
+        
+        self.multimodal = try container.decode(Bool.self, forKey: .multimodal)
+        self.unlisted = try container.decode(Bool.self, forKey: .unlisted)
+        self.description = (try? container.decode(String.self, forKey: .description)) ?? ""
+
+        self.preprompt = try container.decode(String.self, forKey: .preprompt)
+        self.tools = try container.decode(Bool.self, forKey: .tools)
+    }
+    
+    static func == (lhs: LLMModel, rhs: LLMModel) -> Bool {
+       lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+       hasher.combine(id)
+    }
+
+}

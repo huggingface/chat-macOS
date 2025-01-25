@@ -50,8 +50,31 @@ struct MessageViewModel: Identifiable, Hashable {
         }
     }
     
-    // Required for Hashable
     static func == (lhs: MessageViewModel, rhs: MessageViewModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+struct LLMViewModel: Codable, Identifiable, Hashable {
+    let id: String
+    var name: String
+    var displayName: String
+    var multimodal: Bool
+    var description: String
+    
+    init(model: LLMModel) {
+        self.id = model.id
+        self.name = model.name
+        self.displayName = model.displayName
+        self.multimodal = model.multimodal
+        self.description = model.description
+    }
+    
+    static func == (lhs: LLMViewModel, rhs: LLMViewModel) -> Bool {
         lhs.id == rhs.id
     }
     

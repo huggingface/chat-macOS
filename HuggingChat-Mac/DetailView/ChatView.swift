@@ -123,20 +123,13 @@ struct ChatView: View {
                 Button(action: {
                     showingPopover = true
                 }, label: {
-                    HStack(spacing: 5) {
-                        Text("DeepSeek-R1")
-                            .foregroundStyle(colorScheme == .dark ? .white : .black)
-                            .fontWeight(.medium)
-                            .font(.title3)
-                        Image(systemName: "chevron.right")
-                            .imageScale(.small)
-                    }
+                    titleView()
                 })
                 .buttonStyle(.accessoryBar)
                 .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
-                    Text("Your content here")
-                        .font(.headline)
-                        .padding()
+                    ModelListView()
+                        .frame(width: 320)
+                        .frame(maxHeight: 400)
                 }
                 
             }
@@ -158,6 +151,29 @@ struct ChatView: View {
             showPipToolbar = over
         }
         
+    }
+    
+    @ViewBuilder
+    func titleView() -> some View {
+        HStack(alignment: .bottom, spacing: 5) {
+            let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
+            let primaryName = modelName.split(separator: "-").first ?? ""
+            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "-", with: " ") ?? ""
+            Text(primaryName)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .fontWeight(.medium)
+                .font(.title3)
+                .contentTransition(.numericText())
+            Text(secondaryName)
+                .foregroundStyle(.secondary)
+                .fontWeight(.medium)
+                .font(.body)
+                .contentTransition(.numericText())
+            Image(systemName: "chevron.right")
+                .imageScale(.small)
+        }
+        .layoutPriority(100)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -288,17 +304,93 @@ struct ChatEmptyStateView: View {
     }
 }
 
-#Preview(traits: .sizeThatFitsLayout) {
-    ContentView()
-        .environmentObject(AppDelegate())
-        .environment(CoordinatorModel())
+struct ModelListView: View {
+    
+    let modelMapping: [String: String] = [
+        "CohereForAI/c4ai-command-r-plus-08-2024":"Best model for tool use",
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B":"Uses advanced reasoning",
+        "microsoft/Phi-3.5-mini-instruct":"Faster for most questions",
+        "Qwen/QwQ-32B-Preview":"Great for most tasks"
+    ]
+
+    var body: some View {
+            if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models),
+               let models = try? JSONDecoder().decode([LLMModel].self, from: data) {
+                
+                VStack {
+                    ForEach(models, id: \.id) { model in
+                        if let customDescription = modelMapping[model.name] {
+                            ModelCellView(model: model, description: customDescription)
+                        }
+                        
+                    }
+                }
+                .padding(10)
+            }
+        }
+}
+
+struct ModelCellView: View {
+    @Environment(CoordinatorModel.self) private var coordinator
+    @Environment(\.dismiss) var dismiss
+    
+    var model: LLMModel
+    var description: String
+    @State var hoverState: Bool = false
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                Text(model.displayName.split(separator: "/").last ?? "")
+                    .font(.headline)
+                Text(description)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if coordinator.activeModel?.id == model.id {
+                Image(systemName: "checkmark")
+            }
+           
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 5)
+        .padding(.horizontal, 7)
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .background {
+            if hoverState {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.quinary)
+            }
+        }
+        .onTapGesture {
+            withAnimation {
+                coordinator.setActiveModel(LLMViewModel(model: model))
+            }
+            dismiss()
+            // TODO: Reset stuff?
+        }
+        .onHover { isHovering in
+            hoverState = isHovering
+        }
+    }
 }
 
 #Preview {
-    ChatView(
-        isPipMode: true,
-        onPipToggle: { }
-    )
-        .frame(width: 300, height: 500)
-        .environment(CoordinatorModel())
+    Text("Hello wrld")
 }
+
+
+//#Preview {
+//    ContentView()
+//        .environmentObject(AppDelegate())
+//        .environment(CoordinatorModel())
+//}
+
+//#Preview {
+//    ChatView(
+//        isPipMode: true,
+//        onPipToggle: { }
+//    )
+//        .frame(width: 300, height: 500)
+//        .environment(CoordinatorModel())
+//}

@@ -10,5 +10,6 @@ import Foundation
 enum UserDefaultsKeys {
     static let userLoggedIn = "userLoggedIn"
     static let baseURL = "baseURL"
-    static let trimEmojis = "trimEmojis"
+    static let models = "models"
+    static let activeModel = "active_model"
 }

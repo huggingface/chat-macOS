@@ -39,6 +39,15 @@ extension NetworkService {
     }
 }
 
+// MARK: Models
+extension NetworkService {
+    static func getModels() -> AnyPublisher<[LLMModel], HFError> {
+        let endpoint = "\(BASE_URL)/chat/api/models"
+        let request = URLRequest(url: URL(string: endpoint)!)
+        return resolveRequest(request, decoder: JSONDecoder.ISO8601())
+    }
+}
+
 // MARK: Login/Sign up functions
 extension NetworkService {
     static func loginChat() -> AnyPublisher<LoginChat, HFError> {

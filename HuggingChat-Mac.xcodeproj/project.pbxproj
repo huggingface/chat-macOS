@@ -7,20 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F103B81B2C7911B9007B6D87 /* Path in Frameworks */ = {isa = PBXBuildFile; productRef = F103B81A2C7911B9007B6D87 /* Path */; };
 		F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */; };
 		F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = F13631C42C731A30009DEF15 /* LaunchAtLogin */; };
 		F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F1413D6C2C8ECD190045CD54 /* MarkdownView */; };
-		F18E15D82C810C940091EE53 /* Highlighter in Frameworks */ = {isa = PBXBuildFile; productRef = F18E15D72C810C940091EE53 /* Highlighter */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
 		F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A46BAE2D4196F500BDAA5E /* NukeUI */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
 		F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */; };
 		F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E062CABF22B009CBA98 /* Accelerate.framework */; };
 		F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1A76E082CABF231009CBA98 /* Metal.framework */; };
-		F1B317F62CFF9C6A00120FAE /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = F1B317F52CFF9C6A00120FAE /* WhisperKit */; };
-		F1F76BFC2CF6717300E58778 /* Pow in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76BFB2CF6717300E58778 /* Pow */; };
-		F1F76CD02CF6790A00E58778 /* LLM in Frameworks */ = {isa = PBXBuildFile; productRef = F1F76CCF2CF6790A00E58778 /* LLM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,19 +63,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1F76CD02CF6790A00E58778 /* LLM in Frameworks */,
 				F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */,
-				F1B317F62CFF9C6A00120FAE /* WhisperKit in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
 				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
-				F1F76BFC2CF6717300E58778 /* Pow in Frameworks */,
-				F103B81B2C7911B9007B6D87 /* Path in Frameworks */,
 				F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */,
 				F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */,
 				F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */,
 				F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */,
-				F18E15D82C810C940091EE53 /* Highlighter in Frameworks */,
 				F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -138,15 +128,10 @@
 			packageProductDependencies = (
 				F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */,
 				F13631C42C731A30009DEF15 /* LaunchAtLogin */,
-				F103B81A2C7911B9007B6D87 /* Path */,
-				F18E15D72C810C940091EE53 /* Highlighter */,
 				F1413D6C2C8ECD190045CD54 /* MarkdownView */,
 				F19E18BD2C9C889E00B89DB3 /* Sparkle */,
 				F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */,
 				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
-				F1F76BFB2CF6717300E58778 /* Pow */,
-				F1F76CCF2CF6790A00E58778 /* LLM */,
-				F1B317F52CFF9C6A00120FAE /* WhisperKit */,
 				F1A46BAE2D4196F500BDAA5E /* NukeUI */,
 			);
 			productName = "HuggingChat-Mac";
@@ -180,15 +165,9 @@
 			packageReferences = (
 				F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
-				F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */,
-				F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */,
 				F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */,
 				F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */,
-				F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */,
-				F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */,
-				F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
-				F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */,
 				F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -438,14 +417,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mxcl/Path.swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.1;
-			};
-		};
 		F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
@@ -468,14 +439,6 @@
 			requirement = {
 				branch = main;
 				kind = branch;
-			};
-		};
-		F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/smittytone/HighlighterSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.5;
 			};
 		};
 		F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -502,46 +465,9 @@
 				minimumVersion = 4.3.0;
 			};
 		};
-		F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cyrilzakka/WhisperKit.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		F1F76BF92CF6710700E58778 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ml-explore/mlx-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.18.1;
-			};
-		};
-		F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/EmergeTools/Pow";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.5;
-			};
-		};
-		F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ml-explore/mlx-swift-examples/";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.18.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F103B81A2C7911B9007B6D87 /* Path */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F103B8192C7911B9007B6D87 /* XCRemoteSwiftPackageReference "Path.swift" */;
-			productName = Path;
-		};
 		F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
@@ -556,11 +482,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */;
 			productName = MarkdownView;
-		};
-		F18E15D72C810C940091EE53 /* Highlighter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F18E15D62C810C940091EE53 /* XCRemoteSwiftPackageReference "HighlighterSwift" */;
-			productName = Highlighter;
 		};
 		F19E18BD2C9C889E00B89DB3 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -581,21 +502,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */;
 			productName = SwiftPackageListUI;
-		};
-		F1B317F52CFF9C6A00120FAE /* WhisperKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F1B317F42CFF9C6A00120FAE /* XCRemoteSwiftPackageReference "WhisperKit" */;
-			productName = WhisperKit;
-		};
-		F1F76BFB2CF6717300E58778 /* Pow */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F1F76BFA2CF6717300E58778 /* XCRemoteSwiftPackageReference "Pow" */;
-			productName = Pow;
-		};
-		F1F76CCF2CF6790A00E58778 /* LLM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F1F76CCE2CF6790A00E58778 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */;
-			productName = LLM;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
