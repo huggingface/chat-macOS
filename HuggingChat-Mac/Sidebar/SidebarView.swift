@@ -13,6 +13,7 @@ struct SidebarView: View {
     @Environment(CoordinatorModel.self) private var coordinator
     @State private var searchChat: String = ""
     @State private var showingConfirmation = false
+    @Binding var showShareSheet: Bool
     @AppStorage(UserDefaultsKeys.baseURL) var baseURL: String = "https://huggingface.co"
     
     var body: some View {
@@ -50,6 +51,7 @@ struct SidebarView: View {
                                         coordinator.selectedConversation = conversation.id
                                         coordinator.loadConversationHistory()
                                         coordinator.shareConversation()
+                                        showShareSheet = true
                                     } label: {
                                         Label("Share Chat", systemImage: "square.and.arrow.up")
                                     }

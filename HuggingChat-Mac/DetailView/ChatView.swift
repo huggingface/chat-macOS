@@ -20,7 +20,7 @@ struct ChatView: View {
     // Toolbar
     @State private var showingPopover: Bool = false
     @State private var showPipToolbar: Bool = false
-    @State private var presentShareSheet: Bool = false
+    @Binding var showShareSheet: Bool
     
     // Scrollview animation
     @State var scrollViewHeight: CGFloat = 0
@@ -43,6 +43,7 @@ struct ChatView: View {
     }
     
     var body: some View {
+        
         ZStack {
             ChatBackgroundView(isPipMode: isPipMode)
             ScrollViewReader { proxy in
@@ -145,6 +146,8 @@ struct ChatView: View {
                     if coordinator.selectedConversation != nil {
                         coordinator.shareConversation()
                     }
+//                    coordinator.showShareSheet = true
+                    showShareSheet.toggle()
                 }, label: {
                     Image(systemName: "square.and.arrow.up")
                 })
@@ -159,14 +162,6 @@ struct ChatView: View {
         .onHover { over in
             showPipToolbar = over
         }
-        .onChange(of: coordinator.sharedConversationLink) {
-            presentShareSheet.toggle()
-        }
-        .sheet(isPresented: $presentShareSheet) {
-            ShareSheetView()
-                .environment(coordinator)
-        }
-        
     }
     
     @ViewBuilder

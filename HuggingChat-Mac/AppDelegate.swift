@@ -94,7 +94,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             isPipMode: true,
             onPipToggle: { [weak self] in
                 self?.toggleChatWindow()
-            }
+            }, showShareSheet: .constant(false)
         )
         .environment(coordinatorModel)
         .frame(minWidth: 400, idealWidth: 450, maxWidth: 600)

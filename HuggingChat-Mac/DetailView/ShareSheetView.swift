@@ -50,7 +50,8 @@ struct ShareSheetView: View {
                 ChatView(
                     isPipMode: false,
                     isPreviewMode: true,
-                    onPipToggle: { }
+                    onPipToggle: { },
+                    showShareSheet: .constant(false)
                 )
                 
                 if let selectedConversationId = coordinator.selectedConversation, let conversation = coordinator.conversations.first(where: { $0.id == selectedConversationId }) {
