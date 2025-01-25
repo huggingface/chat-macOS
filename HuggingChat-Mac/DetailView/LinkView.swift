@@ -217,6 +217,7 @@ struct SourcesPillView: View {
             SourcesListView(webSources: webSources)
                 .frame(width: 400, height: 400)
         }
+        .contentShape(.rect)
         .onHover { isHovering in
             highlightOnHover = isHovering
         }
