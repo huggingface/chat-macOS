@@ -10,6 +10,7 @@ import SwiftUI
 struct ChatView: View {
     
     var isPipMode: Bool = false
+    var isPreviewMode: Bool = false
     var onPipToggle: () -> Void
     
     @EnvironmentObject private var appDelegate: AppDelegate
@@ -17,8 +18,9 @@ struct ChatView: View {
     @Environment(\.colorScheme) var colorScheme
     
     // Toolbar
-    @State private var showingPopover = false
+    @State private var showingPopover: Bool = false
     @State private var showPipToolbar: Bool = false
+    @State private var presentShareSheet: Bool = false
     
     // Scrollview animation
     @State var scrollViewHeight: CGFloat = 0
@@ -45,48 +47,52 @@ struct ChatView: View {
             ChatBackgroundView(isPipMode: isPipMode)
             ScrollViewReader { proxy in
                 VStack(spacing: 0) {
-                        if isPipMode {
-                            if showPipToolbar {
-                                PiPToolbarView(
-                                    onPipToggle: onPipToggle,
-                                    onNewConversation: { /* Handle new conversation */ }
-                                )
-                                
-                            } else {
-                                Rectangle()
-                                    .fill(.clear)
-                                    .frame(height: 40).zIndex(100)
-                                    
-                            }
+                    if isPipMode {
+                        if showPipToolbar {
+                            PiPToolbarView(
+                                onPipToggle: onPipToggle,
+                                onNewConversation: { /* Handle new conversation */ }
+                            )
+                            
+                        } else {
+                            Rectangle()
+                                .fill(.clear)
+                                .frame(height: 40).zIndex(100)
+                            
                         }
+                    }
                     
                     Group {
                         if let _ = coordinator.selectedConversation {
                             ChatMessageListView(
-                                                            parentWidth: size.width,
-                                                            contentHeight: size.height,
-                                                            isPipMode: isPipMode,
-                                                            showPipToolbar: showPipToolbar,
-                                                            showScrollToBottom: $showScrollToBottom
-                                                        )
+                                parentWidth: size.width,
+                                contentHeight: size.height,
+                                isPipMode: isPipMode,
+                                showPipToolbar: showPipToolbar,
+                                showScrollToBottom: $showScrollToBottom
+                            )
                             
                         } else {
                             ChatEmptyStateView()
                         }
                     }
                     .overlay {
-                        VStack {
-                            Spacer()
-                            ChatBackgroundView(isPipMode: isPipMode)
-                                .frame(height: 50, alignment: .bottom)
-                                .mask(LinearGradient(gradient: Gradient(stops: [
-                                    .init(color: .black, location: 0),
-                                    .init(color: .black, location: 0.01),
-                                    .init(color: .clear, location: 1)
-                                ]), startPoint: .bottom, endPoint: .top))
-                        }
+                        if !isPreviewMode {
+                            VStack {
+                                Spacer()
+                                ChatBackgroundView(isPipMode: isPipMode)
+                                    .frame(height: 50, alignment: .bottom)
+                                    .mask(LinearGradient(gradient: Gradient(stops: [
+                                        .init(color: .black, location: 0),
+                                        .init(color: .black, location: 0.01),
+                                        .init(color: .clear, location: 1)
+                                    ]), startPoint: .bottom, endPoint: .top))
+                            }
                             .allowsHitTesting(false)
+                        }
                     }
+                    
+                    if !isPreviewMode {
                     InputView()
                         .padding([.horizontal, .bottom])
                         .overlay(alignment: .top) {
@@ -98,7 +104,7 @@ struct ChatView: View {
                                 }
                             }
                         }
-                        
+                }
                         
                 }
             }
@@ -136,10 +142,13 @@ struct ChatView: View {
             
             ToolbarItemGroup(placement: .primaryAction) {
                 Button(action: {
-                    // Share conversation
+                    if coordinator.selectedConversation != nil {
+                        coordinator.shareConversation()
+                    }
                 }, label: {
                     Image(systemName: "square.and.arrow.up")
                 })
+                .disabled(coordinator.selectedConversation == nil)
                 Button(action: {
                     onPipToggle()
                 }, label: {
@@ -149,6 +158,13 @@ struct ChatView: View {
         }
         .onHover { over in
             showPipToolbar = over
+        }
+        .onChange(of: coordinator.sharedConversationLink) {
+            presentShareSheet.toggle()
+        }
+        .sheet(isPresented: $presentShareSheet) {
+            ShareSheetView()
+                .environment(coordinator)
         }
         
     }
@@ -198,6 +214,8 @@ struct ChatBackgroundView: View {
 
 // 2. PiP Toolbar View
 struct PiPToolbarView: View {
+    
+    @Environment(CoordinatorModel.self) private var coordinator
     let onPipToggle: () -> Void
     let onNewConversation: () -> Void
     
@@ -374,10 +392,6 @@ struct ModelCellView: View {
             hoverState = isHovering
         }
     }
-}
-
-#Preview {
-    Text("Hello wrld")
 }
 
 

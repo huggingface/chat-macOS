@@ -13,6 +13,7 @@ struct SidebarView: View {
     @Environment(CoordinatorModel.self) private var coordinator
     @State private var searchChat: String = ""
     @State private var showingConfirmation = false
+    @AppStorage(UserDefaultsKeys.baseURL) var baseURL: String = "https://huggingface.co"
     
     var body: some View {
         VStack(spacing: 0) {
@@ -45,6 +46,19 @@ struct SidebarView: View {
                                     coordinator.loadConversationHistory()
                                 }
                                 .contextMenu {
+                                    Button {
+                                        coordinator.selectedConversation = conversation.id
+                                        coordinator.loadConversationHistory()
+                                        coordinator.shareConversation()
+                                    } label: {
+                                        Label("Share Chat", systemImage: "square.and.arrow.up")
+                                    }
+                                    
+                                    Link(destination: URL(string: "\(baseURL)/chat/conversation/" + conversation.serverId)!, label: {
+                                        Label("Open in Browser", systemImage: "globe")
+                                    })
+                                    
+                                    Divider()
                                     Button {
                                         coordinator.selectedConversation = conversation.id
                                         coordinator.loadConversationHistory()
@@ -125,7 +139,9 @@ struct SidebarView: View {
         .searchable(text: $searchChat, placement: .sidebar)
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
-                Button(action: {}, label: {
+                Button(action: {
+                    
+                }, label: {
                     Image(systemName: "square.and.pencil")
                 })
             }
@@ -137,7 +153,6 @@ struct SidebarView: View {
                     coordinator.deleteConversation(id: conversation.serverId)
                     coordinator.selectedConversation = nil
                 }
-                
             }
         } message: {
             Text("Are you sure you want to delete this conversation? This action cannot be undone.")

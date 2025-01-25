@@ -15,6 +15,7 @@ import Combine
     var conversations: [Conversation] = []
     var messages: [MessageViewModel] = []
     var selectedConversation: Conversation.ID?
+    var sharedConversationLink: URL?
     
     // Model
     var activeModel: LLMViewModel?
@@ -200,6 +201,29 @@ extension CoordinatorModel {
             } receiveValue: { _ in
                 
             }.store(in: &cancellables)
+    }
+    
+    func shareConversation() {
+        guard !messages.isEmpty, selectedConversation != nil, let conversation = conversations.first(where: { $0.id == selectedConversation }) else {
+            return
+        }
+        
+        NetworkService.shareConversation(id: conversation.serverId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self?.error = error
+                }
+            } receiveValue: { [weak self] sharedConversation in
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(sharedConversation.url.absoluteString, forType: .string)
+                self?.sharedConversationLink = sharedConversation.url
+            }
+            .store(in: &cancellables)
     }
 }
 
