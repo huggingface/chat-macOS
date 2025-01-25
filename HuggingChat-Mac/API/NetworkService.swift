@@ -37,6 +37,58 @@ extension NetworkService {
         let request = URLRequest(url: URL(string: endpoint)!)
         return resolveRequest(request, decoder: JSONDecoder.ISO8601Millisec())
     }
+    
+    static func createConversation(base: BaseConversation) -> AnyPublisher<Conversation, HFError> {
+        let endpoint = "\(BASE_URL)/chat/conversation"
+        let headers = ["Content-Type": "application/json"]
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = headers
+
+        do {
+            let jsonData = try JSONEncoder().encode(base.toNewConversation())
+            request.httpBody = jsonData
+            return resolveRequest(request, decoder: JSONDecoder.ISO8601())
+                .flatMap({ (newConversation: NewConversation) in
+                    return getConversation(id: newConversation.id).eraseToAnyPublisher()
+                }).eraseToAnyPublisher()
+        } catch {
+            return Fail(outputType: Conversation.self, failure: HFError.encodeError(error)).eraseToAnyPublisher()
+        }
+    }
+    
+    static func deleteConversation(id: String) -> AnyPublisher<Void, HFError> {
+        let endpoint = "\(BASE_URL)/chat/conversation/\(id)"
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "DELETE"
+        return sendRequest(request).map { _ in Void() }.eraseToAnyPublisher()
+    }
+    
+    static func editConversationTitle(conversation: Conversation) -> AnyPublisher<Void, HFError> {
+        let endpoint = "\(BASE_URL)/chat/conversation/\(conversation.id)"
+        let headers = ["Content-Type": "application/json"]
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "PATCH"
+        request.allHTTPHeaderFields = headers
+        
+        do {
+            let jsonData = try JSONEncoder().encode(conversation.toTitleEditionBody())
+            request.httpBody = jsonData
+            return sendRequest(request).map { _ in Void() }.eraseToAnyPublisher()
+        } catch {
+            return Fail(outputType: Void.self, failure: HFError.encodeError(error)).eraseToAnyPublisher()
+        }
+    }
+    
+    static func shareConversation(id: String) -> AnyPublisher<SharedConversation, HFError> {
+        let endpoint = "\(BASE_URL)/chat/conversation/\(id)/share"
+        let headers = ["Content-Type": "application/json"]
+        var request = URLRequest(url: URL(string: endpoint)!)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = headers
+        
+        return resolveRequest(request, decoder: JSONDecoder())
+    }
 }
 
 // MARK: Models

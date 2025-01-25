@@ -12,6 +12,7 @@ import NukeUI
 struct SidebarView: View {
     @Environment(CoordinatorModel.self) private var coordinator
     @State private var searchChat: String = ""
+    @State private var showingConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -40,9 +41,17 @@ struct SidebarView: View {
                                 .listRowInsets(EdgeInsets(top: 0, leading: -7, bottom: 0, trailing: -7))
                                 .tag(conversation.id)
                                 .onTapGesture {
-                                    
                                     coordinator.selectedConversation = conversation.id
                                     coordinator.loadConversationHistory()
+                                }
+                                .contextMenu {
+                                    Button {
+                                        coordinator.selectedConversation = conversation.id
+                                        coordinator.loadConversationHistory()
+                                        showingConfirmation = true
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
                         }
                     }
@@ -120,6 +129,18 @@ struct SidebarView: View {
                     Image(systemName: "square.and.pencil")
                 })
             }
+        }
+        .confirmationDialog("Delete Chat", isPresented: $showingConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                if let selectedConversation = coordinator.selectedConversation, let conversation = coordinator.conversations.first(where: { $0.id == selectedConversation }) {
+                    coordinator.deleteConversation(id: conversation.serverId)
+                    coordinator.selectedConversation = nil
+                }
+                
+            }
+        } message: {
+            Text("Are you sure you want to delete this conversation? This action cannot be undone.")
         }
     }
 }

@@ -59,7 +59,7 @@ struct MessageView: View {
                                 showReasoning = true
                             }, label: {
                                 HStack {
-                                    Text(message.reasoningUpdates.last ?? "Finished thinking")
+                                    Text(message.reasoningUpdates.last != nil ? "Thinking \(message.reasoningUpdates.last!.lowercased())" : "Finished thinking")
                                     Image(systemName: "chevron.down")
                                 }
                                 .fontWeight(.medium)

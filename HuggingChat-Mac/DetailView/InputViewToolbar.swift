@@ -9,6 +9,7 @@ import SwiftUI
 
 struct InputViewToolbar: View {
     
+    @Environment(CoordinatorModel.self) private var coordinator
     @Environment(\.colorScheme) var colorScheme
     var inputText: String
     
@@ -31,9 +32,7 @@ struct InputViewToolbar: View {
                 .buttonStyle(.highlightOnHover)
                 
                 
-                ButtonStateAnimation(buttonText: "Search", buttonImage: "globe") {
-                    // Activate web search
-                }
+                ButtonStateAnimation(buttonText: "Search", buttonImage: "globe")
                 
                 Button {
                     

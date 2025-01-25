@@ -172,8 +172,9 @@ struct ChatView: View {
             Image(systemName: "chevron.right")
                 .imageScale(.small)
         }
-        .layoutPriority(100)
+       
         .frame(maxWidth: .infinity, alignment: .leading)
+        .layoutPriority(100)
     }
 }
 

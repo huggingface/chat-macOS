@@ -9,31 +9,29 @@ import SwiftUI
 
 struct ButtonStateAnimation: View {
     
+    @Environment(CoordinatorModel.self) private var coordinator
     var buttonText: String = "Search"
     var buttonImage: String = "globe"
     var tintColor: Color = .blue
-    var onPress: () -> Void = {}
     
-    @State var toggleAlternateAppearance: Bool = false
     @State private var isHovered = false
     
     var body: some View {
         Button {
-            onPress()
             withAnimation(.spring(duration: 0.2), {
-                toggleAlternateAppearance.toggle()
+                coordinator.useWebSearch.toggle()
             })
         } label: {
             HStack(spacing: 5) {
                 Image(systemName: buttonImage)
                 
-                if toggleAlternateAppearance {
+                if coordinator.useWebSearch {
                     Text(buttonText)
                         .font(.subheadline)
                         
                         .transition(.scale(0.8, anchor: .leading).combined(with: .opacity))
                 }
-            }.foregroundStyle(toggleAlternateAppearance ? tintColor:.primary)
+            }.foregroundStyle(coordinator.useWebSearch ? tintColor:.primary)
                
         }
         .padding(.horizontal, 5)
@@ -50,7 +48,7 @@ struct ButtonStateAnimation: View {
             }
         }
         .background {
-            if toggleAlternateAppearance {
+            if coordinator.useWebSearch {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(tintColor.opacity(0.1))
             }

@@ -49,6 +49,29 @@ struct HuggingChatUser: Decodable, Equatable {
 }
 
 // Conversation model received from the server
+protocol BaseConversation {
+    var id: String { get }
+    func toNewConversation() -> (AnyObject&Codable)
+}
+
+struct NewConversation: Decodable {
+    let id: String
+
+    enum CodingKeys: String, CodingKey {
+        case id = "conversationId"
+    }
+}
+
+// Used to edit conversation title
+struct TitleEditionBody: Encodable {
+    let title: String
+}
+
+// Used to share conversation
+struct SharedConversation: Decodable {
+    let url: URL
+}
+
 final class Conversation: Decodable, Identifiable, Hashable {
     let id = UUID()
     let serverId: String
@@ -87,6 +110,10 @@ final class Conversation: Decodable, Identifiable, Hashable {
         } catch {
             self.messages = []
         }
+    }
+    
+    func toTitleEditionBody() -> TitleEditionBody {
+        return TitleEditionBody(title: title)
     }
     
     static func == (lhs: Conversation, rhs: Conversation) -> Bool {

@@ -18,6 +18,7 @@ import Combine
     
     // Model
     var activeModel: LLMViewModel?
+    var useWebSearch: Bool = false
     
     // Auth
     var currentUser: HuggingChatUser?
@@ -180,6 +181,25 @@ extension CoordinatorModel {
                self?.messages = messages
            }
            .store(in: &cancellables)
+    }
+    
+    func deleteConversation(id: String) {
+        guard let index = conversations.firstIndex(where: { $0.serverId == id }) else {
+           return
+        }
+        conversations.remove(at: index)
+        NetworkService.deleteConversation(id: id)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                    switch completion {
+                    case .finished: break
+                    case .failure(let error):
+                        self?.error = error
+                        self?.fetchConversations()
+                    }
+            } receiveValue: { _ in
+                
+            }.store(in: &cancellables)
     }
 }
 
