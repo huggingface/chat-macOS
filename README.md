@@ -43,7 +43,7 @@ In order to use HuggingChat in VSCode, you'll need to install the [HuggingChat E
 1. Clone the repository:
    ```bash
    git clone https://github.com/huggingface/chat-macOS.git
-   cd HuggingChat-macOS
+   cd chat-macOS
    ```
 2. Open `HuggingChat-macOS.xcodeproj` in Xcode
 3. Select your development team in the project settings if you plan to run on a physical device
