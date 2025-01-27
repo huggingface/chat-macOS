@@ -113,7 +113,6 @@ struct ChatView: View {
                     if !isPreviewMode {
                         InputView() {
                             DispatchQueue.main.async {
-                                print("I am ehre")
                                 withAnimation(.easeOut) {
                                     proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
                                 }
@@ -351,6 +350,8 @@ struct ChatEmptyStateView: View {
 }
 
 struct ModelListView: View {
+    @State var hoverState: Bool = false
+    @State var toggleExpansion: Bool = false
     
     let modelMapping: [String: String] = [
         "CohereForAI/c4ai-command-r-plus-08-2024":"Best model for tool use",
@@ -358,22 +359,71 @@ struct ModelListView: View {
         "microsoft/Phi-3.5-mini-instruct":"Faster for most questions",
         "Qwen/QwQ-32B-Preview":"Great for most tasks"
     ]
-
+    
     var body: some View {
-            if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models),
-               let models = try? JSONDecoder().decode([LLMModel].self, from: data) {
-                
-                VStack {
+        if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models),
+           let models = try? JSONDecoder().decode([LLMModel].self, from: data) {
+            ScrollViewReader { proxy in
+                ScrollView {
                     ForEach(models, id: \.id) { model in
                         if let customDescription = modelMapping[model.name] {
                             ModelCellView(model: model, description: customDescription)
                         }
+                    }
+                    
+                    VStack {
+                        HStack {
+                            Text("More models")
+                                .id("more-models-id")
+                                
+                            
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .rotationEffect(toggleExpansion ? .degrees(90):.zero, anchor: .center)
+                            
+                        }
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 7)
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
+                        .onTapGesture {
+                            withAnimation(.snappy) {
+                                toggleExpansion.toggle()
+                            } completion: {
+                                DispatchQueue.main.async {
+                                    withAnimation(.snappy) {
+                                        proxy.scrollTo("more-models-id", anchor: toggleExpansion ? .top:.bottom)
+                                    }
+                                }
+                            }
+                        }
+                        .background {
+                            if hoverState {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.quinary)
+                            }
+                        }
+                        .onHover { isHovering in
+                            hoverState = isHovering
+                        }
                         
+                        if toggleExpansion {
+                            ForEach(models.filter { !modelMapping.keys.contains($0.name) }, id: \.id) { model in
+                                ModelCellView(
+                                    model: model,
+                                    description: model.description
+                                )
+                            }
+                        }
+                            
                     }
                 }
+                .scrollIndicators(.hidden)
                 .padding(10)
             }
         }
+    }
 }
 
 struct ModelCellView: View {
@@ -388,7 +438,7 @@ struct ModelCellView: View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
                 Text(model.displayName.split(separator: "/").last ?? "")
-                    .font(.headline)
+//                    .font(.headline)
                 Text(description)
                     .foregroundStyle(.secondary)
             }

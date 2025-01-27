@@ -19,7 +19,7 @@ struct InputView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField("Message DeepSeek-R1", text: $inputText, axis: .vertical)
+            TextField("Message \(conversationModelName())", text: $inputText, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
@@ -55,6 +55,17 @@ struct InputView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+    }
+    
+    func conversationModelName() -> String {
+        if let selectedConversationId = coordinator.selectedConversation, let conversation = coordinator.conversations.first(where: { $0.id == selectedConversationId }) {
+            return conversation.modelId
+        } else {
+            let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
+            let primaryName = modelName.split(separator: "-").first ?? ""
+            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "-", with: " ") ?? ""
+            return secondaryName
+        }
     }
 }
 

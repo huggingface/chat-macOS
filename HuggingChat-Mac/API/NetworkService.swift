@@ -149,7 +149,7 @@ extension NetworkService {
             guard let data = data else {
                 throw HFError.unknown
             }
-//            print(String(data: data, encoding: .utf8) ?? "Could not convert data to string")
+            print(String(data: data, encoding: .utf8) ?? "Could not convert data to string")
             do {
                 let models = try decoder.decode(T.self, from: data)
                 return models
