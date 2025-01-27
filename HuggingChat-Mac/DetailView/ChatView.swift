@@ -168,7 +168,8 @@ struct ChatView: View {
                 
             }
             
-            ToolbarItemGroup(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .confirmationAction) {
+                Spacer()
                 Button(action: {
                     if coordinator.selectedConversation != nil {
                         coordinator.shareConversation()
@@ -176,13 +177,13 @@ struct ChatView: View {
 //                    coordinator.showShareSheet = true
                     showShareSheet.toggle()
                 }, label: {
-                    Image(systemName: "square.and.arrow.up")
+                    Label("Share", systemImage: "square.and.arrow.up")
                 })
                 .disabled(coordinator.selectedConversation == nil)
                 Button(action: {
                     onPipToggle()
                 }, label: {
-                    Image(systemName: "pip")
+                    Label("Picture in Picture", systemImage: "pip")
                 })
             }
         }
@@ -196,7 +197,7 @@ struct ChatView: View {
         HStack(alignment: .bottom, spacing: 5) {
             let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
             let primaryName = modelName.split(separator: "-").first ?? ""
-            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "-", with: " ") ?? ""
+            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
             Text(primaryName)
                 .foregroundStyle(colorScheme == .dark ? .white : .black)
                 .fontWeight(.medium)
@@ -472,11 +473,11 @@ struct ModelCellView: View {
 }
 
 
-//#Preview {
-//    ContentView()
-//        .environmentObject(AppDelegate())
-//        .environment(CoordinatorModel())
-//}
+#Preview {
+    ContentView()
+        .environmentObject(AppDelegate())
+        .environment(CoordinatorModel())
+}
 
 //#Preview {
 //    ChatView(

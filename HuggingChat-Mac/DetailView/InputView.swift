@@ -19,7 +19,8 @@ struct InputView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TextField("Message \(conversationModelName())", text: $inputText, axis: .vertical)
+            TextField("", text: $inputText, prompt: Text("Message \(conversationModelName())").foregroundColor(.primary), axis: .vertical)
+                .font(.system(size: 14.5, weight: .regular, design: .default))
                 .textFieldStyle(.plain)
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
@@ -49,8 +50,8 @@ struct InputView: View {
                 
             } else {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(.gray.opacity(0.5), lineWidth: 0.5)
-//                    .fill(.ultraThickMaterial)
+                    .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    .fill(.regularMaterial)
                     .fill(.quinary)
             }
         }
@@ -63,7 +64,7 @@ struct InputView: View {
         } else {
             let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
             let primaryName = modelName.split(separator: "-").first ?? ""
-            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "-", with: " ") ?? ""
+            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
             return secondaryName
         }
     }

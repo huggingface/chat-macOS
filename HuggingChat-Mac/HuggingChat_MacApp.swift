@@ -28,6 +28,7 @@ struct HuggingChat_MacApp: App {
         }
         .windowToolbarStyle(.unified)
         .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
 //        .defaultSize(width: 600, height: 400)
     }
 }
