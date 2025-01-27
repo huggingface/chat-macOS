@@ -196,14 +196,15 @@ struct ChatView: View {
     func titleView() -> some View {
         HStack(alignment: .bottom, spacing: 5) {
             let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
-            let primaryName = modelName.split(separator: "-").first ?? ""
-            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
-            Text(primaryName)
+            let companyName = coordinator.activeModel?.displayName.split(separator: "/").first ?? ""
+//            let primaryName = modelName.split(separator: "-").first ?? ""
+//            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
+            Text(companyName)
                 .foregroundStyle(colorScheme == .dark ? .white : .black)
                 .fontWeight(.medium)
                 .font(.title3)
                 .contentTransition(.numericText())
-            Text(secondaryName)
+            Text(modelName)
                 .foregroundStyle(.secondary)
                 .fontWeight(.medium)
                 .font(.body)
@@ -438,8 +439,7 @@ struct ModelCellView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
-                Text(model.displayName.split(separator: "/").last ?? "")
-//                    .font(.headline)
+                Text(model.displayName)
                 Text(description)
                     .foregroundStyle(.secondary)
             }
