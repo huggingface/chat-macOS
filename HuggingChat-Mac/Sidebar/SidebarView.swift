@@ -146,6 +146,7 @@ struct SidebarView: View {
             ToolbarItemGroup(placement: .automatic) {
                 Button(action: {
                     coordinator.resetConversation()
+                    
                 }, label: {
                     Image(systemName: "square.and.pencil")
                 })

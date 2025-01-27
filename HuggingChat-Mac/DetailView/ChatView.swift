@@ -112,9 +112,11 @@ struct ChatView: View {
                     
                     if !isPreviewMode {
                         InputView() {
-                            DispatchQueue.main.async {
-                                withAnimation(.easeOut) {
-                                    proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+                            if coordinator.messages.count > 0 {
+                                DispatchQueue.main.async {
+                                    withAnimation(.easeOut) {
+                                        proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .top)
+                                    }
                                 }
                             }
                         }
@@ -124,7 +126,7 @@ struct ChatView: View {
                                 ScrollToBottomButton {
                                     DispatchQueue.main.async {
                                         withAnimation(.easeOut) {
-                                            proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+                                            proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .top)
                                         }
                                     }
                                         
@@ -377,8 +379,7 @@ struct ModelListView: View {
                         HStack {
                             Text("More models")
                                 .id("more-models-id")
-                                
-                            
+
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .rotationEffect(toggleExpansion ? .degrees(90):.zero, anchor: .center)

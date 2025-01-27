@@ -62,10 +62,10 @@ struct InputView: View {
         if let selectedConversationId = coordinator.selectedConversation, let conversation = coordinator.conversations.first(where: { $0.id == selectedConversationId }) {
             return conversation.modelId
         } else {
-            let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
-            let primaryName = modelName.split(separator: "-").first ?? ""
-            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
-            return secondaryName
+//            let modelName = coordinator.activeModel?.displayName.split(separator: "/").last ?? ""
+//            let primaryName = modelName.split(separator: "-").first ?? ""
+//            let secondaryName = modelName.components(separatedBy: primaryName).last?.trimmingCharacters(in: .whitespaces) ?? ""
+            return coordinator.activeModel?.displayName ?? ""
         }
     }
 }

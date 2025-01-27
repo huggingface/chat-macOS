@@ -9,17 +9,21 @@ import Foundation
 
 
 // View Models
-struct MessageViewModel: Identifiable, Hashable {
+@Observable
+class MessageViewModel: Identifiable, Hashable {
     let id: String
     var content: String
     let author: Author
-    let webSources: [WebSearchSource]?
+    var webSources: [WebSearchSource]?
     let files: [String]?
     let reasoning: String?
     
+    var isBrowsingWeb: Bool = false
+    var webSearchUpdates: [String] = []
+    
     // Updates
     var reasoningUpdates: [String] = []
-    var webSearchUpdates: [String] = []
+    
     
     init(author: Author, content: String, files: [String]? = nil) {
         self.id = UUID().uuidString.lowercased()
@@ -38,6 +42,9 @@ struct MessageViewModel: Identifiable, Hashable {
         self.files = message.files
         self.reasoning = message.reasoning
         
+        // Initialize webSources to nil initially
+        self.webSources = nil
+        
         // Extract web sources from updates
         if let updates = message.updates {
             for update in updates {
@@ -46,17 +53,19 @@ struct MessageViewModel: Identifiable, Hashable {
                    let status = update.status {
                     reasoningUpdates.append(status)
                 }
-                if update.type == .webSearch,  update.subtype == "update", let webUpdate = update.message {
+                if update.type == .webSearch, update.subtype == "update", let webUpdate = update.message {
                     webSearchUpdates.append(webUpdate)
                 }
             }
-            self.webSources = updates.first { update in
+            
+            // Update webSources if matching updates are found
+            if let webSourceUpdate = updates.first(where: { update in
                 update.type == .webSearch &&
                 update.subtype == "sources" &&
                 update.message == "sources"
-            }?.sources
-        } else {
-            self.webSources = nil
+            })?.sources {
+                self.webSources = webSourceUpdate
+            }
         }
     }
     
@@ -68,6 +77,7 @@ struct MessageViewModel: Identifiable, Hashable {
         hasher.combine(id)
     }
 }
+
 
 struct LLMViewModel: Codable, Identifiable, Hashable {
     let id: String

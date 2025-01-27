@@ -12,6 +12,9 @@ struct MessageView: View {
     
     @Environment(\.colorScheme) var colorScheme
     @State var showReasoning: Bool = false
+    
+    @State var isThinking: Bool = false
+    
     var message: MessageViewModel
     var parentWidth: CGFloat = 0
     
@@ -52,6 +55,18 @@ struct MessageView: View {
                             .frame(maxWidth:  message.author == .user ? parentWidth * 0.75 : .infinity, alignment: message.author == .user ? .trailing : .leading)
                             .padding(message.author == .user ? .trailing:.leading, message.author == .user ? 10 : 0)
                     } else if message.author == .assistant {
+                        
+                        if message.isBrowsingWeb {
+                            Text(message.webSearchUpdates.last ?? "Searching the web")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .shimmering()
+                        }
+                        
+                        if isThinking {
+                            Text("Thinking")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .shimmering()
+                        }
                         
                         // Reasoning
                         if let reasoning = message.reasoning {

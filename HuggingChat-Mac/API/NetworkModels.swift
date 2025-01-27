@@ -428,7 +428,6 @@ enum StreamMessageType {
     case skip
     
     static func messageType(from json: StreamMessage) -> StreamMessageType? {
-        print(json)
         switch json.type {
         case "webSearch":
             return webSearch(from: json)
@@ -467,23 +466,24 @@ final class SendPromptHandler {
     private let conversationId: String
     private var cancellables: [AnyCancellable] = []
     private var postPrompt: PostStream? = PostStream()
+    private var currentMessage: MessageViewModel
     
     var update: AnyPublisher<MessageViewModel, HFError> {
         return privateUpdate
             .map({ [weak self] (messageType: StreamMessageType) -> MessageViewModel? in
                 guard let self else { fatalError() }
-                print("messageType", messageType)
-                return nil
-                //return self.updateMessageRow(with: messageType)
+                self.updateMessage(with: messageType)
+                return self.currentMessage
             })
-            .compactMap({  $0 })
+            .compactMap({ $0 })
             .throttle(
                 for: SendPromptHandler.throttleTime, scheduler: DispatchQueue.main, latest: true
             ).eraseToAnyPublisher()
     }
     
-    init(conversationId: String) {
+    init(conversationId: String, messageVM: MessageViewModel) {
         self.conversationId = conversationId
+        self.currentMessage = messageVM
     }
     
     var tmpMessage: String = ""
@@ -509,16 +509,6 @@ final class SendPromptHandler {
                 guard let sd = self.tmpMessage.data(using: .utf8) else {
                     continue
                 }
-                if let json = try? self.decoder.decode(StreamMessage.self, from: sd),
-                   json.type == "file",
-                   let name = json.name,
-                   let sha = json.sha,
-                   let mime = json.mime {
-                    let fileMessage = FileMessage(name: name, sha: sha, mime: mime)
-                    print(fileMessage)
-//                    self.privateUpdate.send(.file(fileMessage))
-                }
-                
                 guard let json = try? self.decoder.decode(StreamMessage.self, from: sd) else {
                     continue
                 }
@@ -528,4 +518,55 @@ final class SendPromptHandler {
         
         }).store(in: &cancellables)
     }
+    
+    private func updateMessage(with message: StreamMessageType) {
+        print(message)
+        switch message {
+        case .token(let token):
+            currentMessage.content += token
+        case .started:
+            break
+        case .webSearch(let update):
+            switch update {
+            case .message(let message):
+                if currentMessage.isBrowsingWeb == false {
+                    currentMessage.isBrowsingWeb = true
+                }
+                currentMessage.webSearchUpdates.append(message)
+            case .sources(let sources):
+                currentMessage.isBrowsingWeb = false
+                currentMessage.webSources = sources
+            }
+        case .reasoning(_):
+            break
+        case .skip:
+            break
+        }
+    }
+    
+//    private func updateMessageRow(with message: StreamMessageType)  {
+//        switch message {
+//        case .started:
+//            return messageRow
+//        case .webSearch(let update):
+//            if messageRow.webSearch == nil {
+//                messageRow.webSearch = WebSearch(message: "", sources: [])
+//            }
+//            switch update {
+//            case .message(let message):
+//                messageRow.webSearch?.message = message
+//            case .sources(let sources):
+//                messageRow.webSearch?.sources = sources
+//            }
+//            return messageRow
+//        case .token(let token):
+//            messageRow.webSearch?.message = "Completed"
+//            return updateMessage(with: token)
+//        case .skip:
+//            return nil
+//        case .reasoning(_):
+//            print("reason token")
+//            return nil
+//        }
+//    }
 }

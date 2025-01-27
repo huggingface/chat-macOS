@@ -336,6 +336,8 @@ extension CoordinatorModel {
                 }
             } receiveValue: { [weak self] conversation in
                 self?.selectedConversation = conversation.id
+                self?.messages = conversation.messages.compactMap { MessageViewModel(message: $0) }
+                self?.conversations.insert(conversation, at: 0)
                 self?.send(text: prompt, withFiles: withFiles)
             }.store(in: &cancellables)
     }
@@ -372,60 +374,77 @@ extension CoordinatorModel {
     
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
         // TODO: Add state here
-        let sendPromptHandler = SendPromptHandler(conversationId: conversationID)
+        guard let lastMessage = messages.last else { return }
+        let sendPromptHandler = SendPromptHandler(conversationId: conversationID, messageVM: lastMessage)
         self.sendPromptHandler = sendPromptHandler
         let messageRow = self.messages.last!
 //        let messageRow = sendPromptHandler.messageRow
 //        
         let pub = sendPromptHandler.update
-            .receive(on: RunLoop.main).eraseToAnyPublisher()
-        pub.scan((0, messageRow)) { (tuple, newMessage) in
-            (tuple.0 + 1, newMessage)
-        }.eraseToAnyPublisher()
-            .sink { [weak self] completion in
-                guard let self else { return }
-                switch completion {
-                case .finished:
-                    print("Finito")
-                    self.sendPromptHandler = nil
-//                    isInteracting = false
-                    self.sendPromptHandler = nil
-//                    state = .loaded
-                case .failure(let error):
-                    switch error {
-                    case .httpTooManyRequest:
-//                        self.messages.removeLast(2)
-//                        self.state = .error
-                        self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
-//                        print(error.localizedDescription)
-                    default:
-//                        self.state = .error
-                        self.error = error
-                        print(error.localizedDescription)
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
+        pub.sink { [weak self] completion in
+                    guard let self else { return }
+                    switch completion {
+                    case .finished:
+                        self.sendPromptHandler = nil
+                    case .failure(let error):
+                        switch error {
+                        case .httpTooManyRequest:
+                            self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
+                        default:
+                            self.error = error
+                        }
                     }
-                }
-            } receiveValue: { [weak self] obj in
-                print(obj, "verbose")
-                guard let self else { return }
-                let (count, messageRow) = obj
-                print("message row")
-//                if count == 1 {
-//                    self.updateConversation(conversationID: conversationID)
+                } receiveValue: { [weak self] _ in
+                    // No need to do anything here since we're updating the message in place
+                }.store(in: &cancellables)
+//        pub.scan((0, messageRow)) { (tuple, newMessage) in
+//            (tuple.0 + 1, newMessage)
+//        }.eraseToAnyPublisher()
+//            .sink { [weak self] completion in
+//                guard let self else { return }
+//                switch completion {
+//                case .finished:
+//                    self.sendPromptHandler = nil
+////                    isInteracting = false
+//                    self.sendPromptHandler = nil
+////                    state = .loaded
+//                case .failure(let error):
+//                    switch error {
+//                    case .httpTooManyRequest:
+////                        self.messages.removeLast(2)
+////                        self.state = .error
+//                        self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
+////                        print(error.localizedDescription)
+//                    default:
+////                        self.state = .error
+//                        self.error = error
+//                        print(error.localizedDescription)
+//                    }
 //                }
-//                
-//                self.message = messageRow
-//                print(messageRow)
-//                if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
-//                    self.messages[lastIndex] = messageRow
-//                }
-//
-//                if let fileInfo = self.message?.fileInfo,
-//                   fileInfo.mime.hasPrefix("image/"),
-//                   let conversationID = self.conversation?.id {
-//                    self.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
-//                }
-//                
-            }.store(in: &cancellables)
+//            } receiveValue: { [weak self] obj in
+//                print(obj, "verbose")
+//                guard let self else { return }
+//                let (count, messageRow) = obj
+//                print("message row")
+////                if count == 1 {
+////                    self.updateConversation(conversationID: conversationID)
+////                }
+////                
+////                self.message = messageRow
+////                print(messageRow)
+////                if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
+////                    self.messages[lastIndex] = messageRow
+////                }
+////
+////                if let fileInfo = self.message?.fileInfo,
+////                   fileInfo.mime.hasPrefix("image/"),
+////                   let conversationID = self.conversation?.id {
+////                    self.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
+////                }
+////                
+//            }.store(in: &cancellables)
 //
         sendPromptHandler.sendPromptReq(reqBody: req)
     }
