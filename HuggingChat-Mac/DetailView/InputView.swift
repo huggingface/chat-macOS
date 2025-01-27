@@ -24,10 +24,15 @@ struct InputView: View {
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
                 .onSubmit {
-                    onSubmit()
                     coordinator.send(text: inputText)
+                    onSubmit()
                 }
-            InputViewToolbar(inputText: inputText)
+            InputViewToolbar(inputText: inputText) {
+                DispatchQueue.main.async {
+                    coordinator.send(text: inputText)
+                    onSubmit()
+                }
+            }
                 
         }
         .padding(.horizontal)

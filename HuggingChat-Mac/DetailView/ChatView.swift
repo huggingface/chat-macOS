@@ -113,6 +113,7 @@ struct ChatView: View {
                     if !isPreviewMode {
                         InputView() {
                             DispatchQueue.main.async {
+                                print("I am ehre")
                                 withAnimation(.easeOut) {
                                     proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
                                 }

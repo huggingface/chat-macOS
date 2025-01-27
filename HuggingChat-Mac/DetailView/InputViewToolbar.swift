@@ -12,6 +12,7 @@ struct InputViewToolbar: View {
     @Environment(CoordinatorModel.self) private var coordinator
     @Environment(\.colorScheme) var colorScheme
     var inputText: String
+    var onManualPress: () -> Void = { }
     
     var body: some View {
         HStack {
@@ -55,7 +56,7 @@ struct InputViewToolbar: View {
             .font(.title3)
             
             Button {
-                
+                onManualPress()
             } label: {
                 Image(systemName: "arrow.up")
                     .foregroundStyle(colorScheme == .dark ? Color.black : Color.white)
