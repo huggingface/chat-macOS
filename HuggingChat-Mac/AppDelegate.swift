@@ -13,6 +13,7 @@ import KeyboardShortcuts
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     @State var coordinatorModel = CoordinatorModel()
+    @AppStorage(UserDefaultsKeys.userLoggedIn) private var isLoggedIn: Bool = false
     
     var statusBar: NSStatusBar!
     var statusBarItem: NSStatusItem!
@@ -30,7 +31,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         
         // Set keyboard shortcut
         KeyboardShortcuts.onKeyUp(for: .showChatBar, action: {
-            self.toggleChatBar()
+            if self.isLoggedIn {
+                self.toggleChatBar()
+            }
         })
     }
     
@@ -51,7 +54,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         if let event = NSApp.currentEvent, event.isRightClickUp {
             showContextMenu()
         } else {
-            toggleChatBar()
+            if isLoggedIn {
+                toggleChatBar()
+            }
         }
     }
     
@@ -70,12 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     
     // MARK: Chat bar
     private func createChatBar() {
-        let contentView = InputView(cornerRadius: 22, isChatBarMode: true)
+        let contentView = InputView(cornerRadius: 22, isChatBarMode: true, onSubmit: {})
             .frame(minHeight: 287, alignment: .top)
             .fixedSize(horizontal: false, vertical: true)
             .environment(coordinatorModel)
-        //            .edgesIgnoringSafeArea(.top)
-        //            .frame(width: 500) // TODO: Should be relative to screen size
         chatBar = FloatingChatBar(contentRect: NSRect(x: 0, y: 0, width: 400, height: 400), backing: .buffered, defer: false)
         chatBar.contentView = NSHostingView(rootView: contentView)
     }

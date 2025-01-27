@@ -11,7 +11,9 @@ struct InputView: View {
     
     var cornerRadius: CGFloat = 14
     var isChatBarMode: Bool = false
+    var onSubmit: (() -> Void)
     
+    @Environment(CoordinatorModel.self) private var coordinator
     @Environment(\.colorScheme) var colorScheme
     @State private var inputText: String = ""
     
@@ -21,7 +23,12 @@ struct InputView: View {
                 .textFieldStyle(.plain)
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
+                .onSubmit {
+                    onSubmit()
+                    coordinator.send(text: inputText)
+                }
             InputViewToolbar(inputText: inputText)
+                
         }
         .padding(.horizontal)
         .padding(.vertical, 10)

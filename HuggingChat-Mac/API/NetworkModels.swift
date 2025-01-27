@@ -197,7 +197,7 @@ struct Update: Decodable {
     let args: [String]?
     let sources: [WebSearchSource]?
     let interrupted: Bool?
-    let webSources: [WebSearchSource]? // Potentiall deprecated? Do not use
+    let webSources: [WebSearchSource]? // Potentially deprecated? Do not use
     
     private enum CodingKeys: String, CodingKey {
         case type, subtype, status, message, title, text, args, sources
@@ -257,9 +257,18 @@ struct PromptExample: Codable {
     let prompt: String
 }
 
-
-final class LLMModel: Codable, Identifiable, Hashable {
+final class NewConversationFromModelRequestBody: Codable {
+    let model: String
+    let preprompt: String
     
+    init(model: String, preprompt: String) {
+        self.model = model
+        self.preprompt = preprompt
+    }
+}
+
+
+final class LLMModel: Codable, Identifiable, Hashable, BaseConversation {
     let id: String
     let name: String
     let displayName: String
@@ -325,5 +334,198 @@ final class LLMModel: Codable, Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
        hasher.combine(id)
     }
+    
+    func toNewConversation() -> (AnyObject&Codable) {
+        return NewConversationFromModelRequestBody(model: id, preprompt: preprompt)
+    }
 
+}
+
+// Streaming options
+struct PromptRequestBody: Encodable {
+    let id: String?
+    var files: [String]? = nil
+    let inputs: String?
+    let isRetry: Bool?
+    let isContinue: Bool?
+    let webSearch: Bool?
+    let tools: [String]?
+    
+    init(id: String? = nil, inputs: String? = nil, isRetry: Bool = false, isContinue: Bool = false, webSearch: Bool = false, files: [String]? = nil, tools: [String]? = nil) {
+        self.id = id
+        self.inputs = inputs
+        self.isRetry = isRetry
+        self.isContinue = isContinue
+        self.webSearch = webSearch
+        self.files = files
+        self.tools = tools
+    }
+}
+
+struct FileMessage: Decodable {
+    let name: String
+    let sha: String
+    let mime: String
+}
+
+struct StreamMessage: Decodable {
+    let type: String
+    let token: String?
+    let subtype: String?
+    let message: String?
+    let reasoning: String?
+    let sources: [WebSearchSource]?
+    let name: String?      // For file messages
+    let sha: String?       // For file messages
+    let mime: String?      // For file messages
+    
+    enum CodingKeys: CodingKey {
+        case type
+        case token
+        case subtype
+        case message
+        case reasoning
+        case sources
+        case name
+        case sha
+        case mime
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.token = try container.decodeIfPresent(String.self, forKey: .token)?.trimmingCharacters(in: .nulls) ?? ""
+        self.subtype = try container.decodeIfPresent(String.self, forKey: .subtype)
+        self.message = try container.decodeIfPresent(String.self, forKey: .message)
+        self.reasoning = try container.decodeIfPresent(String.self, forKey: .reasoning)
+        self.sources = try container.decodeIfPresent([WebSearchSource].self, forKey: .sources)
+        self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.sha = try container.decodeIfPresent(String.self, forKey: .sha)
+        self.mime = try container.decodeIfPresent(String.self, forKey: .mime)
+    }
+}
+
+final class WebSearch {
+    var message: String
+    var sources: [WebSearchSource]
+    
+    init(message: String, sources: [WebSearchSource]) {
+        self.message = message
+        self.sources = sources
+    }
+}
+
+enum StreamWebSearch {
+    case message(String)
+    case sources([WebSearchSource])
+}
+
+enum StreamMessageType {
+    case started
+    case token(String)
+    case webSearch(StreamWebSearch)
+    case reasoning(String)
+    case skip
+    
+    static func messageType(from json: StreamMessage) -> StreamMessageType? {
+        print(json)
+        switch json.type {
+        case "webSearch":
+            return webSearch(from: json)
+        case "reason":
+            return .reasoning(json.message ?? "")
+        case "stream":
+            return .token(json.token ?? "")
+        case "title":
+            return .skip
+        default:
+            return .skip
+        }
+    }
+    
+    private static func webSearch(from json: StreamMessage) -> StreamMessageType? {
+        guard let messageType = json.subtype else { return nil }
+        
+        switch messageType {
+        case "sources":
+            return .webSearch(.sources(json.sources ?? []))
+        case "update":
+            return .webSearch(.message(json.message ?? ""))
+        default:
+            return nil
+        }
+    }
+}
+
+final class SendPromptHandler {
+    
+    private static let throttleTime: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(100)
+    private var privateUpdate: PassthroughSubject<StreamMessageType, HFError> = PassthroughSubject<
+        StreamMessageType, HFError
+    >()
+    
+    private let conversationId: String
+    private var cancellables: [AnyCancellable] = []
+    private var postPrompt: PostStream? = PostStream()
+    
+    var update: AnyPublisher<MessageViewModel, HFError> {
+        return privateUpdate
+            .map({ [weak self] (messageType: StreamMessageType) -> MessageViewModel? in
+                guard let self else { fatalError() }
+                print("messageType", messageType)
+                return nil
+                //return self.updateMessageRow(with: messageType)
+            })
+            .compactMap({  $0 })
+            .throttle(
+                for: SendPromptHandler.throttleTime, scheduler: DispatchQueue.main, latest: true
+            ).eraseToAnyPublisher()
+    }
+    
+    init(conversationId: String) {
+        self.conversationId = conversationId
+    }
+    
+    var tmpMessage: String = ""
+    
+    private let decoder: JSONDecoder = JSONDecoder()
+    
+    func sendPromptReq(reqBody: PromptRequestBody) {
+        postPrompt?.postPrompt(reqBody: reqBody, conversationId: conversationId).sink(receiveCompletion: { [weak self] completion in
+            switch completion {
+            case .finished:
+                self?.privateUpdate.send(completion: .finished)
+            case .failure(let error):
+                print("error \(error)")
+                self?.privateUpdate.send(completion: .failure(error))
+            }
+        }, receiveValue: { [weak self] (data: Data) in
+            guard let self = self, let message = String(data: data, encoding: .utf8) else {
+                return
+            }
+            let messages = message.split(separator: "\n")
+            for m in messages {
+                self.tmpMessage = self.tmpMessage + m
+                guard let sd = self.tmpMessage.data(using: .utf8) else {
+                    continue
+                }
+                if let json = try? self.decoder.decode(StreamMessage.self, from: sd),
+                   json.type == "file",
+                   let name = json.name,
+                   let sha = json.sha,
+                   let mime = json.mime {
+                    let fileMessage = FileMessage(name: name, sha: sha, mime: mime)
+                    print(fileMessage)
+//                    self.privateUpdate.send(.file(fileMessage))
+                }
+                
+                guard let json = try? self.decoder.decode(StreamMessage.self, from: sd) else {
+                    continue
+                }
+                self.tmpMessage = ""
+                self.privateUpdate.send(StreamMessageType.messageType(from: json) ?? .skip)
+            }
+        
+        }).store(in: &cancellables)
+    }
 }

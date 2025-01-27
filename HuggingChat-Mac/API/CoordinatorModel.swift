@@ -34,6 +34,7 @@ import Combine
     // Misc
     var error: HFError?
     private var cancellables = Set<AnyCancellable>()
+    private var sendPromptHandler: SendPromptHandler?
     
     init() {
         let cookies = HTTPCookieStorage.shared.cookies!
@@ -225,6 +226,12 @@ extension CoordinatorModel {
             }
             .store(in: &cancellables)
     }
+    
+    func resetConversation() {
+        cancellables = []
+        selectedConversation = nil
+        messages = []
+    }
 }
 
 // MARK: Model functions
@@ -305,5 +312,121 @@ extension CoordinatorModel {
         UserDefaults.standard.setValue(nil, forKey: UserDefaultsKeys.models)
         UserDefaults.standard.set(nil, forKey: UserDefaultsKeys.activeModel)
         activeModel = nil
+    }
+}
+
+
+// MARK: Messages
+extension CoordinatorModel {
+    private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
+        if let model = self.activeModel {
+            print("createConversationAndSendPrompt")
+            createConversation(with: model.toLLMModel(), prompt: prompt, withFiles: withFiles, usingTools: usingTools)
+        }
+    }
+    
+    private func createConversation(with model: LLMModel, prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
+        NetworkService.createConversation(base: model)
+            .receive(on: DispatchQueue.main).sink { completion in
+                switch completion {
+                case .finished:
+                    print("ConversationViewModel.createConversation finished")
+                case .failure(let error):
+                    self.error = error
+                }
+            } receiveValue: { [weak self] conversation in
+                self?.selectedConversation = conversation.id
+                self?.send(text: prompt, withFiles: withFiles)
+            }.store(in: &cancellables)
+    }
+    
+    func send(text: String, withFiles: [String]? = nil) {
+        guard let selectedId = selectedConversation,
+              let conversation = conversations.first(where: { $0.id == selectedId }),
+              let previousId = messages.last?.id else {
+            print("Creating conversation")
+            createConversationAndSendPrompt(text, withFiles: withFiles)
+            return
+        }
+        var trimmedText = ""
+        //        if useContext {
+        //            if let contextAppSelectedText = contextAppSelectedText {
+        //                trimmedText += "Selected Text: ```\(contextAppSelectedText)```"
+        //            }
+        //            if let contextAppFullText = contextAppFullText {
+        //                // TODO: Truncate full context if needed
+        //                trimmedText += "\n\nFull Text:```\(contextAppFullText)```"
+        //            }
+        //        }
+        //
+        trimmedText += text.trimmingCharacters(in: .whitespaces)
+        let userMessage = MessageViewModel(author: .user, content: trimmedText, files: withFiles)
+        messages.append(userMessage)
+        
+        let systemMessage = MessageViewModel(author: .assistant, content: "")
+        messages.append(systemMessage)
+        
+        let req = PromptRequestBody(id: previousId, inputs: trimmedText, webSearch: useWebSearch, files: withFiles)
+        sendPromptRequest(req: req, conversationID: conversation.serverId)
+    }
+    
+    private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
+        // TODO: Add state here
+        let sendPromptHandler = SendPromptHandler(conversationId: conversationID)
+        self.sendPromptHandler = sendPromptHandler
+        let messageRow = self.messages.last!
+//        let messageRow = sendPromptHandler.messageRow
+//        
+        let pub = sendPromptHandler.update
+            .receive(on: RunLoop.main).eraseToAnyPublisher()
+        pub.scan((0, messageRow)) { (tuple, newMessage) in
+            (tuple.0 + 1, newMessage)
+        }.eraseToAnyPublisher()
+            .sink { [weak self] completion in
+                guard let self else { return }
+                switch completion {
+                case .finished:
+                    print("Finito")
+                    self.sendPromptHandler = nil
+//                    isInteracting = false
+                    self.sendPromptHandler = nil
+//                    state = .loaded
+                case .failure(let error):
+                    switch error {
+                    case .httpTooManyRequest:
+//                        self.messages.removeLast(2)
+//                        self.state = .error
+                        self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
+//                        print(error.localizedDescription)
+                    default:
+//                        self.state = .error
+                        self.error = error
+                        print(error.localizedDescription)
+                    }
+                }
+            } receiveValue: { [weak self] obj in
+                print(obj, "verbose")
+                guard let self else { return }
+                let (count, messageRow) = obj
+                print("message row")
+//                if count == 1 {
+//                    self.updateConversation(conversationID: conversationID)
+//                }
+//                
+//                self.message = messageRow
+//                print(messageRow)
+//                if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
+//                    self.messages[lastIndex] = messageRow
+//                }
+//
+//                if let fileInfo = self.message?.fileInfo,
+//                   fileInfo.mime.hasPrefix("image/"),
+//                   let conversationID = self.conversation?.id {
+//                    self.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
+//                }
+//                
+            }.store(in: &cancellables)
+//
+        sendPromptHandler.sendPromptReq(reqBody: req)
     }
 }

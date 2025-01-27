@@ -21,7 +21,17 @@ struct MessageViewModel: Identifiable, Hashable {
     var reasoningUpdates: [String] = []
     var webSearchUpdates: [String] = []
     
-    init(message: Message) {
+    init(author: Author, content: String, files: [String]? = nil) {
+        self.id = UUID().uuidString.lowercased()
+        self.author = author
+        self.content = content
+        self.webSources = nil
+        self.files = files
+        self.reasoning = nil
+    }
+    
+    // Convenience init
+    init?(message: Message) {
         self.id = message.id
         self.content = message.content
         self.author = message.author
@@ -63,15 +73,27 @@ struct LLMViewModel: Codable, Identifiable, Hashable {
     let id: String
     var name: String
     var displayName: String
+    var websiteUrl: URL
+    var modelUrl: URL
+    var promptExamples: [PromptExample]
     var multimodal: Bool
+    var unlisted: Bool
     var description: String
+    var preprompt: String
+    var tools: Bool
     
     init(model: LLMModel) {
         self.id = model.id
         self.name = model.name
         self.displayName = model.displayName
+        self.websiteUrl = model.websiteUrl
+        self.modelUrl = model.modelUrl
+        self.promptExamples = model.promptExamples
         self.multimodal = model.multimodal
+        self.unlisted = model.unlisted
         self.description = model.description
+        self.preprompt = model.preprompt
+        self.tools = model.tools
     }
     
     static func == (lhs: LLMViewModel, rhs: LLMViewModel) -> Bool {
@@ -81,4 +103,21 @@ struct LLMViewModel: Codable, Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+    
+    func toLLMModel() -> LLMModel {
+            return LLMModel(
+                id: self.id,
+                name: self.name,
+                displayName: self.displayName,
+                websiteUrl: self.websiteUrl,
+                modelUrl: self.modelUrl,
+                promptExamples: self.promptExamples,
+                multimodal: self.multimodal,
+                unlisted: self.unlisted,
+                description: self.description,
+                isActive: true,
+                preprompt: self.preprompt,
+                tools: self.tools
+            )
+        }
 }

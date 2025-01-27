@@ -72,6 +72,23 @@ struct ChatView: View {
                                 showPipToolbar: showPipToolbar,
                                 showScrollToBottom: $showScrollToBottom
                             )
+                            .onChange(of: coordinator.messages.count) { oldValue, newValue in
+                                guard oldValue == 0 else { return }
+                                guard newValue > 0 else { return }
+                                proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+                            }
+//                            .onAppear {
+//                                print("view appeared")
+//                                DispatchQueue.main.async {
+//                                    guard coordinator.messages.count > 0 else {
+//                                        return
+//                                    }
+//                                    print("view appeared again")
+//                                    withAnimation(.easeOut) {
+//                                        proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+//                                    }
+//                                }
+//                            }
                             
                         } else {
                             ChatEmptyStateView()
@@ -94,14 +111,24 @@ struct ChatView: View {
                     }
                     
                     if !isPreviewMode {
-                    InputView()
+                        InputView() {
+                            DispatchQueue.main.async {
+                                withAnimation(.easeOut) {
+                                    proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+                                }
+                            }
+                        }
                         .padding([.horizontal, .bottom])
                         .overlay(alignment: .top) {
                             if showScrollToBottom {
                                 ScrollToBottomButton {
-                                    withAnimation(.easeOut) {
-                                        proxy.scrollTo(coordinator.messages.last?.id, anchor: .bottom)
+                                    DispatchQueue.main.async {
+                                        withAnimation(.easeOut) {
+                                            proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
+                                        }
                                     }
+                                        
+                                    
                                 }
                             }
                         }
@@ -223,10 +250,10 @@ struct PiPToolbarView: View {
             
             Spacer()
             
-            Button(action: { /* Exit pip mode */ }) {
-                Image(systemName: "pip.exit")
-            }
-            .buttonStyle(.accessoryBar)
+//            Button(action: {  }) {
+//                Image(systemName: "pip.exit")
+//            }
+//            .buttonStyle(.accessoryBar)
             
             Button(action: onNewConversation) {
                 Image(systemName: "square.and.pencil")
@@ -250,20 +277,24 @@ struct ChatMessageListView: View {
     
     var body: some View {
         if #available(macOS 15.0, *) {
-            List {
-                ForEach(coordinator.messages) { message in
-                    MessageView(message: message, parentWidth: parentWidth)
-                        .id(message.id)
-                        .listRowSeparator(.hidden)
-                        .padding(.bottom)
+            ScrollView {
+                LazyVStack {
+                    ForEach(coordinator.messages) { message in
+                        MessageView(message: message, parentWidth: parentWidth)
+                            .id(message.id)
+                            .listRowSeparator(.hidden)
+                            .padding(.bottom)
+                            .padding(.horizontal)
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
             .scrollClipDisabled(isPipMode && !showPipToolbar)
+            
            
             .onScrollGeometryChange(for: Bool.self) { geometry in
                 return geometry.contentOffset.y + geometry.bounds.height >=
-                geometry.contentSize.height - 50 // Added padding
+                geometry.contentSize.height - 100 // Added padding
             } action: { wasGreater, isGreater in
                 showScrollToBottom = !isGreater
             }

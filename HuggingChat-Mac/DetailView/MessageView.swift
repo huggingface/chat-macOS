@@ -80,7 +80,10 @@ struct MessageView: View {
                         }
                         
                         MarkdownView(text: message.content)
+                            .markdownViewRole(.normal)
                             .markdownRenderingThread(.main)
+                            .markdownRenderingMode(.optimized)
+                            
                             .textSelection(.enabled)
                             .padding(.vertical, 9)
                             .padding(.trailing, 15)

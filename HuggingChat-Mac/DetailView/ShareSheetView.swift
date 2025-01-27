@@ -23,7 +23,7 @@ struct ShareSheetView: View {
                 })
                 .frame(width: 45, height: 45)
                 .buttonStyle(.highlightOnHover)
-                .opacity(0)
+                
                 
                 Text("Share link to chat")
                     .fontWeight(.semibold)
@@ -35,6 +35,7 @@ struct ShareSheetView: View {
                 })
                 .frame(width: 45, height: 45)
                 .buttonStyle(.highlightOnHover)
+                .opacity(0)
             }
             .background(.ultraThickMaterial)
 
