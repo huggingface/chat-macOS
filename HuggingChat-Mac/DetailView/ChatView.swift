@@ -288,7 +288,6 @@ struct ChatMessageListView: View {
                             .id(message.id)
                             .listRowSeparator(.hidden)
                             .padding(.bottom)
-                            .padding(.horizontal)
                     }
                 }
             }

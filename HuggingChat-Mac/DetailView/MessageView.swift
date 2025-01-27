@@ -13,8 +13,6 @@ struct MessageView: View {
     @Environment(\.colorScheme) var colorScheme
     @State var showReasoning: Bool = false
     
-    @State var isThinking: Bool = false
-    
     var message: MessageViewModel
     var parentWidth: CGFloat = 0
     
@@ -37,7 +35,14 @@ struct MessageView: View {
                         }
                     
 //                        .offset(y: 5)
-                        .padding(.horizontal, 10)
+                        .padding(.leading, 20)
+                        .padding(.trailing, 5)
+                    
+                    // Loading animation
+                    if message.content.isEmpty && message.isBrowsingWeb == false {
+                        LoadingAnimatedCircleView()
+                    }
+                    
                 }
                 
                 VStack {
@@ -62,11 +67,11 @@ struct MessageView: View {
                                 .shimmering()
                         }
                         
-                        if isThinking {
-                            Text("Thinking")
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .shimmering()
-                        }
+//                        if isThinking {
+//                            Text("Thinking")
+//                                .frame(maxWidth: .infinity, alignment: .leading)
+//                                .shimmering()
+//                        }
                         
                         // Reasoning
                         if let reasoning = message.reasoning {
@@ -115,6 +120,25 @@ struct MessageView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: message.author == .user ? .trailing : .leading)
+    }
+}
+
+struct LoadingAnimatedCircleView: View {
+    @State private var isAnimating = false
+
+    var body: some View {
+        Circle()
+            .fill(Color.primary)
+            .opacity(isAnimating ? 0.8 : 1)
+            .frame(width: 13, height: 13)
+            .scaleEffect(isAnimating ? 0.7 : 1, anchor: .center)
+            .animation(
+                .easeInOut(duration: 0.7).repeatForever(autoreverses: true),
+                value: isAnimating
+            )
+            .onAppear {
+                isAnimating = true
+            }
     }
 }
 

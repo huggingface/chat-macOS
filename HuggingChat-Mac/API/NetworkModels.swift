@@ -428,6 +428,7 @@ enum StreamMessageType {
     case skip
     
     static func messageType(from json: StreamMessage) -> StreamMessageType? {
+        print(json)
         switch json.type {
         case "webSearch":
             return webSearch(from: json)

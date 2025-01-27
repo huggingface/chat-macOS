@@ -26,11 +26,13 @@ struct InputView: View {
                 .frame(maxHeight: .infinity, alignment: .top)
                 .onSubmit {
                     coordinator.send(text: inputText)
+                    inputText = ""
                     onSubmit()
                 }
             InputViewToolbar(inputText: inputText) {
                 DispatchQueue.main.async {
                     coordinator.send(text: inputText)
+                    inputText = ""
                     onSubmit()
                 }
             }
