@@ -126,7 +126,7 @@ struct ChatView: View {
                                 ScrollToBottomButton {
                                     DispatchQueue.main.async {
                                         withAnimation(.easeOut) {
-                                            proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .top)
+                                            proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
                                         }
                                     }
                                         
@@ -284,7 +284,7 @@ struct ChatMessageListView: View {
             ScrollView {
                 LazyVStack {
                     ForEach(coordinator.messages) { message in
-                        MessageView(message: message, parentWidth: parentWidth)
+                        MessageView(message: message, isInteractingWithModel: coordinator.isInteractingWithModel, parentWidth: parentWidth)
                             .id(message.id)
                             .listRowSeparator(.hidden)
                             .padding(.bottom)
@@ -301,8 +301,9 @@ struct ChatMessageListView: View {
             } action: { wasGreater, isGreater in
                 showScrollToBottom = !isGreater
             }
-            .contentMargins(.bottom, 50, for: .scrollContent)
-            .contentMargins(.bottom, 50, for: .scrollIndicators)
+            .contentMargins(.vertical, 10, for: .scrollContent)
+            .contentMargins(.bottom, 60, for: .scrollContent)
+            .contentMargins(.bottom, 60, for: .scrollIndicators)
         } else {
             List {
                 // Fallback for older versions
@@ -461,6 +462,7 @@ struct ModelCellView: View {
         }
         .onTapGesture {
             withAnimation {
+                coordinator.resetConversation()
                 coordinator.setActiveModel(LLMViewModel(model: model))
             }
             dismiss()

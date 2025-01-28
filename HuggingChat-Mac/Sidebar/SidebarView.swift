@@ -43,11 +43,7 @@ struct SidebarView: View {
                                 .listRowInsets(EdgeInsets(top: 0, leading: -7, bottom: 0, trailing: -7))
                                 .tag(conversation.id)
                                 .onTapGesture {
-                                    if conversation.id != coordinator.selectedConversation {
-                                        coordinator.selectedConversation = conversation.id
-                                        coordinator.loadConversationHistory()
-                                    }
-                                    
+                                    handleChatSelection(for: conversation)
                                 }
                                 .contextMenu {
                                     Button {
@@ -162,6 +158,20 @@ struct SidebarView: View {
             }
         } message: {
             Text("Are you sure you want to delete this conversation? This action cannot be undone.")
+        }
+    }
+    
+    private func handleChatSelection(for conversation: Conversation) {
+        if conversation.id != coordinator.selectedConversation {
+            let selectedConversation = coordinator.conversations.first(where: { $0.id == conversation.id })
+            if let allModels = coordinator.getLocalModels() {
+                let llmModel = allModels.first(where: { selectedConversation?.modelId == $0.id })!
+                coordinator.setActiveModel(LLMViewModel(model: llmModel))
+            } else {
+                // TODO: Model no longer available. Raise error.
+            }
+            coordinator.selectedConversation = conversation.id
+            coordinator.loadConversationHistory()
         }
     }
 }

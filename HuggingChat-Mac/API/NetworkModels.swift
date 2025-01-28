@@ -373,11 +373,7 @@ struct StreamMessage: Decodable {
     let token: String?
     let subtype: String?
     let message: String?
-    let reasoning: String?
     let sources: [WebSearchSource]?
-    let name: String?      // For file messages
-    let sha: String?       // For file messages
-    let mime: String?      // For file messages
     
     enum CodingKeys: CodingKey {
         case type
@@ -386,9 +382,6 @@ struct StreamMessage: Decodable {
         case message
         case reasoning
         case sources
-        case name
-        case sha
-        case mime
     }
     
     init(from decoder: Decoder) throws {
@@ -397,11 +390,7 @@ struct StreamMessage: Decodable {
         self.token = try container.decodeIfPresent(String.self, forKey: .token)?.trimmingCharacters(in: .nulls) ?? ""
         self.subtype = try container.decodeIfPresent(String.self, forKey: .subtype)
         self.message = try container.decodeIfPresent(String.self, forKey: .message)
-        self.reasoning = try container.decodeIfPresent(String.self, forKey: .reasoning)
         self.sources = try container.decodeIfPresent([WebSearchSource].self, forKey: .sources)
-        self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        self.sha = try container.decodeIfPresent(String.self, forKey: .sha)
-        self.mime = try container.decodeIfPresent(String.self, forKey: .mime)
     }
 }
 
@@ -420,20 +409,27 @@ enum StreamWebSearch {
     case sources([WebSearchSource])
 }
 
+enum StreamReasoning {
+    case status(String)
+    case stream(String)
+}
+
 enum StreamMessageType {
     case started
     case token(String)
     case webSearch(StreamWebSearch)
-    case reasoning(String)
+    case reasoning(StreamReasoning)
     case skip
     
     static func messageType(from json: StreamMessage) -> StreamMessageType? {
-        print(json)
+#if DEBUG
+        print("🔥", json.type, json)
+#endif
         switch json.type {
         case "webSearch":
             return webSearch(from: json)
-        case "reason":
-            return .reasoning(json.message ?? "")
+        case "reasoning":
+            return reasoning(from: json)
         case "stream":
             return .token(json.token ?? "")
         case "title":
@@ -455,6 +451,19 @@ enum StreamMessageType {
             return nil
         }
     }
+    
+    private static func reasoning(from json: StreamMessage) -> StreamMessageType? {
+            guard let subtype = json.subtype else { return nil }
+            
+            switch subtype {
+            case "status":
+                return .reasoning(.status(json.message ?? "Thinking"))
+            case "stream":
+                return .reasoning(.stream(json.token ?? ""))
+            default:
+                return nil
+            }
+        }
 }
 
 final class SendPromptHandler {
@@ -521,7 +530,6 @@ final class SendPromptHandler {
     }
     
     private func updateMessage(with message: StreamMessageType) {
-        print(message)
         switch message {
         case .token(let token):
             currentMessage.content += token
@@ -538,36 +546,31 @@ final class SendPromptHandler {
                 currentMessage.isBrowsingWeb = false
                 currentMessage.webSources = sources
             }
-        case .reasoning(_):
-            break
+        case .reasoning(let reasoning):
+            switch reasoning {
+            case .status(let status):
+                currentMessage.reasoningUpdates.append(status)
+            case .stream(let token):
+                if let _ = currentMessage.reasoning {
+                    currentMessage.reasoning! += token
+                } else {
+                    currentMessage.reasoning = token
+                }
+                
+//                // For stream updates, we might want to append to the last update
+//                // or create a new one depending on your needs
+//                if token.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+//                    return
+//                }
+//                
+//                if let lastUpdate = currentMessage.reasoningUpdates.last {
+//                    currentMessage.reasoningUpdates[currentMessage.reasoningUpdates.count - 1] = lastUpdate + token
+//                } else {
+//                    currentMessage.reasoningUpdates.append(token)
+//                }
+            }
         case .skip:
             break
         }
     }
-    
-//    private func updateMessageRow(with message: StreamMessageType)  {
-//        switch message {
-//        case .started:
-//            return messageRow
-//        case .webSearch(let update):
-//            if messageRow.webSearch == nil {
-//                messageRow.webSearch = WebSearch(message: "", sources: [])
-//            }
-//            switch update {
-//            case .message(let message):
-//                messageRow.webSearch?.message = message
-//            case .sources(let sources):
-//                messageRow.webSearch?.sources = sources
-//            }
-//            return messageRow
-//        case .token(let token):
-//            messageRow.webSearch?.message = "Completed"
-//            return updateMessage(with: token)
-//        case .skip:
-//            return nil
-//        case .reasoning(_):
-//            print("reason token")
-//            return nil
-//        }
-//    }
 }

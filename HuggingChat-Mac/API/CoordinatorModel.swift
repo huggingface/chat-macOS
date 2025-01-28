@@ -20,6 +20,7 @@ import Combine
     // Model
     var activeModel: LLMViewModel?
     var useWebSearch: Bool = false
+    var isInteractingWithModel: Bool = false
     
     // Auth
     var currentUser: HuggingChatUser?
@@ -107,6 +108,13 @@ extension CoordinatorModel {
     }
     
     func logout() {
+        DispatchQueue.main.async { [weak self] in
+            self?.currentUser = nil
+            self?.selectedConversation = nil
+            self?.resetLocalModels()
+            UserDefaults.standard.setValue(false, forKey: UserDefaultsKeys.userLoggedIn)
+        }
+        
         let cookieStore = HTTPCookieStorage.shared.cookies
         for cookie in cookieStore ?? [] {
             let backgroundQueue = DispatchQueue(label: "background_queue",
@@ -115,13 +123,6 @@ extension CoordinatorModel {
                 HTTPCookieStorage.shared.deleteCookie(cookie)
             }
             
-        }
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.currentUser = nil
-            self?.selectedConversation = nil
-            self?.resetLocalModels()
-            UserDefaults.standard.setValue(false, forKey: UserDefaultsKeys.userLoggedIn)
         }
     }
     
@@ -255,7 +256,7 @@ extension CoordinatorModel {
         }).eraseToAnyPublisher()
     }
     
-    private func getLocalModels() -> [LLMModel]? {
+    func getLocalModels() -> [LLMModel]? {
         guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models) else {
             return nil
         }
@@ -320,7 +321,6 @@ extension CoordinatorModel {
 extension CoordinatorModel {
     private func createConversationAndSendPrompt(_ prompt: String, withFiles: [String]? = nil, usingTools: [String]? = nil) {
         if let model = self.activeModel {
-            print("createConversationAndSendPrompt")
             createConversation(with: model.toLLMModel(), prompt: prompt, withFiles: withFiles, usingTools: usingTools)
         }
     }
@@ -343,10 +343,11 @@ extension CoordinatorModel {
     }
     
     func send(text: String, withFiles: [String]? = nil) {
+        isInteractingWithModel = true
+    
         guard let selectedId = selectedConversation,
               let conversation = conversations.first(where: { $0.id == selectedId }),
               let previousId = messages.last?.id else {
-            print("Creating conversation")
             createConversationAndSendPrompt(text, withFiles: withFiles)
             return
         }
@@ -373,79 +374,65 @@ extension CoordinatorModel {
     }
     
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
-        // TODO: Add state here
         guard let lastMessage = messages.last else { return }
         let sendPromptHandler = SendPromptHandler(conversationId: conversationID, messageVM: lastMessage)
         self.sendPromptHandler = sendPromptHandler
-        let messageRow = self.messages.last!
-//        let messageRow = sendPromptHandler.messageRow
-//        
         let pub = sendPromptHandler.update
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
-        pub.sink { [weak self] completion in
-                    guard let self else { return }
-                    switch completion {
-                    case .finished:
-                        self.sendPromptHandler = nil
-                    case .failure(let error):
-                        switch error {
-                        case .httpTooManyRequest:
-                            self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
-                        default:
-                            self.error = error
-                        }
+        pub.scan((0, nil), { (tuple, prod) in
+            (tuple.0 + 1, prod)
+        }).eraseToAnyPublisher()
+            .sink { [weak self] completion in
+                guard let self else { return }
+                self.isInteractingWithModel = false
+                switch completion {
+                case .finished:
+                    self.sendPromptHandler = nil
+                case .failure(let error):
+                    
+                    switch error {
+                    case .httpTooManyRequest:
+                        self.messages.removeLast(2)
+                        self.error = error
+                    default:
+                        self.error = error
                     }
-                } receiveValue: { [weak self] _ in
-                    // No need to do anything here since we're updating the message in place
-                }.store(in: &cancellables)
-//        pub.scan((0, messageRow)) { (tuple, newMessage) in
-//            (tuple.0 + 1, newMessage)
-//        }.eraseToAnyPublisher()
-//            .sink { [weak self] completion in
-//                guard let self else { return }
-//                switch completion {
-//                case .finished:
-//                    self.sendPromptHandler = nil
-////                    isInteracting = false
-//                    self.sendPromptHandler = nil
-////                    state = .loaded
-//                case .failure(let error):
-//                    switch error {
-//                    case .httpTooManyRequest:
-////                        self.messages.removeLast(2)
-////                        self.state = .error
-//                        self.error = .verbose("You've sent too many requests. Please try logging in before sending a message.")
-////                        print(error.localizedDescription)
-//                    default:
-////                        self.state = .error
-//                        self.error = error
-//                        print(error.localizedDescription)
-//                    }
-//                }
-//            } receiveValue: { [weak self] obj in
-//                print(obj, "verbose")
-//                guard let self else { return }
-//                let (count, messageRow) = obj
-//                print("message row")
-////                if count == 1 {
-////                    self.updateConversation(conversationID: conversationID)
-////                }
-////                
-////                self.message = messageRow
-////                print(messageRow)
-////                if let lastIndex = self.messages.lastIndex(where: { $0.id == messageRow.id }) {
-////                    self.messages[lastIndex] = messageRow
-////                }
-////
-////                if let fileInfo = self.message?.fileInfo,
-////                   fileInfo.mime.hasPrefix("image/"),
-////                   let conversationID = self.conversation?.id {
-////                    self.imageURL = "https://huggingface.co/chat/conversation/\(conversationID)/output/\(fileInfo.sha)"
-////                }
-////                
-//            }.store(in: &cancellables)
-//
+                }
+    
+            } receiveValue: { [weak self] obj in
+                let (count, _) = obj
+                if count == 1 {
+                    self?.updateConversation(conversationID: conversationID)
+                }
+            }.store(in: &cancellables)
+
         sendPromptHandler.sendPromptReq(reqBody: req)
+    }
+    
+    private func updateConversation(conversationID: String) {
+        NetworkService.getConversation(id: conversationID).sink { [weak self] completion in
+            switch completion {
+            case .finished: break
+            case .failure(let error):
+                self?.error = error
+            }
+        } receiveValue: { [weak self] conversation in
+            // Update conversation title
+            let currentConversation = self?.conversations.first(where: { $0.id == self?.selectedConversation })
+            if currentConversation?.title != conversation.title {
+                currentConversation?.title = conversation.title
+            }
+            
+            // Update messages ID
+            let mMessages = conversation.messages
+            if let messagesCount = self?.messages.count, mMessages.count == messagesCount, messagesCount >= 2 {
+                self?.messages[messagesCount - 1].id = mMessages[messagesCount - 1].id
+                self?.messages[messagesCount - 2].id = mMessages[messagesCount - 2].id
+            } else {
+                return
+            }
+            
+        }.store(in: &cancellables)
     }
 }

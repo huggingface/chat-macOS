@@ -1,5 +1,5 @@
 {
-  "originHash" : "f62b4be039a0dc70b5059c17474bafdf7a845ba2234b1132426fd61a378c2ad0",
+  "originHash" : "7b5adc4c3cc82c6658de07a2b846e018c9217241bdfb451f49e503941eeaae99",
   "pins" : [
     {
       "identity" : "highlightr",
@@ -31,19 +31,10 @@
     {
       "identity" : "markdownview",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/cyrilzakka/MarkdownView.git",
+      "location" : "https://github.com/LiYanan2004/MarkdownView.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "4234a0f287910f403701903e7387bc5e1b9c33f9"
-      }
-    },
-    {
-      "identity" : "mathjaxswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/aheze/MathJaxSwift.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "dad2ff323c1d52ea8747f7ad4f405a9c717a62c1"
+        "revision" : "8b746c5146b7842e9547b4d60adb2f1712cebb33",
+        "version" : "1.7.0"
       }
     },
     {
@@ -76,19 +67,19 @@
     {
       "identity" : "swift-cmark",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-cmark.git",
+      "location" : "https://github.com/apple/swift-cmark.git",
       "state" : {
-        "branch" : "gfm",
-        "revision" : "b022b08312decdc46585e0b3440d97f6f22ef703"
+        "revision" : "3ccff77b2dc5b96b77db3da0d68d28068593fa53",
+        "version" : "0.5.0"
       }
     },
     {
       "identity" : "swift-markdown",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-markdown.git",
+      "location" : "https://github.com/apple/swift-markdown.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "3588f0449f1592a5c746079a5c7e6c8b62ba55eb"
+        "revision" : "8f79cb175981458a0a27e76cb42fee8e17b1a993",
+        "version" : "0.5.0"
       }
     },
     {

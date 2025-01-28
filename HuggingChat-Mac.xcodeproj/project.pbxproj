@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */; };
 		F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = F13631C42C731A30009DEF15 /* LaunchAtLogin */; };
-		F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F1413D6C2C8ECD190045CD54 /* MarkdownView */; };
+		F13FDBD82D48C3F400B33854 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDBD72D48C3F400B33854 /* MarkdownView */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
 		F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A46BAE2D4196F500BDAA5E /* NukeUI */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
@@ -68,7 +68,7 @@
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
 				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
 				F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */,
-				F1413D6D2C8ECD190045CD54 /* MarkdownView in Frameworks */,
+				F13FDBD82D48C3F400B33854 /* MarkdownView in Frameworks */,
 				F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */,
 				F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */,
 				F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */,
@@ -128,11 +128,11 @@
 			packageProductDependencies = (
 				F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */,
 				F13631C42C731A30009DEF15 /* LaunchAtLogin */,
-				F1413D6C2C8ECD190045CD54 /* MarkdownView */,
 				F19E18BD2C9C889E00B89DB3 /* Sparkle */,
 				F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */,
 				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
 				F1A46BAE2D4196F500BDAA5E /* NukeUI */,
+				F13FDBD72D48C3F400B33854 /* MarkdownView */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -165,10 +165,10 @@
 			packageReferences = (
 				F136319B2C6F34B4009DEF15 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
-				F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */,
 				F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */,
 				F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */,
+				F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -433,12 +433,12 @@
 				kind = branch;
 			};
 		};
-		F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+		F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/cyrilzakka/MarkdownView.git";
+			repositoryURL = "https://github.com/LiYanan2004/MarkdownView.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
 			};
 		};
 		F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -478,9 +478,9 @@
 			package = F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
 			productName = LaunchAtLogin;
 		};
-		F1413D6C2C8ECD190045CD54 /* MarkdownView */ = {
+		F13FDBD72D48C3F400B33854 /* MarkdownView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F1413D6B2C8ECD190045CD54 /* XCRemoteSwiftPackageReference "MarkdownView" */;
+			package = F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */;
 			productName = MarkdownView;
 		};
 		F19E18BD2C9C889E00B89DB3 /* Sparkle */ = {

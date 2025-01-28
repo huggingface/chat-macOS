@@ -11,12 +11,12 @@ import Foundation
 // View Models
 @Observable
 class MessageViewModel: Identifiable, Hashable {
-    let id: String
+    var id: String
     var content: String
     let author: Author
     var webSources: [WebSearchSource]?
     let files: [String]?
-    let reasoning: String?
+    var reasoning: String?
     
     var isBrowsingWeb: Bool = false
     var webSearchUpdates: [String] = []
