@@ -43,3 +43,9 @@ struct AdaptiveGridRow: View {
         .hidden()
     }
 }
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 400, height: 400)
+        .textSelection(.enabled)
+}

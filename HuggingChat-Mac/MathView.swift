@@ -28,8 +28,7 @@ struct MathView: NSViewRepresentable {
         view.textAlignment = textAlignment
         view.labelMode = labelMode
         view.textColor = MTColor(Color.primary)
-        view.contentInsets = insets
-        view.clipsToBounds = false
+        view.contentInsets = MTEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     }
 }
 

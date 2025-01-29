@@ -185,7 +185,7 @@ extension Markup {
 
 extension BasicInlineContainer {
     var alignment: HorizontalAlignment {
-        guard parent is any TableCellContainer else { return .center }
+        guard parent is any TableCellContainer else { return .leading }
         
         let columnIdx = self.indexInParent
         var currentElement = parent
@@ -211,4 +211,11 @@ extension Renderer {
     mutating func contents(of markup: Markup) -> [Result] {
         markup.children.map { visit($0) }
     }
+}
+
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 400, height: 400)
+        .textSelection(.enabled)
 }

@@ -11,7 +11,7 @@ struct MarkdownLatexTestView: View {
     var body: some View {
         ScrollView {
             MarkdownView(text: """
-The Proximal Policy Optimization (PPO) objective function can be represented in LaTeX as follows:
+The `Proximal Policy Optimization (PPO) objective function can be represented in LaTeX as follows:
 
 \\[
 J(\\theta) = \\mathbb{E}_{\\tau \\sim \\pi_\\theta} \\left[ \\sum_{t=0}^{T} \\gamma^t \\cdot \\min \\left( \\frac{\\pi_\\theta(a_t|s_t)}{\\pi_{\\theta_{\\text{old}}}(a_t|s_t)}, 1 + \\epsilon \\right) \\cdot A^{\\pi_\\theta}(s_t, a_t) \\right]
@@ -39,6 +39,6 @@ This equation encapsulates the core idea of the PPO algorithm, which is to maxim
 
 #Preview {
     MarkdownLatexTestView()
-        .frame(width: 300, height: 400)
+        .frame(width: 400, height: 400)
         .textSelection(.enabled)
 }

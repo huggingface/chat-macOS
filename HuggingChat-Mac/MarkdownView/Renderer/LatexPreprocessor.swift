@@ -81,6 +81,10 @@ class LaTeXPreprocessor: ObservableObject {
         var cleanSnapshot: CleanSnapshot?
         var output = input
         
+        output = output
+            .replacingOccurrences(of: "\\*\\*", with: "", options: .regularExpression) // Remove **
+            .replacingOccurrences(of: "\\*", with: "", options: .regularExpression)
+        
         /// used for checking where the last clean char is in the **input**
         var inputCopy = input
         
@@ -167,3 +171,8 @@ class LaTeXPreprocessor: ObservableObject {
     }
 }
 
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 300, height: 400)
+        .textSelection(.enabled)
+}

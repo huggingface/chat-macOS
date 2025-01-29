@@ -4,60 +4,69 @@ import SwiftUI
 // MARK: - Inline Code Block
 extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
-            let (latexString, isDisplay) = parseLatex(from: inlineCode.code)
-            
-            if let latexString {
-                return Result(
-                    Group {
-                        if isDisplay {
-                            ScrollView(.horizontal, showsIndicators: true) {
-                                MathView(equation: latexString,
-                                       fontSize: 12,
-                                       labelMode: .display)
-                                    .fixedSize()
-                                    .padding()
-                            }
-                            .scrollClipDisabled()
-//                            .background(.green)
-                        } else {
-                            MathView(equation: latexString,
-                                   fontSize: 14,
-                                     labelMode: .display)
-//                            .fixedSize()
-                            .background(.red)
-                        }
+        let (latexString, isDisplay) = parseLatex(from: inlineCode.code)
+        
+        if let latexString {
+            if isDisplay {
+                return Result {
+                    ScrollView(.horizontal, showsIndicators: true) {
+                        MathView(equation: latexString,
+                                 fontSize: 12,
+                                 labelMode: .display)
+                        .fixedSize()
+                        .padding()
+                        .background(.green)
                     }
-                )
+                    .scrollClipDisabled()
+                }
+            } else {
+                // For inline equations, return a text-based Result to maintain proper flow
+                return Result {
+                    MathView(equation: latexString,
+                             fontSize: 14,
+                             labelMode: .text)
+//                    .frame(height: 120)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .background(.red)
+                }
             }
-            
-            var attributedString = AttributedString(stringLiteral: inlineCode.code)
-            attributedString.font = .custom("Menlo Regular", size: 12, relativeTo: .callout)
-            return Result(SwiftUI.Text(attributedString))
         }
+        
+        // For regular inline code
+        var attributedString = AttributedString(stringLiteral: inlineCode.code)
+        attributedString.font = .custom("Menlo Regular", size: 12, relativeTo: .callout)
+        return Result(SwiftUI.Text(attributedString))
+    }
     
     func visitInlineHTML(_ inlineHTML: InlineHTML) -> Result {
         Result(SwiftUI.Text(inlineHTML.rawHTML))
     }
     
     private func parseLatex(from code: String) -> (latex: String?, isDisplay: Bool) {
-            if code.hasPrefix("$$") && code.hasSuffix("$$") {
-                return (String(code.dropFirst(2).dropLast(2)), true)
-            }
-            
-            if code.hasPrefix("$") && code.hasSuffix("$") {
-                return (String(code.dropFirst().dropLast()), false)
-            }
-            
-            if code.hasPrefix(#"\["#) && code.hasSuffix(#"\]"#) {
-                return (String(code.dropFirst(2).dropLast(2)), true)
-            }
-            
-            if code.hasPrefix(#"\("#) && code.hasSuffix(#"\)"#) {
-                return (String(code.dropFirst(2).dropLast(2)), false)
-            }
-            
-            return (nil, false)
+        var cleanedCode = code
+        
+        // Remove Markdown bold and italic formatting
+        cleanedCode = cleanedCode.replacingOccurrences(of: "**", with: "")
+        cleanedCode = cleanedCode.replacingOccurrences(of: "*", with: "")
+        
+        if cleanedCode.hasPrefix("$$") && cleanedCode.hasSuffix("$$") {
+            return (String(cleanedCode.dropFirst(2).dropLast(2)), true)
         }
+        
+        if cleanedCode.hasPrefix("$") && cleanedCode.hasSuffix("$") {
+            return (String(cleanedCode.dropFirst().dropLast()), false)
+        }
+        
+        if cleanedCode.hasPrefix(#"\["#) && cleanedCode.hasSuffix(#"\]"#) {
+            return (String(cleanedCode.dropFirst(2).dropLast(2)), true)
+        }
+        
+        if cleanedCode.hasPrefix(#"\("#) && cleanedCode.hasSuffix(#"\)"#) {
+            return (String(cleanedCode.dropFirst(2).dropLast(2)), false)
+        }
+        
+        return (nil, false)
+    }
 }
 
 // MARK: - Code Block
@@ -107,6 +116,6 @@ extension Renderer {
 
 #Preview {
     MarkdownLatexTestView()
-        .frame(width: 300, height: 400)
+        .frame(width: 400, height: 400)
         .textSelection(.enabled)
 }

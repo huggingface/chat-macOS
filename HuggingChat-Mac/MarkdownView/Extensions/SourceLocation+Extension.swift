@@ -1,4 +1,5 @@
 import Markdown
+import SwiftUI
 
 extension SourceLocation {
     func offset(in text: String) -> Int {
@@ -11,4 +12,10 @@ extension SourceLocation {
             .count
         return previousLinesTotalChar + colIndex + 1
     }
+}
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 400, height: 400)
+        .textSelection(.enabled)
 }

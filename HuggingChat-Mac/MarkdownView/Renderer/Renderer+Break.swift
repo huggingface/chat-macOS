@@ -14,3 +14,9 @@ extension Renderer {
         Result(SwiftUI.Text("\n"))
     }
 }
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 400, height: 400)
+        .textSelection(.enabled)
+}
