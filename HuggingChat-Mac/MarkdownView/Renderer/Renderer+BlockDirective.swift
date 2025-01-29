@@ -33,3 +33,9 @@ extension Renderer {
         return Result(contents)
     }
 }
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 300, height: 400)
+        .textSelection(.enabled)
+}

@@ -11,13 +11,14 @@ import SwiftMath
 struct MathView: NSViewRepresentable {
     var equation: String
     var font: MathFont = .latinModernFont
-    var textAlignment: MTTextAlignment = .center
+    var textAlignment: MTTextAlignment = .left
     var fontSize: CGFloat = 12
-    var labelMode: MTMathUILabelMode = .display
+    var labelMode: MTMathUILabelMode = .text
     var insets: MTEdgeInsets = MTEdgeInsets()
     
     func makeNSView(context: Context) -> MTMathUILabel {
         let view = MTMathUILabel()
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
     
@@ -28,14 +29,22 @@ struct MathView: NSViewRepresentable {
         view.labelMode = labelMode
         view.textColor = MTColor(Color.primary)
         view.contentInsets = insets
+        view.clipsToBounds = false
     }
 }
 
 #Preview {
-    ScrollView(.horizontal) {
-        MathView(equation: "L^{PPO}(\\theta) = \\mathbb{E}_{s,a \\sim \\pi_\\theta} \\left[ \\min \\left( r(\\theta) \\cdot A(s,a), \\text{clip}(r(\\theta), 1 - \\epsilon, 1 + \\epsilon) \\cdot A(s,a) \\right) \\right]", fontSize: 16,
-                 labelMode: .text)
+    MarkdownLatexTestView()
+        .frame(width: 300, height: 400)
         .textSelection(.enabled)
-            .padding()
-    }
 }
+
+//#Preview {
+//    ScrollView(.horizontal) {
+//        MathView(equation: "$\\mathbb{E}$",
+//                 fontSize: 16,
+//                 labelMode: .text)
+//        .textSelection(.enabled)
+//            .padding()
+//    }
+//}

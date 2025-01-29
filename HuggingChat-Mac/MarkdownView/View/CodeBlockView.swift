@@ -20,7 +20,7 @@ struct HighlightedCodeBlock: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 codeLanguage
                     .foregroundStyle(.primary)
@@ -31,18 +31,22 @@ struct HighlightedCodeBlock: View {
             .frame(maxWidth: .infinity)
             .background(.ultraThickMaterial)
             
-            
+            Divider().foregroundStyle(.gray)
             Group {
                 if let attributedCode {
                     ScrollView(.horizontal) {
                         SwiftUI.Text(attributedCode)
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
+                    .scrollIndicators(.hidden)
+                    .contentMargins(.top, 20, for: .scrollContent)
                 } else {
                     ScrollView(.horizontal) {
                         SwiftUI.Text(code)
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
+                    .scrollIndicators(.hidden)
+                    .contentMargins(.top, 20, for: .scrollContent)
                 }
             }
             
@@ -52,12 +56,11 @@ struct HighlightedCodeBlock: View {
         .font(font.codeBlock)
         
         .frame(maxWidth: .infinity, alignment: .leading)
-        
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .mask(RoundedRectangle(cornerRadius: 8))
         .background {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(.gray.opacity(0.5))
-                .fill(.windowBackground)
+                .fill( colorScheme == .dark ? Color(red: 32/255, green: 32/255, blue: 32/255): .white)
         }
         .gesture(
             TapGesture()

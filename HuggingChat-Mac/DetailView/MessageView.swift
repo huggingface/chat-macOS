@@ -50,7 +50,7 @@ struct MessageView: View {
                             
                         }
                         
-                        VStack {
+                        VStack(spacing: 10) {
                             if message.author == .user  {
                                 Text(message.content)
                                     .textSelection(.enabled)

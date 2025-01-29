@@ -26,7 +26,7 @@ extension Renderer {
             VStack(alignment: .leading, spacing: configuration.componentSpacing) {
                 ForEach(listItems.indices, id: \.self) { index in
                     let listItem = listItems[index]
-                    HStack(alignment: .firstTextBaseline) {
+                    HStack(alignment: .top) {
                         if listItem.checkbox != nil {
                             CheckboxView(listItem: listItem, text: rawText, handler: handler)
                         } else {
@@ -52,7 +52,7 @@ extension Renderer {
             VStack(alignment: .leading, spacing: configuration.componentSpacing) {
                 ForEach(itemContent.indices, id: \.self) { index in
                     let listItem = listItems[index]
-                    HStack(alignment: .firstTextBaseline) {
+                    HStack(alignment: .top) {
                         if listItem.checkbox != nil {
                             CheckboxView(listItem: listItem, text: rawText, handler: handler)
                         } else {
@@ -110,4 +110,10 @@ struct CheckboxView: View {
         separatedText[sourceRange.lowerBound.line - 1] = Substring(stringLiteral: newMarkdownText)
         handler(separatedText.joined(separator: "\n"))
     }
+}
+
+#Preview {
+    MarkdownLatexTestView()
+        .frame(width: 300, height: 400)
+        .textSelection(.enabled)
 }

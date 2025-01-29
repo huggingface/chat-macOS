@@ -27,6 +27,7 @@ public struct MarkdownView: View {
 
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
+    @StateObject private var latexPreprocessor = LaTeXPreprocessor()
     @State private var representedView = AnyView(EmptyView()) // RenderedView
     
     /// Parse the Markdown and render it as a single `View`.
@@ -93,8 +94,11 @@ public struct MarkdownView: View {
     }
     
     private func makeView(text: String) -> AnyView {
+
+        let processedText = latexPreprocessor.processIncrementally(input: text)
+        
         var renderer = Renderer(
-            text: text,
+            text: processedText,
             configuration: configuration,
             interactiveEditHandler: { text in
                 Task { @MainActor in
