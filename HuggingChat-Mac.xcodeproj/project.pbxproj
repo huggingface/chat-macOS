@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F136319C2C6F34B4009DEF15 /* KeyboardShortcuts */; };
 		F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = F13631C42C731A30009DEF15 /* LaunchAtLogin */; };
-		F13FDBD82D48C3F400B33854 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDBD72D48C3F400B33854 /* MarkdownView */; };
+		F13FDC7F2D49807200B33854 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDC7E2D49807200B33854 /* Markdown */; };
+		F13FDC892D4981BF00B33854 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDC882D4981BF00B33854 /* SwiftMath */; };
+		F13FDE252D49B42E00B33854 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDE242D49B42E00B33854 /* Highlightr */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
 		F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A46BAE2D4196F500BDAA5E /* NukeUI */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
@@ -63,13 +65,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F13FDC892D4981BF00B33854 /* SwiftMath in Frameworks */,
+				F13FDC7F2D49807200B33854 /* Markdown in Frameworks */,
 				F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
 				F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */,
 				F13631C52C731A30009DEF15 /* LaunchAtLogin in Frameworks */,
-				F13FDBD82D48C3F400B33854 /* MarkdownView in Frameworks */,
 				F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */,
+				F13FDE252D49B42E00B33854 /* Highlightr in Frameworks */,
 				F1A76DC02CABE0E3009CBA98 /* SwiftPackageListUI in Frameworks */,
 				F136319D2C6F34B4009DEF15 /* KeyboardShortcuts in Frameworks */,
 			);
@@ -132,7 +136,9 @@
 				F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */,
 				F1A76DBF2CABE0E3009CBA98 /* SwiftPackageListUI */,
 				F1A46BAE2D4196F500BDAA5E /* NukeUI */,
-				F13FDBD72D48C3F400B33854 /* MarkdownView */,
+				F13FDC7E2D49807200B33854 /* Markdown */,
+				F13FDC882D4981BF00B33854 /* SwiftMath */,
+				F13FDE242D49B42E00B33854 /* Highlightr */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -168,7 +174,9 @@
 				F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				F1A76DBC2CABE0E3009CBA98 /* XCRemoteSwiftPackageReference "swift-package-list" */,
 				F1A46BAD2D4196F500BDAA5E /* XCRemoteSwiftPackageReference "Nuke" */,
-				F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */,
+				F13FDC7D2D49807200B33854 /* XCRemoteSwiftPackageReference "swift-markdown" */,
+				F13FDC872D4981BF00B33854 /* XCRemoteSwiftPackageReference "SwiftMath" */,
+				F13FDE232D49B42E00B33854 /* XCRemoteSwiftPackageReference "Highlightr" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -433,12 +441,28 @@
 				kind = branch;
 			};
 		};
-		F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+		F13FDC7D2D49807200B33854 /* XCRemoteSwiftPackageReference "swift-markdown" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/LiYanan2004/MarkdownView.git";
+			repositoryURL = "https://github.com/swiftlang/swift-markdown.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.7.0;
+				minimumVersion = 0.5.0;
+			};
+		};
+		F13FDC872D4981BF00B33854 /* XCRemoteSwiftPackageReference "SwiftMath" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mgriebling/SwiftMath.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.1;
+			};
+		};
+		F13FDE232D49B42E00B33854 /* XCRemoteSwiftPackageReference "Highlightr" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/raspu/Highlightr.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.1;
 			};
 		};
 		F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -478,10 +502,20 @@
 			package = F13631C32C731A30009DEF15 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
 			productName = LaunchAtLogin;
 		};
-		F13FDBD72D48C3F400B33854 /* MarkdownView */ = {
+		F13FDC7E2D49807200B33854 /* Markdown */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F13FDBD62D48C3F400B33854 /* XCRemoteSwiftPackageReference "MarkdownView" */;
-			productName = MarkdownView;
+			package = F13FDC7D2D49807200B33854 /* XCRemoteSwiftPackageReference "swift-markdown" */;
+			productName = Markdown;
+		};
+		F13FDC882D4981BF00B33854 /* SwiftMath */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F13FDC872D4981BF00B33854 /* XCRemoteSwiftPackageReference "SwiftMath" */;
+			productName = SwiftMath;
+		};
+		F13FDE242D49B42E00B33854 /* Highlightr */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F13FDE232D49B42E00B33854 /* XCRemoteSwiftPackageReference "Highlightr" */;
+			productName = Highlightr;
 		};
 		F19E18BD2C9C889E00B89DB3 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

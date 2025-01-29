@@ -1,5 +1,5 @@
 {
-  "originHash" : "7b5adc4c3cc82c6658de07a2b846e018c9217241bdfb451f49e503941eeaae99",
+  "originHash" : "e396ae558440cfbc007b5e747aceb2b3de1a91a7ccc67fc6dca2d4dc5d6309d5",
   "pins" : [
     {
       "identity" : "highlightr",
@@ -26,15 +26,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "a04ec1c363be3627734f6dad757d82f5d4fa8fcc"
-      }
-    },
-    {
-      "identity" : "markdownview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/LiYanan2004/MarkdownView.git",
-      "state" : {
-        "revision" : "8b746c5146b7842e9547b4d60adb2f1712cebb33",
-        "version" : "1.7.0"
       }
     },
     {
@@ -76,7 +67,7 @@
     {
       "identity" : "swift-markdown",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-markdown.git",
+      "location" : "https://github.com/swiftlang/swift-markdown.git",
       "state" : {
         "revision" : "8f79cb175981458a0a27e76cb42fee8e17b1a993",
         "version" : "0.5.0"
@@ -89,6 +80,15 @@
       "state" : {
         "revision" : "5e954ec39ce2374ff28a38224fd4e6bba7c57cdc",
         "version" : "4.4.2"
+      }
+    },
+    {
+      "identity" : "swiftmath",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mgriebling/SwiftMath.git",
+      "state" : {
+        "revision" : "606f9be66db6afe0c41c3b064723a57061723db7",
+        "version" : "1.7.1"
       }
     }
   ],

@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import MarkdownView
-import LaTeXSwiftUI
 
 struct MessageView: View {
     
@@ -102,9 +100,10 @@ struct MessageView: View {
                                 }
                                 
                                 MarkdownView(text: message.content)
-                                    .markdownViewRole(.normal)
                                     .markdownRenderingThread(.main)
                                     .markdownRenderingMode(.optimized)
+                                    .codeHighlighterTheme(CodeHighlighterTheme(lightModeThemeName: "xcode", darkModeThemeName: "xcode-dark"))
+
                                 
                                 
                                     .textSelection(.enabled)
