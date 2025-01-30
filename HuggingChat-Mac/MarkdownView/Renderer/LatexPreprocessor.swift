@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftMath
 
 // add backticks around LaTeX, which is necessary for the Markdown parser.
 // $\sqrt{4}$ -> `$\sqrt{4}$`

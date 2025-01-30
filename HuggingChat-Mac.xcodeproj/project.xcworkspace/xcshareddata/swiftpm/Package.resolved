@@ -1,5 +1,5 @@
 {
-  "originHash" : "e396ae558440cfbc007b5e747aceb2b3de1a91a7ccc67fc6dca2d4dc5d6309d5",
+  "originHash" : "b3395dbfb0cd4c9b4c3cf8f42986fd1edc1ef0aefc0cf55d3f4e52bf4bb9a769",
   "pins" : [
     {
       "identity" : "highlightr",
@@ -26,6 +26,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "a04ec1c363be3627734f6dad757d82f5d4fa8fcc"
+      }
+    },
+    {
+      "identity" : "mathjaxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/aheze/MathJaxSwift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "dad2ff323c1d52ea8747f7ad4f405a9c717a62c1"
       }
     },
     {

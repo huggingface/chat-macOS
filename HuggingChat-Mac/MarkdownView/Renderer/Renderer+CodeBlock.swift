@@ -15,19 +15,21 @@ extension Renderer {
                                  labelMode: .display)
                         .fixedSize()
                         .padding()
-                        .background(.green)
                     }
                     .scrollClipDisabled()
                 }
             } else {
                 // For inline equations, return a text-based Result to maintain proper flow
-                return Result {
-                    MathView(equation: latexString,
-                             fontSize: 14,
-                             labelMode: .text)
-//                    .frame(height: 120)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .background(.red)
+                do {
+                    let image = try LaTeXRenderer.renderImage(
+                        latexString: latexString,
+                        svgImageScale: 0.09
+                    )
+                    .renderingMode(.template)
+                    
+                    return Result(SwiftUI.Text(image).foregroundColor(.primary))
+                } catch {
+                    print("Inline LaTeX error: \(error)")
                 }
             }
         }

@@ -12,6 +12,7 @@
 		F13FDC7F2D49807200B33854 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDC7E2D49807200B33854 /* Markdown */; };
 		F13FDC892D4981BF00B33854 /* SwiftMath in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDC882D4981BF00B33854 /* SwiftMath */; };
 		F13FDE252D49B42E00B33854 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDE242D49B42E00B33854 /* Highlightr */; };
+		F13FDE302D4B028D00B33854 /* MathJaxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F13FDE2F2D4B028D00B33854 /* MathJaxSwift */; };
 		F19E18BE2C9C889E00B89DB3 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = F19E18BD2C9C889E00B89DB3 /* Sparkle */; };
 		F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1A46BAE2D4196F500BDAA5E /* NukeUI */; };
 		F1A76DBE2CABE0E3009CBA98 /* SwiftPackageList in Frameworks */ = {isa = PBXBuildFile; productRef = F1A76DBD2CABE0E3009CBA98 /* SwiftPackageList */; };
@@ -67,6 +68,7 @@
 			files = (
 				F13FDC892D4981BF00B33854 /* SwiftMath in Frameworks */,
 				F13FDC7F2D49807200B33854 /* Markdown in Frameworks */,
+				F13FDE302D4B028D00B33854 /* MathJaxSwift in Frameworks */,
 				F1A46BAF2D4196F500BDAA5E /* NukeUI in Frameworks */,
 				F1A76E092CABF231009CBA98 /* Metal.framework in Frameworks */,
 				F1A76E072CABF22B009CBA98 /* Accelerate.framework in Frameworks */,
@@ -139,6 +141,7 @@
 				F13FDC7E2D49807200B33854 /* Markdown */,
 				F13FDC882D4981BF00B33854 /* SwiftMath */,
 				F13FDE242D49B42E00B33854 /* Highlightr */,
+				F13FDE2F2D4B028D00B33854 /* MathJaxSwift */,
 			);
 			productName = "HuggingChat-Mac";
 			productReference = F13631892C6F346A009DEF15 /* HuggingChat.app */;
@@ -177,6 +180,7 @@
 				F13FDC7D2D49807200B33854 /* XCRemoteSwiftPackageReference "swift-markdown" */,
 				F13FDC872D4981BF00B33854 /* XCRemoteSwiftPackageReference "SwiftMath" */,
 				F13FDE232D49B42E00B33854 /* XCRemoteSwiftPackageReference "Highlightr" */,
+				F13FDE2E2D4B028D00B33854 /* XCRemoteSwiftPackageReference "MathJaxSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F136318A2C6F346A009DEF15 /* Products */;
@@ -465,6 +469,14 @@
 				minimumVersion = 2.2.1;
 			};
 		};
+		F13FDE2E2D4B028D00B33854 /* XCRemoteSwiftPackageReference "MathJaxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aheze/MathJaxSwift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		F19E18BC2C9C889E00B89DB3 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -516,6 +528,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F13FDE232D49B42E00B33854 /* XCRemoteSwiftPackageReference "Highlightr" */;
 			productName = Highlightr;
+		};
+		F13FDE2F2D4B028D00B33854 /* MathJaxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F13FDE2E2D4B028D00B33854 /* XCRemoteSwiftPackageReference "MathJaxSwift" */;
+			productName = MathJaxSwift;
 		};
 		F19E18BD2C9C889E00B89DB3 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

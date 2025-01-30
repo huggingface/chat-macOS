@@ -6,14 +6,14 @@ struct ViewContent: @unchecked Sendable {
     var type: ContentType
     
     enum ContentType: String {
-        case text, view
+        case text, view, inlineMath
     }
     
     @ViewBuilder var content: some View {
         Group {
             switch self.type {
             case .text: self.text
-            case .view: self.view
+            case .view, .inlineMath: self.view
             }
         }
         .lineLimit(nil)
@@ -35,6 +35,12 @@ struct ViewContent: @unchecked Sendable {
         text = Text("")
         view = AnyView(content)
         type = .view
+    }
+    
+    init(inlineMath content: Text) {
+        text = content
+        view = AnyView(EmptyView())
+        type = .text
     }
 }
 
@@ -73,6 +79,19 @@ extension ViewContent {
         for content in contents {
             if content.type == .text {
                 text.append(content.text)
+            } else if content.type == .inlineMath {
+                text.append(content.text)
+//                if !text.isEmpty {
+//                    let combinedView = HStack(alignment: .bottom,spacing: 0) {
+//                        Text("").font(.body) + text.reduce(Text(""), +)
+//                        content.view
+//                    }
+//                    composedContents.append(ViewContent(combinedView))
+//                    text.removeAll()
+//                } else {
+//                    composedContents.append(ViewContent(content.view))
+//                }
+                
             } else {
                 if !text.isEmpty {
                     composedContents.append(ViewContent(text))

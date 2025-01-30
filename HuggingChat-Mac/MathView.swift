@@ -15,6 +15,7 @@ struct MathView: NSViewRepresentable {
     var fontSize: CGFloat = 12
     var labelMode: MTMathUILabelMode = .text
     var insets: MTEdgeInsets = MTEdgeInsets()
+    var convertToImage: Bool = false
     
     func makeNSView(context: Context) -> MTMathUILabel {
         let view = MTMathUILabel()
@@ -32,6 +33,7 @@ struct MathView: NSViewRepresentable {
     }
 }
 
+
 #Preview {
     MarkdownLatexTestView()
         .frame(width: 300, height: 400)
@@ -40,10 +42,9 @@ struct MathView: NSViewRepresentable {
 
 //#Preview {
 //    ScrollView(.horizontal) {
-//        MathView(equation: "$\\mathbb{E}$",
-//                 fontSize: 16,
-//                 labelMode: .text)
-//        .textSelection(.enabled)
-//            .padding()
+//        MathImageView(equation: "x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}",
+//                            fontSize: 20)
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//        
 //    }
 //}
