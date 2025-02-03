@@ -77,7 +77,8 @@ struct ChatView: View {
                                 guard newValue > 0 else { return }
                                 proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
                             }
-//                            .onAppear {
+                            .onAppear {
+                                
 //                                print("view appeared")
 //                                DispatchQueue.main.async {
 //                                    guard coordinator.messages.count > 0 else {
@@ -87,7 +88,7 @@ struct ChatView: View {
 //                                    withAnimation(.easeOut) {
 //                                        proxy.scrollTo(coordinator.messages[coordinator.messages.count - 1].id, anchor: .bottom)
 //                                    }
-//                                }
+                                }
 //                            }
                             
                         } else {

@@ -22,13 +22,17 @@ struct HuggingChat_MacApp: App {
     }
     
     var body: some Scene {
-        WindowGroup(id: "main-window") {
+        Window("Chat", id: "main-window") {
             appDelegate.makeContentView()
                 .navigationTitle("")
         }
         .windowToolbarStyle(.unified)
         .windowResizability(.contentSize)
         .windowStyle(.hiddenTitleBar)
+        
+        Settings {
+            EmptyView()
+        }
 //        .defaultSize(width: 600, height: 400)
     }
 }

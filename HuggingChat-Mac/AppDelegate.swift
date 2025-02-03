@@ -37,6 +37,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         })
     }
     
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+            // Return false to prevent the app from terminating
+            return false
+        }
+    
     // MARK: Status item
     private func createMenuBarItem() {
         statusBar = NSStatusBar.system

@@ -28,11 +28,14 @@ struct InputView: View {
                 .onSubmit {
                     if isChatBarMode {
                         // Start new conversation
+//
                         coordinator.selectedConversation = nil
                         coordinator.send(text: inputText)
                         inputText = ""
+                        
                         onSubmit()
                         openWindow(id: "main-window")
+                        
                     } else {
                         coordinator.send(text: inputText)
                         inputText = ""
@@ -43,9 +46,11 @@ struct InputView: View {
                 DispatchQueue.main.async {
                     if isChatBarMode {
                         // Start new conversation
+//                        openWindow(id: "main-window")
                         coordinator.selectedConversation = nil
                         coordinator.send(text: inputText)
                         inputText = ""
+                        
                         onSubmit()
                         openWindow(id: "main-window")
                     } else {

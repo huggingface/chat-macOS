@@ -375,6 +375,7 @@ extension CoordinatorModel {
     
     private func sendPromptRequest(req: PromptRequestBody, conversationID: String) {
         guard let lastMessage = messages.last else { return }
+        print("LOG: Sending prompt request...")
         let sendPromptHandler = SendPromptHandler(conversationId: conversationID, messageVM: lastMessage)
         self.sendPromptHandler = sendPromptHandler
         let pub = sendPromptHandler.update
@@ -388,6 +389,7 @@ extension CoordinatorModel {
                 self.isInteractingWithModel = false
                 switch completion {
                 case .finished:
+                    print("LOG: Interaction completed")
                     self.sendPromptHandler = nil
                 case .failure(let error):
                     
@@ -401,8 +403,10 @@ extension CoordinatorModel {
                 }
     
             } receiveValue: { [weak self] obj in
-                let (count, _) = obj
+                let (count, ob) = obj
+                print("LOG: \(ob)")
                 if count == 1 {
+                    print("LOG: Updating conversation...")
                     self?.updateConversation(conversationID: conversationID)
                 }
             }.store(in: &cancellables)

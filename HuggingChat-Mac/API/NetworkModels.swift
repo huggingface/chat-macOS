@@ -423,7 +423,7 @@ enum StreamMessageType {
     
     static func messageType(from json: StreamMessage) -> StreamMessageType? {
 #if DEBUG
-        print("🔥", json.type, json)
+//        print("🔥", json.type, json)
 #endif
         switch json.type {
         case "webSearch":
@@ -482,6 +482,7 @@ final class SendPromptHandler {
         return privateUpdate
             .map({ [weak self] (messageType: StreamMessageType) -> MessageViewModel? in
                 guard let self else { fatalError() }
+                print("LOG: Received message from stream with type: \(messageType)")
                 self.updateMessage(with: messageType)
                 return self.currentMessage
             })
@@ -532,6 +533,7 @@ final class SendPromptHandler {
     private func updateMessage(with message: StreamMessageType) {
         switch message {
         case .token(let token):
+            print("LOG: \(token)")
             currentMessage.content += token
         case .started:
             break
