@@ -2,6 +2,7 @@ import SwiftUI
 import Markdown
 
 struct Renderer: @preconcurrency MarkupVisitor {
+    
     typealias Result = ViewContent
     
     var text: String

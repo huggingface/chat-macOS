@@ -3,6 +3,7 @@ import SwiftUI
 
 // MARK: - Inline Code Block
 extension Renderer {
+    
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
         let (latexString, isDisplay) = parseLatex(from: inlineCode.code)
         
@@ -19,18 +20,25 @@ extension Renderer {
                     .scrollClipDisabled()
                 }
             } else {
-                // For inline equations, return a text-based Result to maintain proper flow
                 do {
                     let image = try LaTeXRenderer.renderImage(
                         latexString: latexString,
-                        svgImageScale: 0.09
+                        svgImageScale: 0.08
                     )
                     .renderingMode(.template)
                     
-                    return Result(SwiftUI.Text(image).foregroundColor(.primary))
+                    return Result(SwiftUI.Text(image))
                 } catch {
                     print("Inline LaTeX error: \(error)")
                 }
+                // For inline equations, return a text-based Result to maintain proper flow
+//                if let image = MathImageView(equation: latexString,
+//                                        fontSize: 14,
+//                                        labelMode: .text) {
+//                    return ViewContent(inlineMath:  Text(Image(systemName: "star")))
+//                } else {
+                    return Result(SwiftUI.Text(latexString))
+//                }
             }
         }
         

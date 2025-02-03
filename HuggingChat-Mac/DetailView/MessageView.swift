@@ -164,7 +164,7 @@ struct MessageTools: View {
                     }
                 }
             }, label: {
-                Image(systemName: showCopyFeedback ? "checkmark" : "doc.on.doc")
+                Image(systemName: showCopyFeedback ? "checkmark" : "square.on.square")
                     .foregroundStyle(.secondary)
             })
             .controlSize(.mini)

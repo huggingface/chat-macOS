@@ -22,7 +22,7 @@ struct HuggingChat_MacApp: App {
     }
     
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "main-window") {
             appDelegate.makeContentView()
                 .navigationTitle("")
         }

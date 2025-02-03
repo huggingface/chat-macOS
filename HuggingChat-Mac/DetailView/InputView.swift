@@ -14,6 +14,7 @@ struct InputView: View {
     var onSubmit: (() -> Void)
     
     @Environment(CoordinatorModel.self) private var coordinator
+    @Environment(\.openWindow) var openWindow
     @Environment(\.colorScheme) var colorScheme
     @State private var inputText: String = ""
     
@@ -25,15 +26,33 @@ struct InputView: View {
                 .lineLimit(12)
                 .frame(maxHeight: .infinity, alignment: .top)
                 .onSubmit {
-                    coordinator.send(text: inputText)
-                    inputText = ""
-                    onSubmit()
+                    if isChatBarMode {
+                        // Start new conversation
+                        coordinator.selectedConversation = nil
+                        coordinator.send(text: inputText)
+                        inputText = ""
+                        onSubmit()
+                        openWindow(id: "main-window")
+                    } else {
+                        coordinator.send(text: inputText)
+                        inputText = ""
+                        onSubmit()
+                    }
                 }
             InputViewToolbar(inputText: inputText) {
                 DispatchQueue.main.async {
-                    coordinator.send(text: inputText)
-                    inputText = ""
-                    onSubmit()
+                    if isChatBarMode {
+                        // Start new conversation
+                        coordinator.selectedConversation = nil
+                        coordinator.send(text: inputText)
+                        inputText = ""
+                        onSubmit()
+                        openWindow(id: "main-window")
+                    } else {
+                        coordinator.send(text: inputText)
+                        inputText = ""
+                        onSubmit()
+                    }
                 }
             }
                 
